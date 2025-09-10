@@ -2,9 +2,7 @@
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: [
-      '@supabase/supabase-js',
-      // 'pg',
-      // 'dotenv'
+      '@supabase/supabase-js'
     ]
   },
   images: {
