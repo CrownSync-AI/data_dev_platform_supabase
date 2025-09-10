@@ -100,8 +100,7 @@
     "sonner": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
-    "arg": "^5.0.2",
-    "commander": "^11.1.0"
+    "arg": "^5.0.2"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.4",
