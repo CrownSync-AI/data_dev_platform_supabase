@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/table';
 import { 
   TrendingUp, 
-  TrendingDown, 
   AlertTriangle, 
   Users, 
   Download,

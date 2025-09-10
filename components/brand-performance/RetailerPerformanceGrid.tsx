@@ -71,7 +71,7 @@ export default function RetailerPerformanceGrid({ campaignId, startDate, endDate
       const result = await response.json()
       
       // Enhance the data with additional fields for card display
-      const enhancedRetailers = result.leaderboard.map((retailer: any, index: number) => ({
+      const enhancedRetailers = result.leaderboard.map((retailer: any, _index: number) => ({
         ...retailer,
         grade: getGradeFromPerformance(retailer.click_rate),
         trend: Math.random() * 10 - 5, // Random trend for demo

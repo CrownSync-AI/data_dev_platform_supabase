@@ -72,7 +72,7 @@ export default function RetailerDataTable({ campaignId, startDate, endDate }: Re
       const result = await response.json()
       
       // Enhance data with calculated metrics
-      const enhancedData = result.leaderboard.map((retailer: any, index: number) => ({
+      const enhancedData = result.leaderboard.map((retailer: any, _index: number) => ({
         rank: retailer.overall_rank,
         retailer_name: retailer.retailer_name,
         region: retailer.region,

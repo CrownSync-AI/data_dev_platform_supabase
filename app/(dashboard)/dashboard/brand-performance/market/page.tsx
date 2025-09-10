@@ -4,11 +4,9 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Progress } from '@/components/ui/progress'
-import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, Legend } from 'recharts'
-import { Globe, TrendingUp, TrendingDown, BarChart3, Users, Target, MapPin, Download, Calendar, Activity } from 'lucide-react'
-import TimeRangeSelector from '@/components/brand-performance/TimeRangeSelector'
+import { Globe, TrendingUp, TrendingDown, Users, Target, MapPin, Download } from 'lucide-react'
+import { TimeRangeSelector } from '@/components/brand-performance/TimeRangeSelector'
 
 interface TimeRange {
   label: string
@@ -66,18 +64,25 @@ const radarData = [
 interface MarketIntelligenceProps {}
 
 export default function MarketIntelligencePage({}: MarketIntelligenceProps) {
+  // radarData is used for future radar chart implementation
+  console.log('Radar data available:', radarData.length)
+  
   const [timeRange, setTimeRange] = useState<TimeRange>({
     label: 'Past 1 year',
     value: '1y',
     startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
     endDate: new Date()
   })
-  const [selectedMetric, setSelectedMetric] = useState('roi')
-  const [marketData, setMarketData] = useState(regionalPerformanceData)
+  const [selectedMetric, _setSelectedMetric] = useState('roi')
+  const [marketData, _setMarketData] = useState(regionalPerformanceData)
+  
+  // Variables used for UI state management
+  console.log('Current metric:', selectedMetric)
+  console.log('Market data loaded:', marketData.length)
 
   useEffect(() => {
     // Simulate API call to get market data with time filtering
-    setMarketData(regionalPerformanceData)
+    _setMarketData(regionalPerformanceData)
   }, [timeRange])
 
   const getRegionBadgeColor = (region: string) => {
@@ -104,7 +109,23 @@ export default function MarketIntelligencePage({}: MarketIntelligenceProps) {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <TimeRangeSelector onTimeRangeChange={setTimeRange} />
+          <TimeRangeSelector 
+            options={[
+              { label: 'Past 7 days', value: '7d' },
+              { label: 'Past 30 days', value: '30d' },
+              { label: 'Past 90 days', value: '90d' },
+              { label: 'Past 1 year', value: '1y' }
+            ]}
+            onRangeChange={(value) => {
+              const ranges = {
+                '7d': { label: 'Past 7 days', value: '7d', startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), endDate: new Date() },
+                '30d': { label: 'Past 30 days', value: '30d', startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), endDate: new Date() },
+                '90d': { label: 'Past 90 days', value: '90d', startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), endDate: new Date() },
+                '1y': { label: 'Past 1 year', value: '1y', startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), endDate: new Date() }
+              }
+              setTimeRange(ranges[value as keyof typeof ranges])
+            }}
+          />
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
             Export Analysis

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
-import { SocialAnalyticsFilters, SocialMetricsResponse } from '@/lib/types/social-media'
+import { SocialMetricsResponse } from '@/lib/types/social-media'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,8 +11,6 @@ export async function GET(request: NextRequest) {
     const platform = searchParams.get('platform')
     const region = searchParams.get('region')
     const performanceTier = searchParams.get('performanceTier')
-    const startDate = searchParams.get('startDate') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    const endDate = searchParams.get('endDate') || new Date().toISOString().split('T')[0]
     const retailerId = searchParams.get('retailerId')
 
     // Build the query
@@ -22,19 +20,19 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (platform && platform !== 'all') {
-      query = query.eq('platform', platform)
+      query = (query as any).eq('platform', platform)
     }
     
     if (region && region !== 'all') {
-      query = query.eq('region', region)
+      query = (query as any).eq('region', region)
     }
     
     if (performanceTier && performanceTier !== 'all') {
-      query = query.eq('performance_tier', performanceTier)
+      query = (query as any).eq('performance_tier', performanceTier)
     }
     
     if (retailerId) {
-      query = query.eq('user_id', retailerId)
+      query = (query as any).eq('user_id', retailerId)
     }
 
     const { data: socialData, error } = await query
@@ -48,16 +46,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Calculate aggregated metrics
-    const totalReach = socialData?.reduce((sum, item) => sum + (item.total_reach || 0), 0) || 0
-    const totalEngagement = socialData?.reduce((sum, item) => sum + (item.total_engagement || 0), 0) || 0
-    const avgEngagementRate = socialData?.length > 0 
-      ? socialData.reduce((sum, item) => sum + (item.avg_engagement_rate || 0), 0) / socialData.length 
+    const totalReach = (socialData as any)?.reduce((sum: number, item: any) => sum + (item.total_reach || 0), 0) || 0
+    const totalEngagement = (socialData as any)?.reduce((sum: number, item: any) => sum + (item.total_engagement || 0), 0) || 0
+    const avgEngagementRate = (socialData as any)?.length > 0 
+      ? (socialData as any).reduce((sum: number, item: any) => sum + (item.avg_engagement_rate || 0), 0) / (socialData as any).length 
       : 0
-    const totalClicks = socialData?.reduce((sum, item) => sum + (item.total_clicks || 0), 0) || 0
-    const newFollowers = socialData?.reduce((sum, item) => sum + (item.avg_daily_follower_growth || 0), 0) || 0
+    const totalClicks = (socialData as any)?.reduce((sum: number, item: any) => sum + (item.total_clicks || 0), 0) || 0
+    const newFollowers = (socialData as any)?.reduce((sum: number, item: any) => sum + (item.avg_daily_follower_growth || 0), 0) || 0
 
     // Platform breakdown
-    const platformBreakdown = socialData?.reduce((acc, item) => {
+    const platformBreakdown = (socialData as any)?.reduce((acc: any[], item: any) => {
       const existing = acc.find(p => p.platform === item.platform)
       if (existing) {
         existing.reach += item.total_reach || 0
@@ -86,7 +84,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: response,
-      rawData: socialData
+      rawData: socialData as any
     })
 
   } catch (error) {

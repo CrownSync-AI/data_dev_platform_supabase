@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowUpDown, ArrowUp, ArrowDown, Search, ExternalLink, Eye, Heart, Share, MousePointer } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowUpDown, ArrowUp, ArrowDown, Search, Eye, Heart, MousePointer } from 'lucide-react';
+
 import type { SocialAnalyticsFilters, TopPerformingContent } from '@/lib/types/social-media';
 
 interface TopContentTableProps {

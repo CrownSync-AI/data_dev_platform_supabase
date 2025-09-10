@@ -31,7 +31,7 @@ export default function CustomerDataTable({
   onSendEmail,
   onAddNote
 }: CustomerDataTableProps) {
-  const [hoveredRow, setHoveredRow] = useState<string | null>(null)
+  const [_hoveredRow, setHoveredRow] = useState<string | null>(null)
 
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('en-US', {

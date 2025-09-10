@@ -17,7 +17,6 @@ export function DataTableRenderer({ content }: DataTableRendererProps) {
   }
 
   const headerLine = tableLines[0];
-  const separatorLine = tableLines[1];
   const dataLines = tableLines.slice(2);
 
   // Parse header

@@ -1,12 +1,12 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { BarChart3, TrendingUp, Users, FileText, Database, Mail } from 'lucide-react';
+import { BarChart3, TrendingUp, Users, FileText, Database, Mail, LucideIcon } from 'lucide-react';
 
 interface QuickAction {
   label: string;
   description: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
   message: string;
 }
 

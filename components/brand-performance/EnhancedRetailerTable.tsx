@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowUpDown, ArrowUp, ArrowDown, Share2, Mail, TrendingUp, Users } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowUpDown, ArrowUp, ArrowDown, Share2, Mail } from 'lucide-react';
+
 
 interface EnhancedRetailerData {
   id: string;

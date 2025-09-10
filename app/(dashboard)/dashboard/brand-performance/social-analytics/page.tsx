@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Download, TrendingUp, Users, Eye, MousePointer, Trophy } from 'lucide-react';
+import { RefreshCw, TrendingUp, Users, Eye, MousePointer, Trophy } from 'lucide-react';
 import { SocialMetricCard } from '@/components/brand-performance/SocialMetricCard';
 import { TimeRangeSelector } from '@/components/brand-performance/TimeRangeSelector';
 import { PlatformFilter } from '@/components/brand-performance/PlatformFilter';
@@ -19,7 +19,7 @@ import { GoogleBusinessAnalytics } from '@/components/brand-performance/GoogleBu
 import { SocialAnalyticsExport } from '@/components/brand-performance/SocialAnalyticsExport';
 import { useSocialAnalyticsRealtime } from '@/lib/hooks/useSocialAnalyticsRealtime';
 
-import type { SocialMetricsResponse, SocialAnalyticsFilters } from '@/lib/types/social-media';
+import type { SocialAnalyticsFilters } from '@/lib/types/social-media';
 
 export default function SocialAnalyticsPage() {
   const [filters, setFilters] = useState<SocialAnalyticsFilters>({
@@ -32,7 +32,7 @@ export default function SocialAnalyticsPage() {
   });
 
   // Use real-time hook for data fetching
-  const { data: metrics, loading, error, lastUpdated, refresh } = useSocialAnalyticsRealtime({
+  const { data: metrics, loading, error: _error, lastUpdated, refresh } = useSocialAnalyticsRealtime({
     filters,
     refreshInterval: 30000 // 30 seconds
   });

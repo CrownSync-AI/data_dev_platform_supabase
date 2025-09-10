@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     const preview = content.length > 500 ? content.substring(0, 500) : content;
     
     // Calculate stats
-    const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
+    const wordCount = content.split(/\s+/).filter((word: string) => word.length > 0).length;
     const lineCount = content.split('\n').length;
 
     const result = {

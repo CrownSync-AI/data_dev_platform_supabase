@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { Instagram, Users, Eye, Heart, Share, ShoppingBag, Play, Camera } from 'lucide-react';
-import type { SocialAnalyticsFilters, InstagramMetrics } from '@/lib/types/social-media';
+import { Instagram, Users, Share, ShoppingBag, Play, Camera } from 'lucide-react';
+import type { SocialAnalyticsFilters } from '@/lib/types/social-media';
 
 interface InstagramAnalyticsProps {
   filters: SocialAnalyticsFilters;
@@ -283,7 +283,7 @@ export function InstagramAnalytics({ filters }: InstagramAnalyticsProps) {
                         fill="#8884d8"
                         dataKey="count"
                       >
-                        {data.content_breakdown.map((entry, index) => (
+                        {data.content_breakdown.map((_entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -343,7 +343,7 @@ export function InstagramAnalytics({ filters }: InstagramAnalyticsProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.hashtag_performance.map((hashtag, index) => (
+                {data.hashtag_performance.map((hashtag, _index) => (
                   <div key={hashtag.hashtag} className="space-y-2">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">

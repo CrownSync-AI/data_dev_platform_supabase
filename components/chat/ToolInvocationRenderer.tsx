@@ -1,12 +1,12 @@
 'use client';
 
-import { ToolInvocation } from 'ai';
+import { UIToolInvocation } from 'ai';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Database, FileText, Users, TrendingUp, BarChart3, Mail } from 'lucide-react';
 
 interface ToolInvocationRendererProps {
-  invocations: ToolInvocation[];
+  invocations: UIToolInvocation<any>[];
 }
 
 export function ToolInvocationRenderer({ invocations }: ToolInvocationRendererProps) {
@@ -19,7 +19,7 @@ export function ToolInvocationRenderer({ invocations }: ToolInvocationRendererPr
   );
 }
 
-function ToolInvocationCard({ invocation }: { invocation: ToolInvocation }) {
+function ToolInvocationCard({ invocation }: { invocation: UIToolInvocation<any> }) {
   const getToolIcon = (toolName: string) => {
     switch (toolName) {
       case 'searchDocuments':
@@ -62,15 +62,15 @@ function ToolInvocationCard({ invocation }: { invocation: ToolInvocation }) {
     }
   };
 
-  const Icon = getToolIcon(invocation.toolName);
+  const Icon = getToolIcon((invocation as any).toolName || 'unknown');
 
-  if (invocation.state === 'call') {
+  if (invocation.state === 'input-streaming' || invocation.state === 'input-available') {
     return (
       <Card className="border-blue-200 bg-blue-50">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm">
             <Icon className="h-4 w-4" />
-            {getToolTitle(invocation.toolName)}
+            {getToolTitle((invocation as any).toolName || 'unknown')}
             <Loader2 className="h-3 w-3 animate-spin" />
           </CardTitle>
         </CardHeader>
@@ -81,22 +81,22 @@ function ToolInvocationCard({ invocation }: { invocation: ToolInvocation }) {
     );
   }
 
-  if (invocation.state === 'result') {
-    const result = invocation.result;
+  if (invocation.state === 'output-available') {
+    const result = (invocation as any).output;
     
     return (
       <Card className="border-green-200 bg-green-50">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm">
             <Icon className="h-4 w-4" />
-            {getToolTitle(invocation.toolName)}
+            {getToolTitle((invocation as any).toolName || 'unknown')}
             <Badge variant="secondary" className="text-xs">
               {result.success ? 'Success' : 'Error'}
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <ToolResultRenderer result={result} toolName={invocation.toolName} />
+          <ToolResultRenderer result={result} toolName={(invocation as any).toolName || 'unknown'} />
         </CardContent>
       </Card>
     );

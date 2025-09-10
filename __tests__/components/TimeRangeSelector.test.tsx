@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import TimeRangeSelector from '@/components/brand-performance/TimeRangeSelector'
+import { TimeRangeSelector } from '@/components/brand-performance/TimeRangeSelector'
 
 describe('TimeRangeSelector', () => {
   const mockOnChange = jest.fn()

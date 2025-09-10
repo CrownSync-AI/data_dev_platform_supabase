@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
-import { Facebook, Users, ThumbsUp, Share, Eye, Calendar, Video, MessageCircle } from 'lucide-react';
-import type { SocialAnalyticsFilters, FacebookMetrics } from '@/lib/types/social-media';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { Facebook, Users, ThumbsUp, Eye, Calendar, Video } from 'lucide-react';
+import type { SocialAnalyticsFilters } from '@/lib/types/social-media';
 
 interface FacebookAnalyticsProps {
   filters: SocialAnalyticsFilters;
@@ -159,7 +159,7 @@ export function FacebookAnalytics({ filters }: FacebookAnalyticsProps) {
     return num.toString();
   };
 
-  const COLORS = ['#1877F2', '#42A5F5', '#1565C0', '#0D47A1'];
+
 
   if (loading || !data) {
     return (
@@ -279,7 +279,7 @@ export function FacebookAnalytics({ filters }: FacebookAnalyticsProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {data.audience_demographics.top_countries.map((country, index) => (
+                  {data.audience_demographics.top_countries.map((country, _index) => (
                     <div key={country.country} className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>{country.country}</span>
@@ -321,7 +321,7 @@ export function FacebookAnalytics({ filters }: FacebookAnalyticsProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {data.post_performance.map((post, index) => (
+                  {data.post_performance.map((post, _index) => (
                     <div key={post.post_type} className="space-y-2">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
@@ -409,7 +409,7 @@ export function FacebookAnalytics({ filters }: FacebookAnalyticsProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.video_metrics.map((video, index) => (
+                {data.video_metrics.map((video, _index) => (
                   <div key={video.video_title} className="p-4 border rounded-lg space-y-3">
                     <div className="flex justify-between items-start">
                       <h4 className="font-medium">{video.video_title}</h4>

@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge"
 import { Users, Building, ShoppingBag, Crown } from "lucide-react"
 
 interface User {
-  user_name: string
-  user_email: string
+  name: string
+  email: string
   user_type: string
   created_at: string
 }

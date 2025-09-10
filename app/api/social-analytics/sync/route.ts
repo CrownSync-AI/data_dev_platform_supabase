@@ -4,7 +4,7 @@ import { socialDataSyncService } from '@/lib/services/socialDataSyncService'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { action, accountIds, platforms, forceSync } = body
+    const { action, accountIds, platforms: _platforms, forceSync: _forceSync } = body
 
     let result
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Get sync status
     const status = await socialDataSyncService.getSyncStatus()

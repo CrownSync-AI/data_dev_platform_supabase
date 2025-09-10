@@ -252,12 +252,12 @@ export function SocialAnalyticsExport({ filters }: SocialAnalyticsExportProps) {
             <div className="space-y-2">
               <label className="text-sm font-medium">Applied Filters</label>
               <div className="flex flex-wrap gap-2">
-                {filters.platform?.map((platform) => (
+                {filters?.platform?.map((platform) => (
                   <Badge key={platform} variant="secondary">
                     {platform}
                   </Badge>
                 ))}
-                {filters.region && filters.region !== 'all' && (
+                {filters?.region && filters.region !== 'all' && (
                   <Badge variant="secondary">
                     {filters.region}
                   </Badge>

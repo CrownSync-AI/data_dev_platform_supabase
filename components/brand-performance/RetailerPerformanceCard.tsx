@@ -31,7 +31,7 @@ export default function RetailerPerformanceCard({
   emailsSent,
   emailsDelivered,
   emailsOpened,
-  emailsClicked,
+  emailsClicked: _emailsClicked,
   trend,
   responseTime,
   grade,

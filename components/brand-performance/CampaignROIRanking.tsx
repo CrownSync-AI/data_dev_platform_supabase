@@ -31,7 +31,7 @@ export default function CampaignROIRanking({ currentCampaignId, startDate, endDa
     fetchCampaignROIData(startDate, endDate)
   }, [startDate, endDate])
 
-  const fetchCampaignROIData = async (startDate?: Date, endDate?: Date) => {
+  const fetchCampaignROIData = async (_startDate?: Date, _endDate?: Date) => {
     try {
       setLoading(true)
       // Using mock data, should fetch from API in real implementation

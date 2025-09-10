@@ -19,24 +19,24 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (platform && platform !== 'all') {
-      query = query.eq('platform', platform)
+      query = (query as any).eq('platform', platform)
     }
     
     if (contentType && contentType !== 'all') {
-      query = query.eq('post_type', contentType)
+      query = (query as any).eq('post_type', contentType)
     }
     
     if (minEngagement > 0) {
-      query = query.gte('engagement_rate', minEngagement)
+      query = (query as any).gte('engagement_rate', minEngagement)
     }
 
     // Filter by date range
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - days)
-    query = query.gte('published_at', startDate.toISOString())
+    query = (query as any).gte('published_at', startDate.toISOString())
 
     // Apply sorting and limit
-    query = query.order('engagement_rate', { ascending: false })
+    query = (query as any).order('engagement_rate', { ascending: false })
     
     if (limit > 0) {
       query = query.limit(limit)
@@ -54,16 +54,16 @@ export async function GET(request: NextRequest) {
 
     // Format content data for display
     const formattedContent = contentData?.map(item => ({
-      ...item,
-      content_preview: item.content ? 
-        (item.content.length > 100 ? item.content.substring(0, 100) + '...' : item.content) : 
+      ...(item as any),
+      content_preview: (item as any).content ? 
+        ((item as any).content.length > 100 ? (item as any).content.substring(0, 100) + '...' : (item as any).content) : 
         'No content available',
-      published_date: item.published_at ? 
-        new Date(item.published_at).toLocaleDateString() : 
+      published_date: (item as any).published_at ? 
+        new Date((item as any).published_at).toLocaleDateString() : 
         'Unknown',
-      performance_tier: item.engagement_rate >= 5 ? 'High' : 
-                       item.engagement_rate >= 2 ? 'Good' : 'Standard',
-      hashtag_count: item.hashtags ? item.hashtags.length : 0
+      performance_tier: (item as any).engagement_rate >= 5 ? 'High' : 
+                       (item as any).engagement_rate >= 2 ? 'Good' : 'Standard',
+      hashtag_count: (item as any).hashtags ? (item as any).hashtags.length : 0
     })) || []
 
     // Get content performance statistics
@@ -128,8 +128,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert new social post
-    const { data: newPost, error } = await supabase
-      .from('social_posts')
+    const { data: newPost, error } = await (supabase
+      .from('social_posts') as any)
       .insert({
         account_id,
         campaign_id,

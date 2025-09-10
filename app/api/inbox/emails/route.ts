@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { DummyDataService } from '@/lib/services/dummyDataService'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // Generate dummy data for emails using shared customers
     const customers = DummyDataService.getSharedCustomers()

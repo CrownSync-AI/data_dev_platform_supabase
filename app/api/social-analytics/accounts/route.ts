@@ -20,15 +20,15 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (platform && platform !== 'all') {
-      query = query.eq('platform', platform)
+      query = (query as any).eq('platform', platform)
     }
     
     if (userId) {
-      query = query.eq('user_id', userId)
+      query = (query as any).eq('user_id', userId)
     }
     
     if (isActive !== null) {
-      query = query.eq('is_active', isActive === 'true')
+      query = (query as any).eq('is_active', isActive === 'true')
     }
 
     const { data: accounts, error } = await query.order('created_at', { ascending: false })
@@ -95,8 +95,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert new social account
-    const { data: newAccount, error } = await supabase
-      .from('social_accounts')
+    const { data: newAccount, error } = await (supabase
+      .from('social_accounts') as any)
       .insert({
         user_id,
         platform,

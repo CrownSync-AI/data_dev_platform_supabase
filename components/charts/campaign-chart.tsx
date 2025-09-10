@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart3, TrendingUp } from "lucide-react"
 
 interface Campaign {
-  campaign_id: string
-  campaign_name: string
-  campaign_status: string
+  id: string
+  name: string
+  status: string
   budget_allocated: number
   created_at: string
 }
@@ -36,7 +36,7 @@ export function CampaignChart({ campaigns, loading }: CampaignChartProps) {
   }
 
   const totalBudget = campaigns.reduce((sum, campaign) => sum + (campaign.budget_allocated || 0), 0)
-  const activeCampaigns = campaigns.filter(c => c.campaign_status === 'active')
+  const activeCampaigns = campaigns.filter(c => c.status === 'active')
   const maxBudget = Math.max(...campaigns.map(c => c.budget_allocated || 0))
 
   return (
@@ -68,18 +68,18 @@ export function CampaignChart({ campaigns, loading }: CampaignChartProps) {
               </div>
               {campaigns.slice(0, 8).map((campaign) => {
                 const percentage = maxBudget > 0 ? ((campaign.budget_allocated || 0) / maxBudget) * 100 : 0
-                const statusColor = campaign.campaign_status === 'active' ? 'bg-green-500' : 
-                                  campaign.campaign_status === 'draft' ? 'bg-gray-400' :
-                                  campaign.campaign_status === 'paused' ? 'bg-yellow-500' :
-                                  campaign.campaign_status === 'completed' ? 'bg-blue-500' : 'bg-red-400'
+                const statusColor = campaign.status === 'active' ? 'bg-green-500' : 
+                                  campaign.status === 'draft' ? 'bg-gray-400' :
+                                  campaign.status === 'paused' ? 'bg-yellow-500' :
+                                  campaign.status === 'completed' ? 'bg-blue-500' : 'bg-red-400'
                 
                 return (
-                  <div key={campaign.campaign_id} className="space-y-2">
+                  <div key={campaign.id} className="space-y-2">
                     <div className="flex items-center justify-between text-sm gap-4">
                       <div className="flex items-center space-x-2 min-w-0 flex-1">
                         <div className={`w-3 h-3 rounded-full flex-shrink-0 ${statusColor}`} />
                         <span className="font-medium truncate">
-                          {campaign.campaign_name}
+                          {campaign.name}
                         </span>
                       </div>
                       <span className="text-muted-foreground flex-shrink-0">

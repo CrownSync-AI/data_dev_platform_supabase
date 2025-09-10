@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Share2, TrendingUp, Users, Eye, Heart } from 'lucide-react';
+import { Share2, TrendingUp, Users, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { fetchSocialMetricsOverview, formatSocialNumber, type SocialMetricsOverview } from '@/lib/services/socialMetricsService';
 

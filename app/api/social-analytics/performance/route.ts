@@ -20,22 +20,22 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (platform && platform !== 'all') {
-      query = query.eq('platform', platform)
+      query = (query as any).eq('platform', platform)
     }
     
     if (region && region !== 'all') {
-      query = query.eq('region', region)
+      query = (query as any).eq('region', region)
     }
     
     if (performanceTier && performanceTier !== 'all') {
-      query = query.eq('performance_tier', performanceTier)
+      query = (query as any).eq('performance_tier', performanceTier)
     }
 
     // Apply sorting
-    query = query.order(sortBy, { ascending: sortOrder === 'asc' })
+    query = (query as any).order(sortBy, { ascending: sortOrder === 'asc' })
     
     if (limit > 0) {
-      query = query.limit(limit)
+      query = (query as any).limit(limit)
     }
 
     const { data: performanceData, error } = await query
@@ -50,19 +50,19 @@ export async function GET(request: NextRequest) {
 
     // Add ranking and format data for table display
     const rankedData = performanceData?.map((item, index) => ({
-      ...item,
+      ...(item as any),
       rank: index + 1,
-      platforms: [item.platform], // Convert single platform to array for consistency
-      total_followers: item.current_followers,
-      content_frequency: Math.round((item.posts_count / 30) * 7), // Posts per week
-      performance_grade: item.avg_engagement_rate >= 5 ? 'A' : 
-                        item.avg_engagement_rate >= 2 ? 'B' : 'C',
-      growth_trend: item.avg_daily_follower_growth,
-      last_activity: item.last_updated
+      platforms: [(item as any).platform], // Convert single platform to array for consistency
+      total_followers: (item as any).current_followers,
+      content_frequency: Math.round(((item as any).posts_count / 30) * 7), // Posts per week
+      performance_grade: (item as any).avg_engagement_rate >= 5 ? 'A' : 
+                        (item as any).avg_engagement_rate >= 2 ? 'B' : 'C',
+      growth_trend: (item as any).avg_daily_follower_growth,
+      last_activity: (item as any).last_updated
     })) || []
 
     // Get aggregated metrics by retailer (combining all platforms)
-    const retailerAggregates = rankedData.reduce((acc, item) => {
+    const retailerAggregates = rankedData.reduce((acc: any[], item: any) => {
       const existing = acc.find(r => r.retailer_name === item.retailer_name)
       if (existing) {
         existing.platforms.push(item.platform)

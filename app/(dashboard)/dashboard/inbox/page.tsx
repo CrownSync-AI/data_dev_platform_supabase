@@ -17,7 +17,6 @@ import {
   Forward,
   MoreHorizontal,
   Mail,
-  Clock,
   Bold,
   Italic,
   Underline,
@@ -69,7 +68,7 @@ export default function InboxPage() {
         setSelectedThread(firstThread)
         
         // Set customer email for CRM panel
-        const customerParticipant = firstThread.participants.find(p => p.email !== 'support@crownsync.com')
+        const customerParticipant = firstThread.participants.find((p: any) => p.email !== 'support@crownsync.com')
         setSelectedCustomerEmail(customerParticipant?.email || null)
       }
     } catch (error) {
@@ -291,8 +290,6 @@ export default function InboxPage() {
                 )}
                 
                 {selectedThread.emails.map((email, index) => {
-                  const isFromCustomer = email.from.email !== 'support@crownsync.com'
-                  
                   return (
                     <Card key={email.id} className={!email.isRead ? 'ring-2 ring-blue-200' : ''}>
                       <CardContent className="p-4">
@@ -397,8 +394,6 @@ interface ReplyEditorProps {
 }
 
 function ReplyEditor({ thread, content, setContent, onCancel, onSend }: ReplyEditorProps) {
-  const [showAIHelper, setShowAIHelper] = useState(false)
-  
   const customerParticipant = thread.participants.find(p => p.email !== 'support@crownsync.com')
   
   const handleAIHelp = () => {
@@ -410,7 +405,6 @@ function ReplyEditor({ thread, content, setContent, onCancel, onSend }: ReplyEdi
     ]
     const suggestion = suggestions[Math.floor(Math.random() * suggestions.length)]
     setContent(content + (content ? '\n\n' : '') + suggestion)
-    setShowAIHelper(false)
   }
 
   return (

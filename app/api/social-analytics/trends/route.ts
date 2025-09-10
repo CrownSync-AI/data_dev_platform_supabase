@@ -40,11 +40,11 @@ export async function GET(request: NextRequest) {
 
     // Apply filters
     if (platform && platform !== 'all') {
-      analyticsQuery = analyticsQuery.eq('platform', platform)
+      analyticsQuery = (analyticsQuery as any).eq('platform', platform)
     }
     
     if (retailerId) {
-      analyticsQuery = analyticsQuery.eq('social_accounts.user_id', retailerId)
+      analyticsQuery = (analyticsQuery as any).eq('social_accounts.user_id', retailerId)
     }
 
     const { data: analyticsData, error: analyticsError } = await analyticsQuery
@@ -76,11 +76,11 @@ export async function GET(request: NextRequest) {
       .lte('analytics_date', endDate.toISOString().split('T')[0])
 
     if (platform && platform !== 'all') {
-      accountQuery = accountQuery.eq('platform', platform)
+      accountQuery = (accountQuery as any).eq('platform', platform)
     }
     
     if (retailerId) {
-      accountQuery = accountQuery.eq('social_accounts.user_id', retailerId)
+      accountQuery = (accountQuery as any).eq('social_accounts.user_id', retailerId)
     }
 
     const { data: accountData, error: accountError } = await accountQuery
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Process engagement trends data
-    const engagementTrends = analyticsData?.reduce((acc, item) => {
+    const engagementTrends = (analyticsData as any)?.reduce((acc: any[], item: any) => {
       const date = item.analytics_date
       const existing = acc.find(d => d.date === date && d.platform === item.platform)
       
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     }, [] as any[]) || []
 
     // Process follower growth trends
-    const followerTrends = accountData?.reduce((acc, item) => {
+    const followerTrends = (accountData as any)?.reduce((acc: any[], item: any) => {
       const date = item.analytics_date
       const existing = acc.find(d => d.date === date && d.platform === item.platform)
       
@@ -141,8 +141,8 @@ export async function GET(request: NextRequest) {
     }, [] as any[]) || []
 
     // Combine trends data
-    const combinedTrends = engagementTrends.map(engagement => {
-      const followerData = followerTrends.find(f => 
+    const combinedTrends = engagementTrends.map((engagement: any) => {
+      const followerData = followerTrends.find((f: any) => 
         f.date === engagement.date && f.platform === engagement.platform
       )
       
@@ -155,10 +155,10 @@ export async function GET(request: NextRequest) {
     })
 
     // Sort by date
-    combinedTrends.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    combinedTrends.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
     // Calculate platform comparison data
-    const platformComparison = combinedTrends.reduce((acc, item) => {
+    const platformComparison = combinedTrends.reduce((acc: any[], item: any) => {
       const existing = acc.find(p => p.platform === item.platform)
       
       if (existing) {
@@ -182,7 +182,7 @@ export async function GET(request: NextRequest) {
     }, [] as any[])
 
     // Calculate final averages
-    platformComparison.forEach(platform => {
+    platformComparison.forEach((platform: any) => {
       platform.avg_engagement_rate = platform.avg_engagement_rate
       platform.avg_growth_rate = platform.avg_growth_rate
       platform.reach_efficiency = platform.total_followers > 0 ? 
@@ -201,7 +201,7 @@ export async function GET(request: NextRequest) {
       },
       meta: {
         totalDataPoints: combinedTrends.length,
-        platforms: [...new Set(combinedTrends.map(t => t.platform))],
+        platforms: [...new Set(combinedTrends.map((t: any) => t.platform))],
         filters: {
           platform,
           days,

@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, Trophy, Medal, Award, TrendingUp, TrendingDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
+
 import type { SocialAnalyticsFilters, RetailerSocialData } from '@/lib/types/social-media';
 
 interface RetailerSocialRankingTableProps {

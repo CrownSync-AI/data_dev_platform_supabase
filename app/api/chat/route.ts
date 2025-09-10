@@ -5,6 +5,12 @@ import { DatabaseRAGService } from '@/lib/services/databaseRAGService';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 
+interface DocumentResult {
+  title: string;
+  content: string;
+  similarity?: number;
+}
+
 function formatDataAsTable(data: any[], title: string): string {
   if (!data || data.length === 0) {
     return `**${title}**\n\nNo data available.`;
@@ -86,11 +92,11 @@ export async function POST(req: NextRequest) {
           
           if (documentResults && documentResults.length > 0) {
             console.log('✅ Found', documentResults.length, 'relevant documents');
-            documentResults.forEach((doc, i) => {
+            documentResults.forEach((doc: DocumentResult, i: number) => {
               console.log(`  ${i + 1}. ${doc.title} (similarity: ${doc.similarity?.toFixed(3) || 'N/A'})`);
             });
             
-            const documentContext = documentResults.map(doc => 
+            const documentContext = documentResults.map((doc: DocumentResult) => 
               `**Document: ${doc.title}**\n${doc.content.substring(0, 1500)}${doc.content.length > 1500 ? '...' : ''}`
             ).join('\n\n');
             dataContext += `\n\nRELEVANT UPLOADED DOCUMENTS:\n${documentContext}`;
@@ -100,8 +106,8 @@ export async function POST(req: NextRequest) {
           }
         }
       } catch (docError) {
-        console.error('💥 Document search error:', docError.message);
-        console.error('Stack:', docError.stack);
+        console.error('💥 Document search error:', docError instanceof Error ? docError.message : docError);
+        console.error('Stack:', docError instanceof Error ? docError.stack : 'No stack trace');
       }
       
       // Check for database queries
@@ -159,7 +165,6 @@ export async function POST(req: NextRequest) {
       - When users ask about documents, you can find and reference relevant content
       - You can summarize, analyze, and answer questions about uploaded documents
       ${dataContext}`,
-      maxTokens: 2000,
       temperature: 0.7,
     });
 

@@ -5,7 +5,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
-import { ToolInvocationRenderer } from './ToolInvocationRenderer';
+
 import { CodeBlockRenderer } from './CodeBlockRenderer';
 import { DataTableRenderer } from './DataTableRenderer';
 
@@ -41,7 +41,7 @@ function StandardMessage({ content }: { content: string }) {
     text = text.replace(/^• (.+)$/gm, '<li>$1</li>');
     
     // Wrap consecutive list items in ul tags
-    text = text.replace(/(<li>.*<\/li>\s*)+/gs, '<ul>$&</ul>');
+    text = text.replace(/(<li>.*<\/li>\s*)+/g, '<ul>$&</ul>');
     
     return text;
   };

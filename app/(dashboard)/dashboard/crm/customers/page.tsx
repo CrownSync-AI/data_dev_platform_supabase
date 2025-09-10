@@ -157,7 +157,7 @@ export default function CRMCustomersPage() {
     router.push(`/dashboard/inbox/compose?to=${encodeURIComponent(customer.email)}&name=${encodeURIComponent(`${customer.firstName} ${customer.lastName}`)}`)
   }
 
-  const handleAddNote = (customerId: string) => {
+  const handleAddNote = (_customerId: string) => {
     // TODO: Implement add note functionality
     toast.info('Add note functionality coming soon')
   }

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Badge } from '@/components/ui/badge'
-import { Search, Download, Filter, X, Calendar as CalendarIcon, UserPlus } from 'lucide-react'
+import { Search, Download, X, Calendar as CalendarIcon, UserPlus } from 'lucide-react'
 import { CustomerFilters } from '@/lib/services/crmService'
 import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
@@ -170,7 +170,7 @@ export default function CustomerFiltersBar({
             <Calendar
               initialFocus
               mode="range"
-              defaultMonth={filters.dateRange.from || undefined}
+              defaultMonth={filters.dateRange.from || new Date()}
               selected={{
                 from: filters.dateRange.from || undefined,
                 to: filters.dateRange.to || undefined

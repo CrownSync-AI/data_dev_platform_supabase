@@ -4,12 +4,13 @@ import { Suspense, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
-import { Download, Share, CheckCircle, AlertTriangle, TrendingUp } from 'lucide-react'
+import { Download, Share } from 'lucide-react'
+
+
 import ConversionFunnel from '@/components/brand-performance/ConversionFunnel'
 import CampaignROIRanking from '@/components/brand-performance/CampaignROIRanking'
 import TopRetailersWidget from '@/components/brand-performance/TopRetailersWidget'
-import TimeRangeSelector from '@/components/brand-performance/TimeRangeSelector'
+import { TimeRangeSelector } from '@/components/brand-performance/TimeRangeSelector'
 
 interface TimeRange {
   label: string
@@ -40,7 +41,23 @@ export default function BrandCampaignPerformancePage({ params }: BrandCampaignPe
           <p className="text-muted-foreground">Brand-focused campaign analytics dashboard</p>
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:space-x-2">
-          <TimeRangeSelector onTimeRangeChange={setTimeRange} />
+          <TimeRangeSelector 
+            options={[
+              { label: 'Past 7 days', value: '7d' },
+              { label: 'Past 30 days', value: '30d' },
+              { label: 'Past 90 days', value: '90d' },
+              { label: 'Past 1 year', value: '1y' }
+            ]}
+            onRangeChange={(value) => {
+              const ranges = {
+                '7d': { label: 'Past 7 days', value: '7d', startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), endDate: new Date() },
+                '30d': { label: 'Past 30 days', value: '30d', startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), endDate: new Date() },
+                '90d': { label: 'Past 90 days', value: '90d', startDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000), endDate: new Date() },
+                '1y': { label: 'Past 1 year', value: '1y', startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000), endDate: new Date() }
+              }
+              setTimeRange(ranges[value as keyof typeof ranges])
+            }}
+          />
           <div className="flex items-center space-x-2">
             <Badge variant="outline" className="text-blue-600 border-blue-600">
               Marco Bicego New 2025 Campaign

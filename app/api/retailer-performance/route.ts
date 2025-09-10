@@ -9,7 +9,6 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const timeframe = searchParams.get('timeframe') || 'past_year';
     const region = searchParams.get('region') || 'all';
     const grade = searchParams.get('grade') || 'all';
 

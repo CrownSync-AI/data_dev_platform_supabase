@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { Linkedin, Users, Eye, MousePointer, TrendingUp, Building, UserCheck } from 'lucide-react';
-import type { SocialAnalyticsFilters, LinkedInMetrics } from '@/lib/types/social-media';
+import { Linkedin, Users, Eye, TrendingUp, Building, UserCheck } from 'lucide-react';
+import type { SocialAnalyticsFilters } from '@/lib/types/social-media';
 
 interface LinkedInAnalyticsProps {
   filters: SocialAnalyticsFilters;
@@ -235,7 +235,7 @@ export function LinkedInAnalytics({ filters }: LinkedInAnalyticsProps) {
                         fill="#8884d8"
                         dataKey="percentage"
                       >
-                        {data.demographics.seniority.map((entry, index) => (
+                        {data.demographics.seniority.map((_entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -252,7 +252,7 @@ export function LinkedInAnalytics({ filters }: LinkedInAnalyticsProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {data.demographics.industry.map((item, index) => (
+                  {data.demographics.industry.map((item, _index) => (
                     <div key={item.name} className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>{item.name}</span>
@@ -319,7 +319,7 @@ export function LinkedInAnalytics({ filters }: LinkedInAnalyticsProps) {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {data.demographics.company_size.map((item, index) => (
+                  {data.demographics.company_size.map((item, _index) => (
                     <div key={item.size} className="flex items-center justify-between">
                       <span className="text-sm">{item.size} employees</span>
                       <div className="flex items-center gap-2">

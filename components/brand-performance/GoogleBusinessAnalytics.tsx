@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { MapPin, Eye, Navigation, Phone, Globe, Star, Camera, Calendar } from 'lucide-react';
-import type { SocialAnalyticsFilters, GoogleBusinessMetrics } from '@/lib/types/social-media';
+import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
+import { MapPin, Eye, Navigation, Phone, Star } from 'lucide-react';
+import type { SocialAnalyticsFilters } from '@/lib/types/social-media';
 
 interface GoogleBusinessAnalyticsProps {
   filters: SocialAnalyticsFilters;
@@ -262,7 +262,7 @@ export function GoogleBusinessAnalytics({ filters }: GoogleBusinessAnalyticsProp
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {data.search_queries.map((query, index) => (
+                  {data.search_queries.map((query, _index) => (
                     <div key={query.query} className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">{query.query}</span>
@@ -340,7 +340,7 @@ export function GoogleBusinessAnalytics({ filters }: GoogleBusinessAnalyticsProp
                         fill="#8884d8"
                         dataKey="count"
                       >
-                        {data.customer_actions.map((entry, index) => (
+                        {data.customer_actions.map((_entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -357,7 +357,7 @@ export function GoogleBusinessAnalytics({ filters }: GoogleBusinessAnalyticsProp
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {data.customer_actions.map((action, index) => (
+                  {data.customer_actions.map((action, _index) => (
                     <div key={action.action_type} className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">{action.action_type}</span>
@@ -444,7 +444,7 @@ export function GoogleBusinessAnalytics({ filters }: GoogleBusinessAnalyticsProp
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.photo_performance.map((photo, index) => (
+                {data.photo_performance.map((photo, _index) => (
                   <div key={photo.photo_type} className="p-4 border rounded-lg space-y-3">
                     <div className="flex justify-between items-center">
                       <h4 className="font-medium">{photo.photo_type}</h4>
