@@ -2,8 +2,11 @@
   "name": "my-v0-project",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
-    "build": "next build",
+    "build": "rm -rf .next && next build",
     "dev": "next dev",
     "start": "next start",
     "lint": "next lint",
@@ -89,7 +92,7 @@
     "embla-carousel-react": "^8.0.0",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.454.0",
-    "next": "^14.2.0",
+    "next": "^14.2.32",
     "pdf-parse": "^1.1.1",
     "pg": "^8.16.3",
     "react": "^18.3.1",
