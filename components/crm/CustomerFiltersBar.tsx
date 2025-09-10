@@ -58,11 +58,38 @@ export default function CustomerFiltersBar({
     })
   }
 
-  const handleDateRangeChange = (range: { from: Date | null; to: Date | null }) => {
-    onFiltersChange({
-      ...filters,
-      dateRange: range
-    })
+  const handleDateRangeChange = (newDate: Date | null) => {
+    if (!newDate) {
+      onFiltersChange({
+        ...filters,
+        dateRange: { from: null, to: null }
+      })
+      return
+    }
+
+    if (!filters.dateRange.from) {
+      onFiltersChange({
+        ...filters,
+        dateRange: { from: newDate, to: null }
+      })
+    } else if (!filters.dateRange.to) {
+      if (newDate < filters.dateRange.from) {
+        onFiltersChange({
+          ...filters,
+          dateRange: { from: newDate, to: filters.dateRange.from }
+        })
+      } else {
+        onFiltersChange({
+          ...filters,
+          dateRange: { from: filters.dateRange.from, to: newDate }
+        })
+      }
+    } else {
+      onFiltersChange({
+        ...filters,
+        dateRange: { from: newDate, to: null }
+      })
+    }
   }
 
   const clearFilters = () => {
@@ -168,23 +195,13 @@ export default function CustomerFiltersBar({
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={filters.dateRange.from || new Date()}
-              selected={{
-                from: filters.dateRange.from || undefined,
-                to: filters.dateRange.to || undefined
-              }}
-              onSelect={(range) => {
-                handleDateRangeChange({
-                  from: range?.from || null,
-                  to: range?.to || null
-                })
-                if (range?.from && range?.to) {
+              value={filters.dateRange.from || null}
+              onChange={(newValue) => {
+                handleDateRangeChange(newValue)
+                if (newValue) {
                   setDatePickerOpen(false)
                 }
               }}
-              numberOfMonths={2}
             />
           </PopoverContent>
         </Popover>
@@ -253,7 +270,7 @@ export default function CustomerFiltersBar({
               Date: {filters.dateRange.from ? format(filters.dateRange.from, "MMM dd") : "Start"} - {filters.dateRange.to ? format(filters.dateRange.to, "MMM dd") : "End"}
               <X 
                 className="h-3 w-3 cursor-pointer" 
-                onClick={() => handleDateRangeChange({ from: null, to: null })}
+                onClick={() => handleDateRangeChange(null)}
               />
             </Badge>
           )}

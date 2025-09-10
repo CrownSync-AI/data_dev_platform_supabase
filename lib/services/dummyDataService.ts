@@ -397,7 +397,7 @@ export class DummyDataService {
       }
 
       // Generate AI summary for the thread
-      const summary = this.generateEmailThreadSummary(subject, threadEmails, customer)
+      const summary = this.generateEmailThreadSummary(subject, customer)
 
       // Create thread summary
       const thread: EmailThread = {
