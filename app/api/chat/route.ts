@@ -3,7 +3,7 @@ import { streamText } from 'ai';
 import { NextRequest } from 'next/server';
 import { DatabaseRAGService } from '@/lib/services/databaseRAGService';
 import { createClient } from '@supabase/supabase-js';
-import OpenAI from 'openai';
+import { OpenAI } from 'openai';
 
 interface DocumentResult {
   title: string;

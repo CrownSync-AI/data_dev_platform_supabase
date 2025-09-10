@@ -5,7 +5,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { 
   User, 
@@ -14,9 +13,6 @@ import {
   MapPin, 
   Calendar, 
   ShoppingBag, 
-  DollarSign,
-  TrendingUp,
-  Star,
   MessageSquare,
   ExternalLink,
   Plus,
@@ -280,7 +276,7 @@ export default function CRMPanel({ customerEmail, isVisible, onClose }: CRMPanel
                 )}
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                  <span>Customer since {formatDate(customer.createdAt)}</span>
+                  <span>Customer since {formatDate(customer.createdAt.toISOString())}</span>
                 </div>
               </div>
             </div>
