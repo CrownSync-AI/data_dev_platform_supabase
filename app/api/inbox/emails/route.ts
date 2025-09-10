@@ -5,7 +5,7 @@ export async function GET(_request: NextRequest) {
   try {
     // Generate dummy data for emails using shared customers
     const customers = DummyDataService.getSharedCustomers()
-    const { emails, threads } = DummyDataService.generateEmails(customers, 100)
+    const { emails, threads } = DummyDataService.generateEmails(customers)
 
     // Sort threads by last activity (most recent first)
     const sortedThreads = threads.sort((a, b) => 

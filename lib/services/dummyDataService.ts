@@ -2,16 +2,11 @@ import {
   Customer,
   Order,
   OrderLineItem,
-  CustomerBehavior,
-  CustomerJourney,
   CRMAnalytics,
-  CustomerNote
 } from '@/lib/types/crm'
 import {
   Email,
   EmailThread,
-  EmailContact,
-  EmailAnalytics,
   EmailThreadSummary
 } from '@/lib/types/email'
 
@@ -78,17 +73,6 @@ const FIXED_CUSTOMERS = [
 ]
 
 // Sample data pools for additional random data
-const firstNames = [
-  'Emma', 'Liam', 'Olivia', 'Noah', 'Ava', 'Elijah', 'Charlotte', 'Oliver', 'Amelia', 'William',
-  'Sophia', 'James', 'Isabella', 'Benjamin', 'Mia', 'Lucas', 'Harper', 'Henry', 'Evelyn', 'Alexander',
-  'Alice', 'Michael', 'Sarah', 'David', 'Emily', 'Daniel', 'Grace', 'Matthew', 'Chloe', 'Joseph'
-]
-
-const lastNames = [
-  'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez',
-  'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin',
-  'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson'
-]
 
 const companies = [
   'Luxury Boutique', 'Elite Jewelry Co', 'Premium Watches Ltd', 'Designer Collections', 'Fine Accessories',
@@ -333,7 +317,7 @@ export class DummyDataService {
   }
 
   // Generate email dummy data
-  static generateEmails(customers: Customer[], count: number = 100): { emails: Email[], threads: EmailThread[] } {
+  static generateEmails(customers: Customer[]): { emails: Email[], threads: EmailThread[] } {
     const emails: Email[] = []
     const threads: EmailThread[] = []
     const threadIds: string[] = []
@@ -468,7 +452,7 @@ export class DummyDataService {
   }
 
   // Generate AI-powered email thread summary
-  private static generateEmailThreadSummary(subject: string, emails: Email[], customer: Customer): EmailThreadSummary {
+  private static generateEmailThreadSummary(subject: string, customer: Customer): EmailThreadSummary {
     // Create contextual summaries based on email subject and content
     const summaryTemplates = {
       'Question about your jewelry collection': {
