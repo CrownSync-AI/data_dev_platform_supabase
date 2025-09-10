@@ -2,7 +2,6 @@ import {
   Customer,
   Order,
   OrderLineItem,
-  Product,
   CustomerBehavior,
   CustomerJourney,
   CRMAnalytics,
