@@ -1,10 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: [
-    '@supabase/supabase-js',
-    // 'pg',
-    // 'dotenv'
-  ],
+  experimental: {
+    serverComponentsExternalPackages: [
+      '@supabase/supabase-js',
+      // 'pg',
+      // 'dotenv'
+    ]
+  },
   images: {
     domains: ['localhost'],
     unoptimized: true,
