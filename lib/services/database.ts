@@ -126,9 +126,9 @@ export class UserService {
 
   static async updateUser(userId: string, updates: Partial<User>): Promise<ApiResponse<User>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('users')
-        .update(updates as any)
+        .update(updates)
         .eq('user_id', userId)
         .select()
         .single()
@@ -143,7 +143,7 @@ export class UserService {
 
   static async deactivateUser(userId: string): Promise<ApiResponse<boolean>> {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('users')
         .update({ is_active: false })
         .eq('user_id', userId)
@@ -245,7 +245,7 @@ export class FileService {
         p_action_type: actionType,
         p_session_id: sessionId,
         p_metadata: metadata || {}
-      })
+      } as any)
 
       if (error) throw error
 
@@ -260,7 +260,7 @@ export class FileService {
       const { error } = await supabase.rpc('soft_delete_file', {
         p_file_id: fileId,
         p_user_id: userId
-      })
+      } as any)
 
       if (error) throw error
 
@@ -373,7 +373,7 @@ export class CampaignService {
 
   static async updateCampaign(campaignId: string, updates: Partial<Campaign>): Promise<ApiResponse<Campaign>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('campaigns')
         .update(updates)
         .eq('campaign_id', campaignId)
@@ -396,7 +396,7 @@ export class CampaignService {
 export class EmailCampaignService {
   static async createEmailCampaign(emailData: CreateEmailCampaignForm, userId: string): Promise<ApiResponse<EmailCampaign>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('email_campaigns')
         .insert({
           campaign_id: emailData.campaign_id,
@@ -474,7 +474,7 @@ export class EmailCampaignService {
 export class SmsCampaignService {
   static async createSmsCampaign(smsData: CreateSmsCampaignForm, userId: string): Promise<ApiResponse<SmsCampaign>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('sms_campaigns')
         .insert({
           campaign_id: smsData.campaign_id,
@@ -616,7 +616,7 @@ export class SocialMediaService {
 export class ProductService {
   static async createProduct(productData: CreateProductForm, userId: string): Promise<ApiResponse<Product>> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('products')
         .insert({
           product_name: productData.product_name,

@@ -1,9 +1,9 @@
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI, openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 import { NextRequest } from 'next/server';
 import { DatabaseRAGService } from '@/lib/services/databaseRAGService';
 import { createClient } from '@supabase/supabase-js';
-import OpenAI from 'openai';
+import { embed } from 'ai';
 
 interface DocumentResult {
   title: string;
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
-    const openaiClient = new OpenAI({
+    const openaiProvider = createOpenAI({
       apiKey: process.env.OPENAI_API_KEY!
     });
     
@@ -61,14 +61,14 @@ export async function POST(req: NextRequest) {
       console.log('🔍 Searching documents for query:', userMessage);
       try {
         // Generate embedding for the query
-        const queryEmbedding = await openaiClient.embeddings.create({
-          model: 'text-embedding-3-small',
-          input: userMessage
+        const { embedding } = await embed({
+          model: openaiProvider.embedding('text-embedding-3-small'),
+          value: userMessage
         });
         
         // Search for similar documents (try connected-only function first, fallback to all documents)
         let { data: documentResults, error: searchError } = await supabase.rpc('match_documents_connected', {
-          query_embedding: queryEmbedding.data[0].embedding,
+          query_embedding: embedding,
           match_threshold: 0.1,
           match_count: 3
         });
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
         if (searchError && searchError.message.includes('match_documents_connected')) {
           console.log('match_documents_connected function not found, using match_documents...');
           const fallbackResult = await supabase.rpc('match_documents', {
-            query_embedding: queryEmbedding.data[0].embedding,
+            query_embedding: embedding,
             match_threshold: 0.1,
             match_count: 3
           });
