@@ -169,7 +169,7 @@ export class DocumentRAGService {
           .order('upload_date', { ascending: false });
         
         const result = await fallbackQuery;
-        data = result.data;
+        data = result.data ? result.data.map(doc => ({ ...doc, is_connected_to_ai: true })) : null;
         error = result.error;
       }
 
@@ -299,12 +299,16 @@ export class DocumentRAGService {
           console.error('PDF parsing error:', pdfError);
           
           // Provide more helpful error messages
-          if (pdfError.message.includes('ENOENT')) {
-            throw new Error('PDF parsing failed due to file access issue. Please try a different PDF or convert it to text format first.');
-          } else if (pdfError.message.includes('Invalid PDF')) {
-            throw new Error('The uploaded file appears to be corrupted or is not a valid PDF.');
+          if (pdfError instanceof Error) {
+            if (pdfError.message.includes('ENOENT')) {
+              throw new Error('PDF parsing failed due to file access issue. Please try a different PDF or convert it to text format first.');
+            } else if (pdfError.message.includes('Invalid PDF')) {
+              throw new Error('The uploaded file appears to be corrupted or is not a valid PDF.');
+            } else {
+              throw new Error(`Failed to extract text from PDF: ${pdfError.message}. Please try converting the PDF to text format first.`);
+            }
           } else {
-            throw new Error(`Failed to extract text from PDF: ${pdfError.message}. Please try converting the PDF to text format first.`);
+            throw new Error('An unknown error occurred during PDF parsing.');
           }
         }
       }
