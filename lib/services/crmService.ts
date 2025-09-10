@@ -251,7 +251,7 @@ export class CRMService {
       email: customerData.email || '',
       firstName: customerData.firstName || '',
       lastName: customerData.lastName || '',
-      phone: customerData.phone,
+      phone: customerData.phone || undefined,
       addresses: customerData.addresses || [],
       status: customerData.status || 'active',
       emailMarketingConsent: customerData.emailMarketingConsent || false,

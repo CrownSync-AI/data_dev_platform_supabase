@@ -165,19 +165,19 @@ export class AyrshareService {
         likes: ayrshareData.metrics?.likes || 0,
         comments: ayrshareData.metrics?.comments || 0,
         shares: ayrshareData.metrics?.shares || 0,
-        reactions: ayrshareData.metrics?.reactions || 0,
-        saves: ayrshareData.metrics?.saves || 0,
+        reactions: (ayrshareData.metrics as any)?.reactions || 0,
+        saves: (ayrshareData.metrics as any)?.saves || 0,
         impressions: ayrshareData.metrics?.impressions || 0,
         reach: ayrshareData.metrics?.reach || 0,
         organic_reach: Math.floor((ayrshareData.metrics?.reach || 0) * 0.8), // Estimate
         paid_reach: Math.floor((ayrshareData.metrics?.reach || 0) * 0.2), // Estimate
         link_clicks: ayrshareData.metrics?.link_clicks || 0,
-        profile_clicks: ayrshareData.metrics?.profile_clicks || 0,
-        website_clicks: ayrshareData.metrics?.website_clicks || 0,
-        video_views: ayrshareData.metrics?.video_views || 0,
-        video_completion_rate: ayrshareData.metrics?.video_completion_rate || 0,
-        average_watch_time: ayrshareData.metrics?.average_watch_time || 0,
-        platform_metrics: ayrshareData.platform_specific || {}
+        profile_clicks: (ayrshareData.metrics as any)?.profile_clicks || 0,
+        website_clicks: (ayrshareData.metrics as any)?.website_clicks || 0,
+        video_views: (ayrshareData.metrics as any)?.video_views || 0,
+        video_completion_rate: (ayrshareData.metrics as any)?.video_completion_rate || 0,
+        average_watch_time: (ayrshareData.metrics as any)?.average_watch_time || 0,
+        platform_metrics: (ayrshareData as any).platform_specific || {}
       }
 
       return socialAnalytics as SocialAnalytics

@@ -2,8 +2,8 @@ import { openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 import { NextRequest } from 'next/server';
 import { DatabaseRAGService } from '@/lib/services/databaseRAGService';
-// import { createClient } from '@supabase/supabase-js';
-// import { OpenAI } from 'openai';
+import { createClient } from '@supabase/supabase-js';
+import OpenAI from 'openai';
 
 interface DocumentResult {
   title: string;
@@ -47,51 +47,46 @@ export async function POST(req: NextRequest) {
     const databaseRAG = new DatabaseRAGService();
     
     // Initialize document search services directly
-    // const supabase = createClient(
-    //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    //   process.env.SUPABASE_SERVICE_ROLE_KEY!
-    // );
-    // const openaiClient = new OpenAI({
-    //   apiKey: process.env.OPENAI_API_KEY!
-    // });
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    const openaiClient = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY!
+    });
     
     // Check if user is asking for specific data and fetch it
     try {
       // Always try document search first for any user query
       console.log('🔍 Searching documents for query:', userMessage);
       try {
-        // TODO: Re-enable document search once OpenAI import issue is resolved
         // Generate embedding for the query
-        // const queryEmbedding = await openaiClient.embeddings.create({
-        //   model: 'text-embedding-3-small',
-        //   input: userMessage
-        // });
+        const queryEmbedding = await openaiClient.embeddings.create({
+          model: 'text-embedding-3-small',
+          input: userMessage
+        });
         
         // Search for similar documents (try connected-only function first, fallback to all documents)
-        // let { data: documentResults, error: searchError } = await supabase.rpc('match_documents_connected', {
-        //   query_embedding: queryEmbedding.data[0].embedding,
-        //   match_threshold: 0.1,
-        //   match_count: 3
-        // });
-
-        // Temporarily disable document search
-        let documentResults: any[] = [];
-        let searchError = null;
+        let { data: documentResults, error: searchError } = await supabase.rpc('match_documents_connected', {
+          query_embedding: queryEmbedding.data[0].embedding,
+          match_threshold: 0.1,
+          match_count: 3
+        });
 
         // If the connected function doesn't exist, use the original function
-        // if (searchError && searchError.message.includes('match_documents_connected')) {
-        //   console.log('match_documents_connected function not found, using match_documents...');
-        //   const fallbackResult = await supabase.rpc('match_documents', {
-        //     query_embedding: queryEmbedding.data[0].embedding,
-        //     match_threshold: 0.1,
-        //     match_count: 3
-        //   });
-        //   documentResults = fallbackResult.data;
-        //   searchError = fallbackResult.error;
-        // }
+        if (searchError && searchError.message.includes('match_documents_connected')) {
+          console.log('match_documents_connected function not found, using match_documents...');
+          const fallbackResult = await supabase.rpc('match_documents', {
+            query_embedding: queryEmbedding.data[0].embedding,
+            match_threshold: 0.1,
+            match_count: 3
+          });
+          documentResults = fallbackResult.data;
+          searchError = fallbackResult.error;
+        }
         
         if (searchError) {
-          console.error('💥 Document search error:', searchError);
+          console.error('💥 Document search error:', searchError.message);
         } else {
           console.log('📄 Document search completed, results:', documentResults?.length || 0);
           

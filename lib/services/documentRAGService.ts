@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { OpenAI } from 'openai';
+import OpenAI from 'openai';
 
 export interface DocumentUpload {
   id: string;
@@ -117,7 +117,7 @@ export class DocumentRAGService {
       return response.data[0].embedding;
     } catch (error) {
       console.error('Embedding generation error:', error);
-      throw new Error(`Failed to generate embedding: ${error.message}`);
+      throw new Error(`Failed to generate embedding: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 

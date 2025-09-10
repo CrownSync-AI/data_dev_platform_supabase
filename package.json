@@ -87,7 +87,7 @@
     "markdown-it": "^14.1.0",
     "next": "^14.2.0",
     "next-themes": "latest",
-    "openai": "^5.20.0",
+    "openai": "^4.67.3",
     "path": "latest",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^5.4.149",
