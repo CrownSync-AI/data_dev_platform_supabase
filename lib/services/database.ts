@@ -38,6 +38,10 @@ import type {
 export class UserService {
   static async createUser(userData: CreateUserForm): Promise<ApiResponse<User>> {
     try {
+      if (!supabaseAdmin) {
+        throw new Error('Supabase admin client not available. This function requires server-side execution.')
+      }
+
       const { data, error } = await supabaseAdmin.rpc('create_user', {
         p_email: userData.user_email,
         p_name: userData.user_name,
@@ -47,16 +51,9 @@ export class UserService {
 
       if (error) throw error
 
-      // Fetch the created user
-      const { data: user, error: fetchError } = await supabaseAdmin
-        .from('users')
-        .select('*')
-        .eq('user_id', data)
-        .single()
-
-      if (fetchError) throw fetchError
-
-      return { data: user, success: true }
+      // Return the data from the RPC function directly
+      // The create_user function should return the complete user object
+      return { data: data as any, success: true }
     } catch (error: any) {
       return { error: error.message, success: false }
     }
@@ -131,7 +128,7 @@ export class UserService {
     try {
       const { data, error } = await supabase
         .from('users')
-        .update(updates)
+        .update(updates as any)
         .eq('user_id', userId)
         .select()
         .single()
