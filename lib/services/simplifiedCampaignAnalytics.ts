@@ -57,6 +57,16 @@ interface EcommerceOrderRow {
   order_value: number;
 }
 
+interface RegionalDataRow {
+  status: string;
+  clicked_at: string | null;
+  users: { region: string } | { region: string }[];
+}
+
+interface RetailerCountRow {
+  region: string;
+}
+
 export class SimplifiedCampaignAnalyticsService {
   
   /**
@@ -292,7 +302,7 @@ export class SimplifiedCampaignAnalyticsService {
           status,
           clicked_at
         `)
-        .eq('email_campaigns.campaign_id', campaignId)
+        .eq('email_campaigns.campaign_id', campaignId) as { data: RegionalDataRow[] | null, error: any }
 
       const regionStats = {
         East: { count: 0, total_sent: 0, total_clicked: 0 },
@@ -315,7 +325,7 @@ export class SimplifiedCampaignAnalyticsService {
       const { data: retailerCounts } = await supabase
         .from('users')
         .select('region')
-        .eq('user_type', 'retailer')
+        .eq('user_type', 'retailer') as { data: RetailerCountRow[] | null, error: any }
 
       retailerCounts?.forEach(retailer => {
         const region = retailer.region as keyof typeof regionStats
