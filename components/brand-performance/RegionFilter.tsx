@@ -1,35 +1,37 @@
 'use client';
 
+import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin } from 'lucide-react';
-import type { RegionFilterProps } from '@/lib/types/social-media';
+
+interface RegionFilterProps {
+  selectedRegion: string;
+  onFilterChange: (region: string) => void;
+}
 
 const regions = [
-  { value: 'all', label: 'All Regions' },
-  { value: 'East', label: 'East' },
-  { value: 'Central', label: 'Central' },
-  { value: 'West', label: 'West' }
+  { label: 'All Regions', value: 'all' },
+  { label: 'East', value: 'east' },
+  { label: 'Central', value: 'central' },
+  { label: 'West', value: 'west' }
 ];
 
-export function RegionFilter({
-  selectedRegion,
-  onFilterChange
-}: RegionFilterProps) {
+export function RegionFilter({ selectedRegion, onFilterChange }: RegionFilterProps) {
+  const handleRegionChange = (value: string) => {
+    onFilterChange(value);
+  };
+
   return (
-    <div className="flex items-center gap-2">
-      <MapPin className="h-4 w-4 text-muted-foreground" />
-      <Select value={selectedRegion} onValueChange={onFilterChange}>
-        <SelectTrigger className="w-[140px]">
-          <SelectValue placeholder="Select region" />
-        </SelectTrigger>
-        <SelectContent>
-          {regions.map((region) => (
-            <SelectItem key={region.value} value={region.value}>
-              {region.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <Select value={selectedRegion} onValueChange={handleRegionChange}>
+      <SelectTrigger className="w-[150px]">
+        <SelectValue placeholder="Select region" />
+      </SelectTrigger>
+      <SelectContent>
+        {regions.map((region) => (
+          <SelectItem key={region.value} value={region.value}>
+            {region.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
