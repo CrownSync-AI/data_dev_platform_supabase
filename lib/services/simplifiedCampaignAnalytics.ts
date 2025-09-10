@@ -39,6 +39,24 @@ export interface RetailerPerformance {
   performance_tier: string
 }
 
+interface EmailSendRow {
+  retailer_id: string;
+  status: string;
+  opened_at: string | null;
+  clicked_at: string | null;
+  users: { name: string; region: string } | { name: string; region: string }[];
+}
+
+interface CrmConversionRow {
+  retailer_id: string;
+  conversion_value: number;
+}
+
+interface EcommerceOrderRow {
+  retailer_id: string;
+  order_value: number;
+}
+
 export class SimplifiedCampaignAnalyticsService {
   
   /**
@@ -123,7 +141,7 @@ export class SimplifiedCampaignAnalyticsService {
         query = query.eq('users.region', filters.region)
       }
 
-      const { data: emailData, error } = await query
+      const { data: emailData, error } = await query as { data: EmailSendRow[] | null, error: any }
 
       if (error) {
         console.error('Error fetching retailer performance:', error)
@@ -175,12 +193,12 @@ export class SimplifiedCampaignAnalyticsService {
       const { data: conversionData } = await supabase
         .from('crm_conversions')
         .select('retailer_id, conversion_value')
-        .eq('campaign_id', campaignId)
+        .eq('campaign_id', campaignId) as { data: CrmConversionRow[] | null, error: any }
 
       const { data: orderData } = await supabase
         .from('ecommerce_orders')
         .select('retailer_id, order_value')
-        .eq('campaign_id', campaignId)
+        .eq('campaign_id', campaignId) as { data: EcommerceOrderRow[] | null, error: any }
 
       // Calculate revenue by retailer
       const retailerRevenue = new Map<string, number>()
@@ -267,7 +285,7 @@ export class SimplifiedCampaignAnalyticsService {
       }
 
       // Get regional breakdown
-      const { data: regionalData, error: regionalError } = await supabase
+      const { data: regionalData } = await supabase
         .from('email_sends')
         .select(`
           users!inner(region),

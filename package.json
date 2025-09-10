@@ -87,6 +87,7 @@
     "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.0.0",
     "input-otp": "^1.2.4",
+    "caniuse-lite": "latest",
     "lucide-react": "^0.454.0",
     "next": "^14.2.0",
     "next-themes": "^0.3.0",
