@@ -47,7 +47,7 @@ export class UserService {
         p_name: userData.user_name,
         p_user_type: userData.user_type,
         p_profile_data: userData.profile_data || {}
-      })
+      } as any)
 
       if (error) throw error
 
@@ -287,7 +287,7 @@ export class CampaignService {
         p_budget_allocated: campaignData.budget_allocated,
         p_target_audience: campaignData.target_audience || {},
         p_campaign_settings: campaignData.campaign_settings || {}
-      })
+      } as any)
 
       if (error) throw error
 
@@ -424,7 +424,7 @@ export class EmailCampaignService {
       const { data, error } = await supabase.rpc('send_email_campaign', {
         p_email_campaign_id: emailCampaignId,
         p_recipients: recipients
-      })
+      } as any)
 
       if (error) throw error
 
@@ -500,7 +500,7 @@ export class SmsCampaignService {
       const { data, error } = await supabase.rpc('send_sms_campaign', {
         p_sms_campaign_id: smsCampaignId,
         p_recipients: recipients
-      })
+      } as any)
 
       if (error) throw error
 
@@ -557,7 +557,7 @@ export class SocialMediaService {
         p_post_type: postData.post_type,
         p_scheduled_at: postData.scheduled_at,
         p_metadata: postData.metadata || {}
-      })
+      } as any)
 
       if (error) throw error
 
@@ -890,7 +890,7 @@ export class SessionService {
         p_user_agent: userAgent,
         p_device_info: deviceInfo || {},
         p_location_data: locationData || {}
-      })
+      } as any)
 
       if (error) throw error
 
@@ -904,7 +904,7 @@ export class SessionService {
     try {
       const { error } = await supabase.rpc('end_session', {
         p_session_id: sessionId
-      })
+      } as any)
 
       if (error) throw error
 

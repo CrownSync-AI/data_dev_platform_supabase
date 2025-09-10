@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import OpenAI from 'openai';
+import { createOpenAI } from '@ai-sdk/openai';
+import { embed } from 'ai';
 
 export interface DocumentUpload {
   id: string;
@@ -30,7 +31,7 @@ export class DocumentRAGService {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
-    this.openai = new OpenAI({
+    this.openai = createOpenAI({
       apiKey: process.env.OPENAI_API_KEY!
     });
   }
@@ -109,12 +110,12 @@ export class DocumentRAGService {
       // Truncate text if too long (max ~8000 tokens for text-embedding-3-small)
       const truncatedText = text.length > 32000 ? text.substring(0, 32000) : text;
       
-      const response = await this.openai.embeddings.create({
-        model: 'text-embedding-3-small',
-        input: truncatedText
+      const { embedding } = await embed({
+        model: this.openai.embedding('text-embedding-3-small'),
+        value: truncatedText
       });
       
-      return response.data[0].embedding;
+      return embedding;
     } catch (error) {
       console.error('Embedding generation error:', error);
       throw new Error(`Failed to generate embedding: ${error instanceof Error ? error.message : 'Unknown error'}`);
