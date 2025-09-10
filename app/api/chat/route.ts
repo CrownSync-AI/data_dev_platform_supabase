@@ -2,7 +2,7 @@ import { openai } from '@ai-sdk/openai';
 import { streamText } from 'ai';
 import { NextRequest } from 'next/server';
 import { DatabaseRAGService } from '@/lib/services/databaseRAGService';
-import { createClient } from '@supabase/supabase-js';
+// import { createClient } from '@supabase/supabase-js';
 // import { OpenAI } from 'openai';
 
 interface DocumentResult {
@@ -47,10 +47,10 @@ export async function POST(req: NextRequest) {
     const databaseRAG = new DatabaseRAGService();
     
     // Initialize document search services directly
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    // const supabase = createClient(
+    //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    //   process.env.SUPABASE_SERVICE_ROLE_KEY!
+    // );
     // const openaiClient = new OpenAI({
     //   apiKey: process.env.OPENAI_API_KEY!
     // });
@@ -91,7 +91,7 @@ export async function POST(req: NextRequest) {
         // }
         
         if (searchError) {
-          console.error('💥 Document search error:', searchError.message);
+          console.error('💥 Document search error:', searchError);
         } else {
           console.log('📄 Document search completed, results:', documentResults?.length || 0);
           

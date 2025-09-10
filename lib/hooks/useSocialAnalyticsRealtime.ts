@@ -102,6 +102,7 @@ export function useSocialAnalyticsRealtime({
       const interval = setInterval(fetchData, refreshInterval);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [fetchData, refreshInterval]);
 
   const refresh = useCallback(() => {

@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import OpenAI from 'openai';
+import { OpenAI } from 'openai';
 
 export interface DocumentUpload {
   id: string;
