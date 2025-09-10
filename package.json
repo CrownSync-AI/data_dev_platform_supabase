@@ -84,13 +84,12 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
-
     "date-fns": "^2.30.0",
     "dotenv": "^16.4.5",
     "embla-carousel-react": "^8.0.0",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.454.0",
-    "next": "14.0.4",
+    "next": "^14.2.0",
     "pdf-parse": "^1.1.1",
     "pg": "^8.16.3",
     "react": "^18.3.1",
@@ -100,7 +99,8 @@
     "recharts": "^2.12.7",
     "sonner": "latest",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "arg": "^5.0.2"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.4",
@@ -135,8 +135,5 @@
     "*.{json,md,css}": [
       "prettier --write"
     ]
-  },
-  "overrides": {
-    "next": "14.0.4"
   }
 }
