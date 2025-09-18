@@ -35,6 +35,12 @@ const sidebarGroups = [
         description: "Campaign ROI analysis and conversion insights",
       },
       {
+        title: "Campaign Performance New",
+        href: "/dashboard/brand-performance/campaign-performance-new",
+        icon: TrendingUp,
+        description: "Ayrshare-modeled campaign analytics with role-based insights",
+      },
+      {
         title: "Retailer Performance", 
         href: "/dashboard/brand-performance/retailer-performance",
         icon: Users,

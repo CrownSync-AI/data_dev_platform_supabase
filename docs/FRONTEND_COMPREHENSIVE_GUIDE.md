@@ -1,8 +1,8 @@
-# CrownSync Frontend Architecture Guide
+# CrownSync Frontend Comprehensive Guide
 
 ## 🎯 Overview
 
-CrownSync is a comprehensive data analytics and campaign management platform built with modern frontend technologies. The frontend provides an intuitive interface for brand asset management, marketing campaign tracking, AI-powered data analysis, and business intelligence.
+CrownSync is a comprehensive data analytics and campaign management platform built with modern frontend technologies. This guide covers the complete frontend architecture, components, features, and development workflows.
 
 ## 🏗️ Architecture Overview
 
@@ -32,12 +32,16 @@ app/                                    # Next.js App Router
 ├── (dashboard)/                       # Dashboard layout group
 │   ├── dashboard/                     # Main dashboard pages
 │   │   ├── analytics/                 # Analytics & reporting
+│   │   │   ├── brand-assets/          # Brand asset analytics
+│   │   │   ├── campaign/              # Campaign analytics
+│   │   │   └── page.tsx               # Main analytics dashboard
 │   │   ├── brand-performance/         # Brand performance dashboard
 │   │   │   ├── campaigns/             # Campaign management
 │   │   │   ├── retailer-performance/  # Retailer analytics
 │   │   │   ├── market/                # Market intelligence
 │   │   │   ├── brand-assets/          # Asset performance
-│   │   │   └── content/               # Content analytics
+│   │   │   ├── content/               # Content analytics
+│   │   │   └── social-analytics/      # Social media analytics
 │   │   ├── chat/                      # AI Assistant
 │   │   ├── crm/                       # Customer management
 │   │   ├── inbox/                     # Email management
@@ -49,17 +53,24 @@ app/                                    # Next.js App Router
 │   │   ├── projects/                  # Project management
 │   │   ├── security/                  # Security settings
 │   │   ├── settings/                  # User settings
-│   │   └── users/                     # User management
+│   │   ├── users/                     # User management
+│   │   ├── help/                      # Help & support
+│   │   ├── errors/                    # Error pages
+│   │   └── page.tsx                   # Main dashboard
 │   └── layout.tsx                     # Dashboard layout
 ├── api/                               # API routes
 │   ├── campaigns/                     # Campaign analytics APIs
 │   ├── chat/                          # AI chat endpoints
 │   ├── crm/                           # CRM APIs
 │   ├── inbox/                         # Email APIs
-│   └── retailer-performance/          # Performance APIs
+│   ├── retailer-performance/          # Performance APIs
+│   └── social-analytics/              # Social media APIs
 ├── globals.css                        # Global styles
 ├── layout.tsx                         # Root layout
-└── page.tsx                           # Landing page
+├── page.tsx                           # Landing page
+├── not-found.tsx                      # 404 page
+├── robots.ts                          # SEO robots
+└── sitemap.ts                         # SEO sitemap
 
 components/                            # Reusable components
 ├── brand-performance/                 # Brand performance components
@@ -70,7 +81,19 @@ components/                            # Reusable components
 │   ├── RetailerBubbleChart.tsx        # Bubble chart visualization
 │   ├── RetailerMetricsCards.tsx       # Metrics overview
 │   ├── TimeRangeSelector.tsx          # Date range picker
-│   └── TopRetailersWidget.tsx         # Top performers widget
+│   ├── TopRetailersWidget.tsx         # Top performers widget
+│   ├── SocialMetricCard.tsx           # Social media metrics
+│   ├── EngagementTrendsChart.tsx      # Engagement trends
+│   ├── PlatformComparisonChart.tsx    # Platform comparison
+│   ├── RetailerSocialRankingTable.tsx # Social rankings
+│   ├── TopContentTable.tsx           # Top content analysis
+│   ├── SocialAnalyticsExport.tsx     # Export functionality
+│   ├── LinkedInAnalytics.tsx         # LinkedIn specific
+│   ├── InstagramAnalytics.tsx        # Instagram specific
+│   ├── FacebookAnalytics.tsx         # Facebook specific
+│   ├── GoogleBusinessAnalytics.tsx   # Google Business specific
+│   ├── PlatformFilter.tsx            # Platform filtering
+│   └── RegionFilter.tsx              # Region filtering
 ├── chat/                              # AI Assistant components
 │   ├── ChatBot.tsx                    # Main chat interface
 │   ├── ChatInput.tsx                  # Message input
@@ -93,6 +116,8 @@ components/                            # Reusable components
 ├── charts/                            # Chart components
 │   ├── campaign-chart.tsx             # Campaign visualizations
 │   └── user-analytics.tsx             # User analytics charts
+├── dashboard/                         # Dashboard components
+│   └── SocialMediaMetricsCard.tsx     # Social media overview
 ├── shared/                            # Shared components
 │   ├── sidebar.tsx                    # Navigation sidebar
 │   ├── topbar.tsx                     # Top navigation bar
@@ -100,6 +125,8 @@ components/                            # Reusable components
 │   └── app-switcher.tsx               # App navigation
 ├── providers/                         # Context providers
 │   └── ChatPersistenceProvider.tsx    # Chat state management
+├── debug/                             # Debug components
+│   └── SocialAnalyticsDebug.tsx       # Debug utilities
 └── ui/                                # Shadcn/UI components
     ├── button.tsx                     # Button component
     ├── card.tsx                       # Card component
@@ -124,15 +151,28 @@ lib/                                   # Utility functions & services
 ├── services/                          # Service layer
 │   ├── databaseRAGService.ts          # Database query service
 │   ├── documentRAGService.ts          # Document processing
-│   └── simplifiedCampaignAnalytics.ts # Campaign analytics
+│   ├── simplifiedCampaignAnalytics.ts # Campaign analytics
+│   ├── ayrshareService.ts             # Social media API
+│   ├── socialDataSyncService.ts       # Social data sync
+│   ├── socialMetricsService.ts        # Social metrics
+│   ├── campaignAnalytics.ts           # Campaign data
+│   ├── crmService.ts                  # CRM operations
+│   └── dummyDataService.ts            # Test data
 ├── hooks/                             # Additional hooks
-│   └── useChatPersistence.ts          # Chat persistence hook
+│   ├── useChatPersistence.ts          # Chat persistence hook
+│   └── useSocialAnalyticsRealtime.ts  # Real-time social data
 ├── types/                             # TypeScript definitions
 │   ├── database.ts                    # Database schema types
-│   └── chat.ts                        # Chat interface types
+│   ├── chat.ts                        # Chat interface types
+│   ├── crm.ts                         # CRM types
+│   ├── email.ts                       # Email types
+│   └── social-media.ts                # Social media types
+├── utils/                             # Utility functions
+│   └── chatCleanup.ts                 # Chat utilities
 ├── supabase.ts                        # Supabase client
 ├── analytics-data.ts                  # Analytics data layer
-└── utils.ts                           # Utility functions
+├── database.ts                        # Database utilities
+└── utils.ts                           # General utilities
 ```
 
 ## 🎨 Design System
@@ -170,10 +210,12 @@ lib/                                   # Utility functions & services
 - Recent activity feeds
 - Campaign status overview
 - User analytics summary
+- Social media metrics integration
 
 **Key Components**:
 - `CampaignChart` - Campaign performance visualization
 - `UserAnalytics` - User engagement metrics
+- `SocialMediaMetricsCard` - Social media overview
 - Metric cards with trend indicators
 - Data tables with sorting and filtering
 
@@ -194,6 +236,8 @@ lib/                                   # Utility functions & services
 - `DocumentUpload` - File upload with preview
 - `QuickActions` - Predefined query buttons
 - `ToolInvocationRenderer` - Database result display
+- `CodeBlockRenderer` - Code syntax highlighting
+- `DataTableRenderer` - Structured data display
 
 **Technical Implementation**:
 ```typescript
@@ -211,6 +255,7 @@ User Input → ChatInput → API Route → OpenAI → Streaming Response → Mes
 - Performance tier classification
 - Export capabilities
 - Real-time data updates
+- Social media analytics integration
 
 **Key Components**:
 - `RetailerDataTable` - Dynamic data table with 15+ retailers
@@ -218,6 +263,7 @@ User Input → ChatInput → API Route → OpenAI → Streaming Response → Mes
 - `ConversionFunnel` - Sales funnel analysis
 - `RetailerBubbleChart` - Performance visualization
 - `TimeRangeSelector` - Date filtering
+- `RetailerMetricsCards` - Performance overview
 
 **Data Flow**:
 ```typescript
@@ -225,7 +271,30 @@ User Input → ChatInput → API Route → OpenAI → Streaming Response → Mes
 Database → API Route → React Hook → Component State → UI Update
 ```
 
-### **4. CRM System**
+### **4. Social Media Analytics**
+**Location**: `app/(dashboard)/dashboard/brand-performance/social-analytics/`
+
+**Features**:
+- Multi-platform social media performance (LinkedIn, Instagram, Facebook, Google Business)
+- Real-time engagement metrics
+- Platform comparison and analysis
+- Retailer social media rankings
+- Content performance analysis
+- Export functionality
+
+**Key Components**:
+- `SocialMetricCard` - Overview metric cards with trend indicators
+- `EngagementTrendsChart` - Time-series engagement analysis
+- `PlatformComparisonChart` - Radar chart for platform comparison
+- `RetailerSocialRankingTable` - Sortable retailer performance table
+- `TopContentTable` - Best performing content analysis
+- `LinkedInAnalytics` - LinkedIn-specific metrics
+- `InstagramAnalytics` - Instagram stories, reels, shopping
+- `FacebookAnalytics` - Facebook page insights
+- `GoogleBusinessAnalytics` - Local business metrics
+- `SocialAnalyticsExport` - Multi-format export
+
+### **5. CRM System**
 **Location**: `app/(dashboard)/dashboard/crm/`
 
 **Features**:
@@ -239,8 +308,9 @@ Database → API Route → React Hook → Component State → UI Update
 - `CustomerDataTable` - Customer list with pagination
 - `CustomerFiltersBar` - Advanced filtering
 - `CustomerMetricsCards` - CRM overview metrics
+- `CustomerTablePagination` - Table pagination
 
-### **5. Unified Inbox**
+### **6. Unified Inbox**
 **Location**: `app/(dashboard)/dashboard/inbox/`
 
 **Features**:
@@ -253,6 +323,21 @@ Database → API Route → React Hook → Component State → UI Update
 **Key Components**:
 - `CRMPanel` - Right-side customer information
 - `EmailThreadSummary` - Conversation view
+
+### **7. Analytics Dashboard**
+**Location**: `app/(dashboard)/dashboard/analytics/`
+
+**Features**:
+- Comprehensive analytics overview
+- Brand asset performance
+- Campaign analytics
+- User engagement metrics
+- Export and filtering capabilities
+
+**Key Components**:
+- Various chart components for data visualization
+- Performance tables and metrics cards
+- Filter and search functionality
 
 ## 🔄 State Management
 
@@ -298,7 +383,14 @@ app/api/
 ├── chat/                        # AI assistant endpoints
 ├── crm/customers/              # Customer management
 ├── inbox/emails/               # Email operations
-└── retailer-performance/       # Performance metrics
+├── retailer-performance/       # Performance metrics
+└── social-analytics/           # Social media analytics
+    ├── route.ts                # Main analytics endpoint
+    ├── accounts/route.ts       # Account management
+    ├── performance/route.ts    # Performance rankings
+    ├── content/route.ts        # Content analysis
+    ├── trends/route.ts         # Engagement trends
+    └── export/route.ts         # Data export
 ```
 
 ### **Service Layer**
@@ -307,7 +399,13 @@ app/api/
 lib/services/
 ├── databaseRAGService.ts       # Database query abstraction
 ├── documentRAGService.ts       # Document processing
-└── simplifiedCampaignAnalytics.ts # Campaign data processing
+├── simplifiedCampaignAnalytics.ts # Campaign data processing
+├── ayrshareService.ts          # Social media API integration
+├── socialDataSyncService.ts    # Social data synchronization
+├── socialMetricsService.ts     # Social metrics calculation
+├── campaignAnalytics.ts        # Campaign analytics
+├── crmService.ts               # CRM operations
+└── dummyDataService.ts         # Test data generation
 ```
 
 ### **Data Fetching Patterns**
