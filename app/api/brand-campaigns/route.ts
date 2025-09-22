@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    // Mock data for now (database tables not created yet)
-    const mockCampaigns = [
+    // Base campaigns data (some are mixed type)
+    const baseCampaigns = [
       {
         campaign_id: '1',
         campaign_name: 'Spring Collection Preview',
@@ -116,8 +116,48 @@ export async function GET(request: NextRequest) {
       }
     ]
 
-    // Apply filters to mock data
-    let filteredCampaigns = mockCampaigns
+    // Process campaigns: split mixed campaigns into separate social and email campaigns
+    const processedCampaigns: any[] = []
+    
+    baseCampaigns.forEach(campaign => {
+      if (campaign.campaign_type === 'mixed') {
+        // Split mixed campaigns into separate social and email campaigns
+        
+        // Social campaign card
+        const socialCampaign = {
+          ...campaign,
+          campaign_id: `${campaign.campaign_id}-social`,
+          campaign_name: `${campaign.campaign_name} (Social)`,
+          campaign_type: 'social',
+          // Social-focused metrics (70% of total reach/engagement)
+          total_reach: Math.round(campaign.total_reach * 0.7),
+          total_engagement: Math.round(campaign.total_engagement * 0.7),
+          avg_click_rate: Number((campaign.avg_click_rate * 1.2).toFixed(1)), // Social typically has higher engagement
+          total_emails_sent: 0 // No emails for social campaign
+        }
+
+        // Email campaign card
+        const emailCampaign = {
+          ...campaign,
+          campaign_id: `${campaign.campaign_id}-email`,
+          campaign_name: `${campaign.campaign_name} (Email)`,
+          campaign_type: 'email',
+          // Email-focused metrics (30% of total reach/engagement)
+          total_reach: Math.round(campaign.total_reach * 0.3),
+          total_engagement: Math.round(campaign.total_engagement * 0.3),
+          avg_click_rate: Number((campaign.avg_click_rate * 0.8).toFixed(1)), // Email typically has lower engagement rate
+          total_emails_sent: campaign.total_emails_sent // Keep email count
+        }
+
+        processedCampaigns.push(socialCampaign, emailCampaign)
+      } else {
+        // Keep single-type campaigns as they are
+        processedCampaigns.push(campaign)
+      }
+    })
+
+    // Apply filters to processed campaigns
+    let filteredCampaigns = processedCampaigns
 
     if (status && status !== 'all') {
       filteredCampaigns = filteredCampaigns.filter(c => c.campaign_status === status)

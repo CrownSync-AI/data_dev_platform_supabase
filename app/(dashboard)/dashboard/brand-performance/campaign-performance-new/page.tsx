@@ -16,7 +16,7 @@ interface Campaign {
   campaign_id: string
   campaign_name: string
   campaign_status: 'active' | 'paused' | 'completed' | 'draft'
-  campaign_type: 'email' | 'social' | 'mixed'
+  campaign_type: 'email' | 'social'
   start_date: string
   end_date?: string
   duration_days: number
@@ -84,7 +84,7 @@ export default function CampaignPerformanceNewPage() {
     }
   }
 
-  const getMockCampaigns = (): Campaign[] => [
+  const getBaseCampaigns = () => [
     {
       campaign_id: '1',
       campaign_name: 'Spring Collection Preview',
@@ -131,7 +131,7 @@ export default function CampaignPerformanceNewPage() {
       total_reach: 0,
       total_engagement: 0,
       participating_retailers_count: 5,
-      total_emails_sent: 1500,
+      total_emails_sent: 0,
       performance_tier: 'standard',
       trend_direction: 'stable',
       last_updated: '2024-12-17T09:20:00Z'
@@ -171,6 +171,50 @@ export default function CampaignPerformanceNewPage() {
       last_updated: '2024-12-01T18:30:00Z'
     }
   ]
+
+  const getMockCampaigns = (): Campaign[] => {
+    const baseCampaigns = getBaseCampaigns()
+    const processedCampaigns: Campaign[] = []
+
+    baseCampaigns.forEach(campaign => {
+      if (campaign.campaign_type === 'mixed') {
+        // Split mixed campaigns into separate social and email campaigns
+        
+        // Social campaign card
+        const socialCampaign: Campaign = {
+          ...campaign,
+          campaign_id: `${campaign.campaign_id}-social`,
+          campaign_name: `${campaign.campaign_name} (Social)`,
+          campaign_type: 'social',
+          // Social-focused metrics (70% of total reach/engagement)
+          total_reach: Math.round(campaign.total_reach * 0.7),
+          total_engagement: Math.round(campaign.total_engagement * 0.7),
+          avg_click_rate: campaign.avg_click_rate * 1.2, // Social typically has higher engagement
+          total_emails_sent: 0 // No emails for social campaign
+        }
+
+        // Email campaign card
+        const emailCampaign: Campaign = {
+          ...campaign,
+          campaign_id: `${campaign.campaign_id}-email`,
+          campaign_name: `${campaign.campaign_name} (Email)`,
+          campaign_type: 'email',
+          // Email-focused metrics (30% of total reach/engagement)
+          total_reach: Math.round(campaign.total_reach * 0.3),
+          total_engagement: Math.round(campaign.total_engagement * 0.3),
+          avg_click_rate: campaign.avg_click_rate * 0.8, // Email typically has lower engagement rate
+          total_emails_sent: campaign.total_emails_sent // Keep email count
+        }
+
+        processedCampaigns.push(socialCampaign, emailCampaign)
+      } else {
+        // Keep single-type campaigns as they are
+        processedCampaigns.push(campaign)
+      }
+    })
+
+    return processedCampaigns
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -399,10 +443,12 @@ export default function CampaignPerformanceNewPage() {
                 </CardHeader>
                 
                 <CardContent className="pt-0">
-                  {/* Key Metrics - Only Ayrshare available data */}
+                  {/* Key Metrics - Campaign Type Specific */}
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div>
-                      <p className="text-sm text-gray-600">Engagement Rate</p>
+                      <p className="text-sm text-gray-600">
+                        {campaign.campaign_type === 'email' ? 'Click Rate' : 'Engagement Rate'}
+                      </p>
                       <p className="text-xl font-bold">{campaign.avg_click_rate}%</p>
                     </div>
                     <div>
@@ -413,23 +459,63 @@ export default function CampaignPerformanceNewPage() {
                     </div>
                   </div>
 
-                  {/* Performance Metrics */}
+                  {/* Performance Metrics - Campaign Type Specific */}
                   <div className="space-y-3 mb-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Eye className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm">Reach</span>
-                      </div>
-                      <span className="font-medium">{formatNumber(campaign.total_reach)}</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <MousePointer className="h-4 w-4 text-purple-600" />
-                        <span className="text-sm">Engagement</span>
-                      </div>
-                      <span className="font-medium">{formatNumber(campaign.total_engagement)}</span>
-                    </div>
+                    {campaign.campaign_type === 'social' && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Eye className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm">Social Reach</span>
+                          </div>
+                          <span className="font-medium">{formatNumber(campaign.total_reach)}</span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <MousePointer className="h-4 w-4 text-purple-600" />
+                            <span className="text-sm">Social Engagement</span>
+                          </div>
+                          <span className="font-medium">{formatNumber(campaign.total_engagement)}</span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-orange-600" />
+                            <span className="text-sm">Platforms</span>
+                          </div>
+                          <span className="font-medium">4 platforms</span>
+                        </div>
+                      </>
+                    )}
+
+                    {campaign.campaign_type === 'email' && (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-4 w-4 text-green-600" />
+                            <span className="text-sm">Emails Sent</span>
+                          </div>
+                          <span className="font-medium">{formatNumber(campaign.total_emails_sent)}</span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Eye className="h-4 w-4 text-blue-600" />
+                            <span className="text-sm">Email Opens</span>
+                          </div>
+                          <span className="font-medium">{formatNumber(Math.round(campaign.total_emails_sent * 0.25))}</span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <MousePointer className="h-4 w-4 text-purple-600" />
+                            <span className="text-sm">Email Clicks</span>
+                          </div>
+                          <span className="font-medium">{formatNumber(Math.round(campaign.total_emails_sent * 0.03))}</span>
+                        </div>
+                      </>
+                    )}
                     
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -438,16 +524,6 @@ export default function CampaignPerformanceNewPage() {
                       </div>
                       <span className="font-medium">{campaign.participating_retailers_count}</span>
                     </div>
-
-                    {campaign.total_emails_sent > 0 && (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-green-600" />
-                          <span className="text-sm">Emails Sent</span>
-                        </div>
-                        <span className="font-medium">{formatNumber(campaign.total_emails_sent)}</span>
-                      </div>
-                    )}
                   </div>
 
                   {/* Trend and Date */}

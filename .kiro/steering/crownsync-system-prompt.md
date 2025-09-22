@@ -97,6 +97,30 @@ AYRSHARE_API_KEY=ayr_your_ayrshare_key
 AYRSHARE_BASE_URL=https://app.ayrshare.com/api
 ```
 
+### **Frontend Data Implementation (Showcase Mode)**
+```typescript
+// Example: Use hardcoded dummy data instead of API calls
+const getMockCampaignData = () => {
+  return {
+    campaigns: [
+      {
+        campaign_id: '1',
+        campaign_name: 'Spring Collection Preview',
+        platform_performance: {
+          facebook: { impressions: 63900, reach: 34300, engagement: 546 },
+          instagram: { impressions: 76700, reach: 47200, engagement: 729 },
+          twitter: { impressions: 57500, reach: 30000, engagement: 455 },
+          linkedin: { impressions: 44700, reach: 25700, engagement: 364 }
+        }
+      }
+    ]
+  }
+}
+
+// Use mock data instead of fetch calls
+const [campaigns, setCampaigns] = useState(getMockCampaignData().campaigns)
+```
+
 ### **Development Commands**
 ```bash
 npm run dev              # Start development server
@@ -241,6 +265,14 @@ export async function GET(request: Request) {
 - **NO AI INSIGHTS**: Focus only on data visualization and analytics from available metrics
 - **AYRSHARE FORMAT ONLY**: Data structure follows Ayrshare format for consistency, but no actual API integration
 
+### **IMPORTANT: Frontend Data Strategy (Temporary Setup)**
+- **HARDCODED DUMMY DATA**: All frontend components should use hardcoded dummy data for showcasing
+- **NO DATABASE WRITES**: Do not write updates to Supabase DB - use mock data generation instead
+- **SHOWCASE MODE**: This is a temporary setup for demonstration purposes
+- **REALISTIC DATA**: Generate realistic dummy data that follows Ayrshare structure for visual appeal
+- **CLIENT-SIDE GENERATION**: Use JavaScript/TypeScript to generate mock data within components
+- **NO API CALLS**: Avoid actual API calls to backend - use local mock data functions instead
+
 ### **Performance Expectations**
 - **Page Load**: < 2 seconds for dashboard pages
 - **API Response**: < 500ms for analytics queries
@@ -255,21 +287,55 @@ export async function GET(request: Request) {
 
 ## 🔄 Development Workflow
 
-### **When Making Changes**
+### **When Making Changes (Showcase Mode)**
 1. **Update Progress**: Always update `docs/project-progress.md` with completion timestamps
 2. **Documentation**: Update relevant documentation when features change
 3. **Testing**: Run test suite and type checking before commits
-4. **Database Changes**: Use migrations and update generated types
-5. **Performance**: Monitor query performance and optimize as needed
+4. **Mock Data**: Use hardcoded dummy data instead of database operations
+5. **Performance**: Focus on frontend performance and visual appeal
+6. **Showcase Ready**: Ensure all components work with mock data for demonstrations
 
-### **Code Review Checklist**
+### **Showcase Mode Guidelines**
+- **Component Development**: Build components with built-in mock data generators
+- **API Simulation**: Create mock functions that return realistic data structures
+- **Visual Focus**: Prioritize visual appeal and smooth interactions over database accuracy
+- **Demo Readiness**: All features should work immediately without database setup
+- **Realistic Data**: Use industry-realistic numbers and trends for credibility
+
+### **Code Review Checklist (Showcase Mode)**
 - [ ] TypeScript types properly defined
-- [ ] Error handling implemented
-- [ ] Performance considerations addressed
-- [ ] Security implications reviewed
+- [ ] Mock data generators implemented
+- [ ] Visual components working with dummy data
+- [ ] No database write operations
 - [ ] Documentation updated if needed
-- [ ] Tests added or updated
+- [ ] Realistic data patterns used
 - [ ] Mobile responsiveness verified
+- [ ] Demo-ready functionality
+
+### **Mock Data Patterns**
+```typescript
+// Pattern 1: Component-level mock data
+const generateMockTrendData = (days: number) => {
+  return Array.from({ length: days }, (_, i) => ({
+    date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toLocaleDateString(),
+    impressions: 30000 + Math.random() * 40000,
+    reach: 25000 + Math.random() * 30000,
+    engagement: 800 + Math.random() * 1200
+  }))
+}
+
+// Pattern 2: Service-level mock data
+const mockCampaignService = {
+  getCampaigns: () => Promise.resolve(mockCampaignData),
+  getCampaignById: (id: string) => Promise.resolve(mockCampaignData.find(c => c.id === id))
+}
+
+// Pattern 3: Hook-based mock data
+const useMockCampaigns = () => {
+  const [campaigns, setCampaigns] = useState(generateMockCampaigns())
+  return { campaigns, loading: false, error: null }
+}
+```
 
 ### **Deployment Process**
 1. **Pre-deployment**: Run `npm run build` and `npm run test`

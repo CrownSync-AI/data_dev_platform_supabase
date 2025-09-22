@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
       { name: 'Luxury Lifestyle Showcase', status: 'active', type: 'social', tier: 'high', trend: 'up' }
     ]
 
-    const mockCampaigns = campaignTemplates.map((template, index) => {
+    // Generate base campaigns first
+    const baseCampaigns = campaignTemplates.map((template, index) => {
       const baseMetrics = {
         impressions: 30000 + Math.floor(Math.random() * 40000),
         reach: 25000 + Math.floor(Math.random() * 30000),
@@ -99,8 +100,64 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    // Apply filters
-    let filteredCampaigns = mockCampaigns
+    // Process campaigns: split mixed campaigns into separate social and email campaigns
+    const processedCampaigns: any[] = []
+    
+    baseCampaigns.forEach(campaign => {
+      if (campaign.campaign_type === 'mixed') {
+        // Split mixed campaigns into separate social and email campaigns
+        
+        // Social campaign card
+        const socialCampaign = {
+          ...campaign,
+          campaign_id: `${campaign.campaign_id}-social`,
+          campaign_name: `${campaign.campaign_name} (Social)`,
+          campaign_type: 'social',
+          // Keep platform performance data for social
+          platform_performance: campaign.platform_performance
+        }
+
+        // Email campaign card
+        const emailCampaign = {
+          ...campaign,
+          campaign_id: `${campaign.campaign_id}-email`,
+          campaign_name: `${campaign.campaign_name} (Email)`,
+          campaign_type: 'email',
+          // Remove platform performance for email campaigns
+          platform_performance: {},
+          // Add email-specific metrics
+          email_metrics: {
+            emails_sent: 1200 + Math.floor(Math.random() * 800),
+            emails_opened: Math.floor((1200 + Math.random() * 800) * 0.25),
+            emails_clicked: Math.floor((1200 + Math.random() * 800) * 0.03),
+            open_rate: 22 + Math.random() * 8, // 22-30%
+            click_rate: 2.5 + Math.random() * 2 // 2.5-4.5%
+          }
+        }
+
+        processedCampaigns.push(socialCampaign, emailCampaign)
+      } else if (campaign.campaign_type === 'email') {
+        // Add email metrics to email campaigns
+        const emailCampaign = {
+          ...campaign,
+          platform_performance: {}, // No platform data for email
+          email_metrics: {
+            emails_sent: 1200 + Math.floor(Math.random() * 800),
+            emails_opened: Math.floor((1200 + Math.random() * 800) * 0.25),
+            emails_clicked: Math.floor((1200 + Math.random() * 800) * 0.03),
+            open_rate: 22 + Math.random() * 8,
+            click_rate: 2.5 + Math.random() * 2
+          }
+        }
+        processedCampaigns.push(emailCampaign)
+      } else {
+        // Keep social campaigns as they are
+        processedCampaigns.push(campaign)
+      }
+    })
+
+    // Apply filters to processed campaigns
+    let filteredCampaigns = processedCampaigns
 
     if (status && status !== 'all') {
       filteredCampaigns = filteredCampaigns.filter(c => c.campaign_status === status)

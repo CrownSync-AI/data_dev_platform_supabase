@@ -16,7 +16,7 @@ interface RetailerCampaign {
   campaign_id: string
   campaign_name: string
   campaign_status: 'active' | 'paused' | 'completed' | 'draft'
-  campaign_type: 'email' | 'social' | 'mixed'
+  campaign_type: 'email' | 'social'
   start_date: string
   end_date?: string
   retailer_id: string
@@ -72,6 +72,13 @@ interface RetailerCampaign {
   performance_tier: 'high' | 'good' | 'standard'
   trend_direction: 'up' | 'down' | 'stable'
   last_updated: string
+  email_metrics?: {
+    emails_sent: number
+    emails_opened: number
+    emails_clicked: number
+    open_rate: number
+    click_rate: number
+  }
 }
 
 interface Retailer {
@@ -236,41 +243,42 @@ export default function RetailerCampaignView() {
           </div>
         </div>
 
-        {/* Platform Tabs */}
-        <Tabs value={selectedPlatform} onValueChange={setSelectedPlatform} className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="all">All Platforms</TabsTrigger>
-            {Object.keys(campaign.platform_performance).map(platform => (
-              <TabsTrigger key={platform} value={platform} className="capitalize">
-                {platform}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        {/* Type-Specific Content */}
+        {campaign.campaign_type === 'social' && (
+          <Tabs value={selectedPlatform} onValueChange={setSelectedPlatform} className="space-y-6">
+            <TabsList>
+              <TabsTrigger value="all">All Platforms</TabsTrigger>
+              {Object.keys(campaign.platform_performance).map(platform => (
+                <TabsTrigger key={platform} value={platform} className="capitalize">
+                  {platform}
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-          {/* All Platforms Overview */}
-          <TabsContent value="all" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {Object.entries(campaign.platform_performance).map(([platform, data]) => (
-                <Card key={platform}>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg capitalize">{platform}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Impressions</span>
-                        <span className="font-medium">{formatNumber(data.impressions)}</span>
+            {/* All Platforms Overview */}
+            <TabsContent value="all" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {Object.entries(campaign.platform_performance).map(([platform, data]) => (
+                  <Card key={platform}>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-lg capitalize">{platform}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">Impressions</span>
+                          <span className="font-medium">{formatNumber(data.impressions)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">Reach</span>
+                          <span className="font-medium">{formatNumber(data.reach)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-gray-600">Engagement</span>
+                          <span className="font-medium">{formatNumber(data.engagement)}</span>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Reach</span>
-                        <span className="font-medium">{formatNumber(data.reach)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Engagement</span>
-                        <span className="font-medium">{formatNumber(data.engagement)}</span>
-                      </div>
-                    </div>
-                  </CardContent>
+                    </CardContent>
                 </Card>
               ))}
             </div>
@@ -426,6 +434,179 @@ export default function RetailerCampaignView() {
             </TabsContent>
           ))}
         </Tabs>
+        )}
+
+        {/* Email Campaign Detail View */}
+        {campaign.campaign_type === 'email' && campaign.email_metrics && (
+          <div className="space-y-6">
+            {/* Email Performance Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Emails Sent</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {formatNumber(campaign.email_metrics.emails_sent)}
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">Total emails delivered</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Emails Opened</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-green-600">
+                    {formatNumber(campaign.email_metrics.emails_opened)}
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">Recipients who opened</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Open Rate</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-purple-600">
+                    {campaign.email_metrics.open_rate.toFixed(1)}%
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">Percentage opened</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Click Rate</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-orange-600">
+                    {campaign.email_metrics.click_rate.toFixed(1)}%
+                  </div>
+                  <p className="text-sm text-gray-600 mt-1">Percentage clicked</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Email Performance Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Email Engagement Metrics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                        <span className="text-sm">Emails Sent</span>
+                      </div>
+                      <span className="font-medium">{formatNumber(campaign.email_metrics.emails_sent)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                        <span className="text-sm">Emails Opened</span>
+                      </div>
+                      <span className="font-medium">{formatNumber(campaign.email_metrics.emails_opened)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                        <span className="text-sm">Emails Clicked</span>
+                      </div>
+                      <span className="font-medium">{formatNumber(campaign.email_metrics.emails_clicked)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Performance Rates</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Open Rate</span>
+                        <span className="font-medium">{campaign.email_metrics.open_rate.toFixed(1)}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-purple-600 h-2 rounded-full" 
+                          style={{ width: `${Math.min(campaign.email_metrics.open_rate, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Click Rate</span>
+                        <span className="font-medium">{campaign.email_metrics.click_rate.toFixed(1)}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-orange-600 h-2 rounded-full" 
+                          style={{ width: `${Math.min(campaign.email_metrics.click_rate * 10, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Click-to-Open Rate</span>
+                        <span className="font-medium">
+                          {((campaign.email_metrics.click_rate / campaign.email_metrics.open_rate) * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full" 
+                          style={{ width: `${Math.min((campaign.email_metrics.click_rate / campaign.email_metrics.open_rate) * 100, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Campaign Timeline */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Campaign Timeline</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <div>
+                      <p className="font-medium">Campaign Started</p>
+                      <p className="text-sm text-gray-600">{formatDate(campaign.start_date)}</p>
+                    </div>
+                  </div>
+                  {campaign.end_date && (
+                    <div className="flex items-center gap-4">
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <div>
+                        <p className="font-medium">Campaign Completed</p>
+                        <p className="text-sm text-gray-600">{formatDate(campaign.end_date)}</p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-4">
+                    <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                    <div>
+                      <p className="font-medium">Last Updated</p>
+                      <p className="text-sm text-gray-600">{formatDate(campaign.last_updated)}</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     )
   }
@@ -538,23 +719,54 @@ export default function RetailerCampaignView() {
                 </CardHeader>
                 
                 <CardContent className="pt-0">
-                  {/* Platform Performance Summary */}
+                  {/* Type-Specific Performance Summary */}
                   <div className="space-y-3 mb-4">
-                    <div className="text-sm font-medium text-gray-700">Platform Performance:</div>
-                    {Object.entries(campaign.platform_performance).map(([platform, data]) => (
-                      <div key={platform} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${
-                            platform === 'facebook' ? 'bg-blue-500' :
-                            platform === 'instagram' ? 'bg-pink-500' :
-                            platform === 'linkedin' ? 'bg-blue-700' :
-                            'bg-sky-500'
-                          }`}></div>
-                          <span className="text-sm capitalize">{platform}</span>
+                    {campaign.campaign_type === 'social' && (
+                      <>
+                        <div className="text-sm font-medium text-gray-700">Platform Performance:</div>
+                        {Object.entries(campaign.platform_performance).map(([platform, data]) => (
+                          <div key={platform} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full ${
+                                platform === 'facebook' ? 'bg-blue-500' :
+                                platform === 'instagram' ? 'bg-pink-500' :
+                                platform === 'linkedin' ? 'bg-blue-700' :
+                                'bg-sky-500'
+                              }`}></div>
+                              <span className="text-sm capitalize">{platform}</span>
+                            </div>
+                            <span className="text-sm font-medium">{formatNumber(data.engagement)} eng.</span>
+                          </div>
+                        ))}
+                      </>
+                    )}
+
+                    {campaign.campaign_type === 'email' && campaign.email_metrics && (
+                      <>
+                        <div className="text-sm font-medium text-gray-700">Email Performance:</div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                            <span className="text-sm">Emails Sent</span>
+                          </div>
+                          <span className="text-sm font-medium">{formatNumber(campaign.email_metrics.emails_sent)}</span>
                         </div>
-                        <span className="text-sm font-medium">{formatNumber(data.engagement)} eng.</span>
-                      </div>
-                    ))}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                            <span className="text-sm">Open Rate</span>
+                          </div>
+                          <span className="text-sm font-medium">{campaign.email_metrics.open_rate.toFixed(1)}%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                            <span className="text-sm">Click Rate</span>
+                          </div>
+                          <span className="text-sm font-medium">{campaign.email_metrics.click_rate.toFixed(1)}%</span>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Performance Tier and Trend */}
