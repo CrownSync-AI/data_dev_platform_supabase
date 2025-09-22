@@ -11,6 +11,7 @@ import { Search, TrendingUp, TrendingDown, Minus, Calendar, MoreHorizontal, Arro
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import PlatformSpecificCharts from './PlatformSpecificCharts'
 import AllPlatformsTrendChart from './AllPlatformsTrendChart'
+import PlatformComparisonCharts from './PlatformComparisonCharts'
 
 interface RetailerCampaign {
   campaign_id: string
@@ -245,62 +246,16 @@ export default function RetailerCampaignView() {
 
         {/* Type-Specific Content */}
         {campaign.campaign_type === 'social' && (
-          <Tabs value={selectedPlatform} onValueChange={setSelectedPlatform} className="space-y-6">
-            <TabsList>
-              <TabsTrigger value="all">All Platforms</TabsTrigger>
-              {Object.keys(campaign.platform_performance).map(platform => (
-                <TabsTrigger key={platform} value={platform} className="capitalize">
-                  {platform}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            {/* All Platforms Overview */}
-            <TabsContent value="all" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {Object.entries(campaign.platform_performance).map(([platform, data]) => (
-                  <Card key={platform}>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-lg capitalize">{platform}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm text-gray-600">Impressions</span>
-                          <span className="font-medium">{formatNumber(data.impressions)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-gray-600">Reach</span>
-                          <span className="font-medium">{formatNumber(data.reach)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-gray-600">Engagement</span>
-                          <span className="font-medium">{formatNumber(data.engagement)}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* All Platforms Trend Visualization */}
-            <AllPlatformsTrendChart
-              platformData={campaign.platform_performance}
-              campaignName={campaign.campaign_name}
-            />
-          </TabsContent>
-
-          {/* Platform-Specific Views */}
-          {Object.entries(campaign.platform_performance).map(([platform, data]) => (
-            <TabsContent key={platform} value={platform} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Core Metrics */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Core Metrics</CardTitle>
+          <div className="space-y-6">
+            {/* Platform Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Object.entries(campaign.platform_performance).map(([platform, data]) => (
+                <Card key={platform}>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-lg capitalize">{platform}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-sm text-gray-600">Impressions</span>
                         <span className="font-medium">{formatNumber(data.impressions)}</span>
@@ -313,127 +268,24 @@ export default function RetailerCampaignView() {
                         <span className="text-sm text-gray-600">Engagement</span>
                         <span className="font-medium">{formatNumber(data.engagement)}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Engagement Rate</span>
-                        <span className="font-medium">{((data.engagement / data.reach) * 100).toFixed(2)}%</span>
-                      </div>
                     </div>
                   </CardContent>
                 </Card>
+              ))}
+            </div>
 
-                {/* Platform-Specific Metrics */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="capitalize">{platform} Metrics</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {platform === 'facebook' && 'sharesCount' in data && (
-                        <>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Shares</span>
-                            <span className="font-medium">{data.sharesCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Comments</span>
-                            <span className="font-medium">{data.commentsCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Likes</span>
-                            <span className="font-medium">{data.likeCount}</span>
-                          </div>
-                        </>
-                      )}
-                      {platform === 'instagram' && 'savedCount' in data && (
-                        <>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Likes</span>
-                            <span className="font-medium">{data.likeCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Comments</span>
-                            <span className="font-medium">{data.commentsCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Saves</span>
-                            <span className="font-medium">{data.savedCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Shares</span>
-                            <span className="font-medium">{data.sharesCount}</span>
-                          </div>
-                        </>
-                      )}
-                      {platform === 'linkedin' && 'shareCount' in data && (
-                        <>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Likes</span>
-                            <span className="font-medium">{data.likeCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Comments</span>
-                            <span className="font-medium">{data.commentsCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Shares</span>
-                            <span className="font-medium">{data.shareCount}</span>
-                          </div>
-                        </>
-                      )}
-                      {platform === 'twitter' && 'retweetCount' in data && (
-                        <>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Likes</span>
-                            <span className="font-medium">{data.likeCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Retweets</span>
-                            <span className="font-medium">{data.retweetCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Replies</span>
-                            <span className="font-medium">{data.replyCount}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-sm text-gray-600">Bookmarks</span>
-                            <span className="font-medium">{data.bookmarkCount}</span>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+            {/* All Platforms Trend Visualization */}
+            <AllPlatformsTrendChart
+              platformData={campaign.platform_performance}
+              campaignName={campaign.campaign_name}
+            />
 
-                {/* Reactions/Interactions */}
-                {((platform === 'facebook' && 'reactions' in data) || 
-                  (platform === 'linkedin' && 'reactions' in data)) && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Reactions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        {Object.entries(data.reactions).map(([reaction, count]) => (
-                          <div key={reaction} className="flex justify-between">
-                            <span className="text-sm text-gray-600 capitalize">{reaction}</span>
-                            <span className="font-medium">{count}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-
-              {/* Platform-Specific Charts */}
-              <PlatformSpecificCharts
-                platform={platform}
-                data={data}
-                campaignName={campaign.campaign_name}
-              />
-            </TabsContent>
-          ))}
-        </Tabs>
+            {/* Platform Comparison Charts */}
+            <PlatformComparisonCharts
+              platformData={campaign.platform_performance}
+              campaignName={campaign.campaign_name}
+            />
+          </div>
         )}
 
         {/* Email Campaign Detail View */}
