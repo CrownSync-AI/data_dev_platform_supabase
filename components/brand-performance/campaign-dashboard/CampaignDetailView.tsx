@@ -418,26 +418,31 @@ export default function CampaignDetailView({ campaignId, onBack }: CampaignDetai
 
       {/* Type-Specific Performance & Retailer Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Detailed Platform Performance - Only for Social Campaigns */}
-        {campaign.campaign_type === 'social' && platformPerformance && platformPerformance.length > 0 && (
+        {/* Performance Notes - Moved from bottom */}
+        {notes && notes.length > 0 && (
           <Card>
             <CardHeader>
-              <CardTitle>Detailed Platform Performance</CardTitle>
+              <CardTitle>Performance Notes</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {platformPerformance.map((platform: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <p className="font-medium capitalize">{platform.platform}</p>
-                      <p className="text-sm text-gray-600">
-                        {formatNumber(platform.impressions)} impressions • {platform.engagement_rate}% engagement
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-semibold">{formatNumber(platform.engagement)}</p>
-                      <p className="text-sm text-gray-600">engagements</p>
-                    </div>
+                {notes.map((note: any, index: number) => (
+                  <div key={index} className="p-4 bg-gray-50 rounded-lg">
+                    {note.performance_notes && (
+                      <div className="mb-3">
+                        <p className="font-medium text-gray-900">Performance Summary</p>
+                        <p className="text-gray-700">{note.performance_notes}</p>
+                      </div>
+                    )}
+                    
+                    {note.best_performing_platform && (
+                      <div>
+                        <p className="font-medium text-gray-900 mb-1">Best Performing Platform</p>
+                        <Badge variant="outline" className="capitalize">
+                          {note.best_performing_platform}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -545,37 +550,7 @@ export default function CampaignDetailView({ campaignId, onBack }: CampaignDetai
         )}
       </div>
 
-      {/* Performance Notes */}
-      {notes && notes.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Performance Notes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {notes.map((note: any, index: number) => (
-                <div key={index} className="p-4 bg-gray-50 rounded-lg">
-                  {note.performance_notes && (
-                    <div className="mb-3">
-                      <p className="font-medium text-gray-900">Performance Summary</p>
-                      <p className="text-gray-700">{note.performance_notes}</p>
-                    </div>
-                  )}
-                  
-                  {note.best_performing_platform && (
-                    <div>
-                      <p className="font-medium text-gray-900 mb-1">Best Performing Platform</p>
-                      <Badge variant="outline" className="capitalize">
-                        {note.best_performing_platform}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+
     </div>
   )
 }
