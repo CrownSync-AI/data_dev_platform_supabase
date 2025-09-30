@@ -11,26 +11,15 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
 import { 
   TrendingUp, 
   AlertTriangle, 
   Users, 
   Download,
   RefreshCw,
-  Search,
-  Star,
-  Target,
-  Activity
+  Target
 } from 'lucide-react';
+import { RetailerPerformanceTable } from '@/components/brand-performance/campaign-performance-new/RetailerPerformanceTable';
 
 interface RetailerPerformanceData {
   summary: {
@@ -97,18 +86,13 @@ export default function RetailerPerformancePage() {
   const [data, setData] = useState<RetailerPerformanceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState('all');
-  const [selectedGrade, setSelectedGrade] = useState('all');
   const [timeframe, setTimeframe] = useState('past_year');
 
   const fetchData = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        timeframe,
-        region: selectedRegion,
-        grade: selectedGrade
+        timeframe
       });
       
       const response = await fetch(`/api/retailer-performance?${params}`);
@@ -128,29 +112,7 @@ export default function RetailerPerformancePage() {
 
   useEffect(() => {
     fetchData();
-  }, [timeframe, selectedRegion, selectedGrade]);
-
-  const filteredRetailers = data?.retailers.filter(retailer =>
-    retailer.retailerName.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
-
-  const getPerformanceColor = (grade: string) => {
-    switch (grade) {
-      case 'A': return 'bg-green-100 text-green-800';
-      case 'B': return 'bg-blue-100 text-blue-800';
-      case 'C': return 'bg-yellow-100 text-yellow-800';
-      case 'D': return 'bg-orange-100 text-orange-800';
-      case 'F': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getRankIcon = (rank: number) => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return `#${rank}`;
-  };
+  }, [timeframe]);
 
   if (loading) {
     return (
@@ -284,149 +246,12 @@ export default function RetailerPerformancePage() {
         </Card>
       </div>
 
-      {/* Retailer Performance Data Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Retailer Performance Data Table</CardTitle>
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export Table
-            </Button>
-          </div>
-          <p className="text-sm text-gray-600">
-            Quantified metrics for each retailer - {filteredRetailers.length} retailers shown
-          </p>
-        </CardHeader>
-        <CardContent>
-          {/* Filters */}
-          <div className="flex gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                placeholder="Search retailers..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="All Regions" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Regions</SelectItem>
-                {data.filters.regions.slice(1).map(region => (
-                  <SelectItem key={region} value={region}>{region}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="All Grades" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Grades</SelectItem>
-                {data.filters.grades.slice(1).map(grade => (
-                  <SelectItem key={grade} value={grade}>{grade}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Table */}
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Rank</TableHead>
-                  <TableHead>Retailer Name</TableHead>
-                  <TableHead>Region</TableHead>
-                  <TableHead>Emails Sent</TableHead>
-                  <TableHead>Delivery Rate</TableHead>
-                  <TableHead>Open Rate</TableHead>
-                  <TableHead>Click Rate</TableHead>
-                  <TableHead>Conversion Rate</TableHead>
-                  <TableHead>Grade</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRetailers.map((retailer) => (
-                  <TableRow key={retailer.id}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        {retailer.isTopPerformer && <Star className="h-4 w-4 text-yellow-500" />}
-                        {getRankIcon(retailer.rank)}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{retailer.retailerName}</div>
-                        <div className="text-sm text-gray-500">
-                          Last active: {new Date(retailer.lastActiveDate).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{retailer.region}</Badge>
-                    </TableCell>
-                    <TableCell>{retailer.emailsSent.toLocaleString()}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full" 
-                            style={{ width: `${Math.min(100, parseFloat(retailer.deliveryRate.replace('%', '')))}%` }}
-                          ></div>
-                        </div>
-                        {retailer.deliveryRate}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-green-600 h-2 rounded-full" 
-                            style={{ width: `${Math.min(100, parseFloat(retailer.openRate.replace('%', '')))}%` }}
-                          ></div>
-                        </div>
-                        {retailer.openRate}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className="w-16 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-purple-600 h-2 rounded-full" 
-                            style={{ width: `${Math.min(100, parseFloat(retailer.clickRate.replace('%', '')) * 10)}%` }}
-                          ></div>
-                        </div>
-                        {retailer.clickRate}
-                      </div>
-                    </TableCell>
-                    <TableCell>{retailer.conversionRate}</TableCell>
-                    <TableCell>
-                      <Badge className={getPerformanceColor(retailer.performanceGrade)}>
-                        {retailer.performanceGrade}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <p className="text-sm text-gray-600">
-              Showing {filteredRetailers.length} of {data.retailers.length} retailers
-            </p>
-            <Button variant="outline" size="sm">
-              <Activity className="h-4 w-4 mr-2" />
-              All Results
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Retailer Performance Table with Campaign Separation */}
+      <RetailerPerformanceTable 
+        role="brand"
+        retailers={data?.retailers || []}
+        selectedPlatforms={['all']}
+      />
     </div>
   );
 }
