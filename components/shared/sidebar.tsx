@@ -30,27 +30,15 @@ const sidebarGroups = [
     items: [
       {
         title: "Campaign Performance",
-        href: "/dashboard/brand-performance/campaigns",
+        href: "/dashboard/brand-performance/campaign-performance",
         icon: TrendingUp,
-        description: "Campaign ROI analysis and conversion insights",
-      },
-      {
-        title: "Campaign Performance New",
-        href: "/dashboard/brand-performance/campaign-performance-new",
-        icon: TrendingUp,
-        description: "Ayrshare-modeled campaign analytics with role-based insights",
+        description: "Comprehensive campaign analytics with social and email performance insights",
       },
       {
         title: "Retailer Performance", 
         href: "/dashboard/brand-performance/retailer-performance",
         icon: Users,
         description: "Retailer rankings and performance management",
-      },
-      {
-        title: "Social Analytics",
-        href: "/dashboard/brand-performance/social-analytics",
-        icon: Share2,
-        description: "Social media performance and engagement analytics",
       },
     ],
   },
