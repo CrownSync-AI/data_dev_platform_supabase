@@ -26,7 +26,7 @@ const sidebarGroups = [
     ],
   },
   {
-    title: "Brand Performance",
+    title: "Brand View",
     items: [
       {
         title: "Campaign Performance",
@@ -39,6 +39,17 @@ const sidebarGroups = [
         href: "/dashboard/brand-performance/retailer-performance",
         icon: Users,
         description: "Retailer rankings and performance management",
+      },
+    ],
+  },
+  {
+    title: "Retailer View",
+    items: [
+      {
+        title: "Campaign Performance",
+        href: "/dashboard/retailer-view/campaign-performance",
+        icon: TrendingUp,
+        description: "Retailer-specific campaign performance and analytics",
       },
     ],
   },
