@@ -7,6 +7,8 @@ export async function GET(request: NextRequest) {
     // Get query parameters
     const retailerId = searchParams.get('retailerId')
     const status = searchParams.get('status')
+    const type = searchParams.get('type')
+    const performanceTier = searchParams.get('performanceTier')
     const search = searchParams.get('search')
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
@@ -20,14 +22,70 @@ export async function GET(request: NextRequest) {
 
     // Mock retailer campaigns with platform-specific data (8 campaigns per retailer)
     const campaignTemplates = [
-      { name: 'Spring Collection Preview', status: 'active', type: 'mixed', tier: 'high', trend: 'up' },
-      { name: 'Holiday Luxury Campaign', status: 'completed', type: 'social', tier: 'good', trend: 'stable' },
-      { name: 'Summer Elegance 2025', status: 'draft', type: 'email', tier: 'standard', trend: 'stable' },
-      { name: 'Winter Wonderland Exclusive', status: 'active', type: 'mixed', tier: 'high', trend: 'up' },
-      { name: 'Artisan Heritage Collection', status: 'paused', type: 'social', tier: 'good', trend: 'down' },
-      { name: 'Timeless Elegance Launch', status: 'active', type: 'email', tier: 'high', trend: 'up' },
-      { name: 'Modern Minimalist Series', status: 'completed', type: 'mixed', tier: 'standard', trend: 'stable' },
-      { name: 'Luxury Lifestyle Showcase', status: 'active', type: 'social', tier: 'high', trend: 'up' }
+      { 
+        name: 'Spring Collection Preview', 
+        status: 'active', 
+        type: 'mixed', 
+        tier: 'high', 
+        trend: 'up',
+        image: 'https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?w=400&h=250&fit=crop&auto=format'
+      },
+      { 
+        name: 'Holiday Luxury Campaign', 
+        status: 'completed', 
+        type: 'social', 
+        tier: 'good', 
+        trend: 'stable',
+        image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=250&fit=crop&auto=format'
+      },
+      { 
+        name: 'Summer Elegance 2025', 
+        status: 'draft', 
+        type: 'email', 
+        tier: 'standard', 
+        trend: 'stable',
+        image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=250&fit=crop&auto=format'
+      },
+      { 
+        name: 'Winter Wonderland Exclusive', 
+        status: 'active', 
+        type: 'mixed', 
+        tier: 'high', 
+        trend: 'up',
+        image: 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=400&h=250&fit=crop&auto=format'
+      },
+      { 
+        name: 'Artisan Heritage Collection', 
+        status: 'paused', 
+        type: 'social', 
+        tier: 'good', 
+        trend: 'down',
+        image: 'https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=400&h=250&fit=crop&auto=format'
+      },
+      { 
+        name: 'Timeless Elegance Launch', 
+        status: 'active', 
+        type: 'email', 
+        tier: 'high', 
+        trend: 'up',
+        image: 'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?w=400&h=250&fit=crop&auto=format'
+      },
+      { 
+        name: 'Modern Minimalist Series', 
+        status: 'completed', 
+        type: 'mixed', 
+        tier: 'standard', 
+        trend: 'stable',
+        image: 'https://images.unsplash.com/photo-1594534475808-b18fc33b045e?w=400&h=250&fit=crop&auto=format'
+      },
+      { 
+        name: 'Luxury Lifestyle Showcase', 
+        status: 'active', 
+        type: 'social', 
+        tier: 'high', 
+        trend: 'up',
+        image: 'https://images.unsplash.com/photo-1549972574-8e3e1ed6a347?w=400&h=250&fit=crop&auto=format'
+      }
     ]
 
     // Generate base campaigns first
@@ -43,6 +101,7 @@ export async function GET(request: NextRequest) {
         campaign_name: template.name,
         campaign_status: template.status,
         campaign_type: template.type,
+        campaign_image: template.image,
         start_date: new Date(2024, 10 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
         end_date: template.status === 'completed' ? new Date(2024, 11, Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0] : undefined,
         retailer_id: retailerId,
@@ -161,6 +220,14 @@ export async function GET(request: NextRequest) {
 
     if (status && status !== 'all') {
       filteredCampaigns = filteredCampaigns.filter(c => c.campaign_status === status)
+    }
+
+    if (type && type !== 'all') {
+      filteredCampaigns = filteredCampaigns.filter(c => c.campaign_type === type)
+    }
+
+    if (performanceTier && performanceTier !== 'all') {
+      filteredCampaigns = filteredCampaigns.filter(c => c.performance_tier === performanceTier)
     }
 
     if (search) {

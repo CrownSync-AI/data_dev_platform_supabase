@@ -9,9 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Search, TrendingUp, TrendingDown, Minus, Calendar, MoreHorizontal, ArrowLeft } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import PlatformSpecificCharts from './PlatformSpecificCharts'
-import AllPlatformsTrendChart from './AllPlatformsTrendChart'
-import PlatformComparisonCharts from './PlatformComparisonCharts'
+import PlatformSpecificCharts from '../campaign-performance-new/PlatformSpecificCharts'
+import AllPlatformsTrendChart from '../campaign-performance-new/AllPlatformsTrendChart'
+import PlatformComparisonCharts from '../campaign-performance-new/PlatformComparisonCharts'
 import CampaignFiltersAndViews from './CampaignFiltersAndViews'
 import CampaignListView from './CampaignListView'
 
@@ -575,12 +575,12 @@ export default function RetailerCampaignView() {
               {filteredAndSortedCampaigns.map((campaign) => (
               <Card 
                 key={campaign.campaign_id} 
-                className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
+                className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0"
                 onClick={() => handleCampaignClick(campaign.campaign_id)}
               >
                 {/* Campaign Image */}
                 {campaign.campaign_image && (
-                  <div className="relative h-48 w-full overflow-hidden">
+                  <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
                     <img 
                       src={campaign.campaign_image} 
                       alt={campaign.campaign_name}
@@ -612,7 +612,7 @@ export default function RetailerCampaignView() {
                   </div>
                 )}
                 
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-3 px-6 pt-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg mb-2">{campaign.campaign_name}</CardTitle>
@@ -643,7 +643,7 @@ export default function RetailerCampaignView() {
                   </div>
                 </CardHeader>
                 
-                <CardContent className="pt-0">
+                <CardContent className="pt-0 px-6 pb-6">
                   {/* Type-Specific Performance Summary */}
                   <div className="space-y-3 mb-4">
                     {campaign.campaign_type === 'social' && (

@@ -286,10 +286,10 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
           {filteredAndSortedCampaigns.map((campaign) => {
           console.log('🔍 RENDERING CAMPAIGN:', campaign.campaign_name, 'HAS IMAGE:', !!campaign.campaign_image, 'IMAGE URL:', campaign.campaign_image)
           return (
-          <Card key={campaign.campaign_id} className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden">
+          <Card key={campaign.campaign_id} className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0">
             {/* Campaign Image */}
             {(campaign.campaign_image || true) && (
-              <div className="relative h-48 w-full overflow-hidden">
+              <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
                 <img 
                   src={campaign.campaign_image || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=250&fit=crop&auto=format'} 
                   alt={campaign.campaign_name}
@@ -320,7 +320,7 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
               </div>
             )}
             
-            <CardHeader className="pb-3">
+            <CardHeader className="pb-3 px-6 pt-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <CardTitle className="text-lg mb-2">{campaign.campaign_name}</CardTitle>
@@ -350,7 +350,7 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
               </div>
             </CardHeader>
             
-            <CardContent className="pt-0">
+            <CardContent className="pt-0 px-6 pb-6">
               {/* Key Metrics - Only Ayrshare available data */}
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>

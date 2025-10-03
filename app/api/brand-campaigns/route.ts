@@ -5,7 +5,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     
     // Get query parameters
+    const role = searchParams.get('role') || 'brand'
+    const retailerId = searchParams.get('retailerId')
     const status = searchParams.get('status')
+    const type = searchParams.get('type')
+    const performanceTier = searchParams.get('performanceTier')
     const search = searchParams.get('search')
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
@@ -17,6 +21,7 @@ export async function GET(request: NextRequest) {
         campaign_name: 'Spring Collection Preview',
         campaign_status: 'active',
         campaign_type: 'mixed',
+        campaign_image: 'https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?w=400&h=250&fit=crop&auto=format',
         start_date: '2024-12-01',
         end_date: '2025-01-01',
         duration_days: 32,
@@ -34,6 +39,7 @@ export async function GET(request: NextRequest) {
         campaign_name: 'Holiday Luxury Campaign',
         campaign_status: 'paused',
         campaign_type: 'email',
+        campaign_image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=250&fit=crop&auto=format',
         start_date: '2024-11-15',
         end_date: '2025-01-16',
         duration_days: 62,
@@ -51,6 +57,7 @@ export async function GET(request: NextRequest) {
         campaign_name: 'Summer Elegance 2025',
         campaign_status: 'draft',
         campaign_type: 'social',
+        campaign_image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=250&fit=crop&auto=format',
         start_date: '2025-03-01',
         end_date: '2025-05-01',
         duration_days: 0,
@@ -68,6 +75,7 @@ export async function GET(request: NextRequest) {
         campaign_name: 'Winter Wonderland Exclusive',
         campaign_status: 'active',
         campaign_type: 'mixed',
+        campaign_image: 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=400&h=250&fit=crop&auto=format',
         start_date: '2024-12-15',
         end_date: '2025-02-15',
         duration_days: 5,
@@ -85,6 +93,7 @@ export async function GET(request: NextRequest) {
         campaign_name: 'Artisan Heritage Collection',
         campaign_status: 'completed',
         campaign_type: 'social',
+        campaign_image: 'https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=400&h=250&fit=crop&auto=format',
         start_date: '2024-10-01',
         end_date: '2024-12-01',
         duration_days: 61,
@@ -102,6 +111,7 @@ export async function GET(request: NextRequest) {
         campaign_name: 'Timeless Elegance Launch',
         campaign_status: 'active',
         campaign_type: 'email',
+        campaign_image: 'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?w=400&h=250&fit=crop&auto=format',
         start_date: '2025-01-01',
         end_date: '2025-03-01',
         duration_days: -13,
@@ -129,6 +139,7 @@ export async function GET(request: NextRequest) {
           campaign_id: `${campaign.campaign_id}-social`,
           campaign_name: `${campaign.campaign_name} (Social)`,
           campaign_type: 'social',
+          campaign_image: campaign.campaign_image, // Preserve image
           // Social-focused metrics (70% of total reach/engagement)
           total_reach: Math.round(campaign.total_reach * 0.7),
           total_engagement: Math.round(campaign.total_engagement * 0.7),
@@ -142,6 +153,7 @@ export async function GET(request: NextRequest) {
           campaign_id: `${campaign.campaign_id}-email`,
           campaign_name: `${campaign.campaign_name} (Email)`,
           campaign_type: 'email',
+          campaign_image: campaign.campaign_image, // Preserve image
           // Email-focused metrics (30% of total reach/engagement)
           total_reach: Math.round(campaign.total_reach * 0.3),
           total_engagement: Math.round(campaign.total_engagement * 0.3),
@@ -163,6 +175,14 @@ export async function GET(request: NextRequest) {
       filteredCampaigns = filteredCampaigns.filter(c => c.campaign_status === status)
     }
 
+    if (type && type !== 'all') {
+      filteredCampaigns = filteredCampaigns.filter(c => c.campaign_type === type)
+    }
+
+    if (performanceTier && performanceTier !== 'all') {
+      filteredCampaigns = filteredCampaigns.filter(c => c.performance_tier === performanceTier)
+    }
+
     if (search) {
       filteredCampaigns = filteredCampaigns.filter(c => 
         c.campaign_name.toLowerCase().includes(search.toLowerCase())
@@ -171,6 +191,13 @@ export async function GET(request: NextRequest) {
 
     // Apply pagination
     const paginatedCampaigns = filteredCampaigns.slice(offset, offset + limit)
+
+    // Debug: Log the campaigns being returned
+    console.log('🔍 API DEBUG: Returning campaigns:', paginatedCampaigns.map(c => ({
+      id: c.campaign_id,
+      name: c.campaign_name,
+      image: c.campaign_image
+    })))
 
     return NextResponse.json({
       campaigns: paginatedCampaigns,
