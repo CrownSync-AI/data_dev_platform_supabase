@@ -19,7 +19,7 @@ import {
   RefreshCw,
   Target
 } from 'lucide-react';
-import { RetailerPerformanceTable } from '@/components/brand-performance/campaign-performance-new/RetailerPerformanceTable';
+import { RetailerPerformanceTable } from '@/components/brand-performance/campaign-performance/RetailerPerformanceTable';
 
 interface RetailerPerformanceData {
   summary: {

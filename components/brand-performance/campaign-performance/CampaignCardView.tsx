@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Search, TrendingUp, TrendingDown, Minus, Calendar, Users, Mail, Eye, MousePointer, MoreHorizontal } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import CampaignFiltersAndViews from './CampaignFiltersAndViews'
@@ -33,17 +31,16 @@ interface Campaign {
 interface CampaignCardViewProps {
   role: 'brand' | 'retailer'
   retailerId?: string
+  onCampaignClick?: (campaignId: string) => void
 }
 
-export default function CampaignCardView({ role, retailerId }: CampaignCardViewProps) {
+export default function CampaignCardView({ role, retailerId, onCampaignClick }: CampaignCardViewProps) {
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card')
-  const [sortBy, setSortBy] = useState('updated')
   const [filters, setFilters] = useState({
     status: 'all',
     type: 'all',
-    performanceTier: 'all',
     dateRange: { from: undefined, to: undefined },
     search: ''
   })
@@ -57,6 +54,19 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
     try {
       setLoading(true)
       
+      // TEMPORARY: Use mock data directly to ensure recent dates
+      console.log('🔍 Using mock campaigns with recent dates for demo')
+      const mockCampaigns = getMockCampaigns()
+      console.log('🔍 Mock campaigns:', mockCampaigns.map(c => ({
+        id: c.campaign_id,
+        name: c.campaign_name,
+        start_date: c.start_date,
+        end_date: c.end_date
+      })))
+      setCampaigns(mockCampaigns)
+      
+      // Commented out API call to force mock data usage
+      /*
       const params = new URLSearchParams({
         role,
         limit: '20',
@@ -67,7 +77,6 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
       if (filters.search) params.append('search', filters.search)
       if (filters.status !== 'all') params.append('status', filters.status)
       if (filters.type !== 'all') params.append('type', filters.type)
-      if (filters.performanceTier !== 'all') params.append('performanceTier', filters.performanceTier)
       
       const response = await fetch(`/api/brand-campaigns?${params}`)
       
@@ -87,6 +96,7 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
       } else {
         throw new Error('No campaigns data received')
       }
+      */
       
     } catch (error) {
       console.error('Error fetching campaigns:', error)
@@ -108,10 +118,10 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
       campaign_id: '1',
       campaign_name: 'Spring Collection Preview',
       campaign_status: 'active',
-      campaign_type: 'mixed',
-      start_date: '2024-12-01',
-      end_date: '2025-01-01',
-      duration_days: 32,
+      campaign_type: 'social',
+      start_date: '2025-09-15',
+      end_date: '2025-10-15',
+      duration_days: 30,
       avg_click_rate: 2.9,
       total_reach: 285000,
       total_engagement: 24500,
@@ -119,17 +129,17 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
       total_emails_sent: 1500,
       performance_tier: 'high',
       trend_direction: 'up',
-      last_updated: '2024-12-19T10:30:00Z',
-      campaign_image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=250&fit=crop&auto=format'
+      last_updated: '2025-10-02T10:30:00Z',
+      campaign_image: 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573'
     },
     {
       campaign_id: '2',
       campaign_name: 'Holiday Luxury Campaign',
       campaign_status: 'paused',
       campaign_type: 'email',
-      start_date: '2024-11-15',
-      end_date: '2025-01-16',
-      duration_days: 62,
+      start_date: '2025-08-20',
+      end_date: '2025-09-20',
+      duration_days: 30,
       avg_click_rate: 2.9,
       total_reach: 198000,
       total_engagement: 18200,
@@ -137,17 +147,17 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
       total_emails_sent: 1500,
       performance_tier: 'good',
       trend_direction: 'stable',
-      last_updated: '2024-12-18T15:45:00Z',
-      campaign_image: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=400&h=250&fit=crop&auto=format'
+      last_updated: '2025-10-01T15:45:00Z',
+      campaign_image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=250&fit=crop&auto=format'
     },
     {
       campaign_id: '3',
-      campaign_name: 'Summer Elegance 2025',
+      campaign_name: 'Winter Elegance Collection',
       campaign_status: 'draft',
       campaign_type: 'social',
-      start_date: '2025-03-01',
-      end_date: '2025-05-01',
-      duration_days: 0,
+      start_date: '2025-09-25',
+      end_date: '2025-10-25',
+      duration_days: 31,
       avg_click_rate: 2.9,
       total_reach: 0,
       total_engagement: 0,
@@ -155,8 +165,98 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
       total_emails_sent: 1500,
       performance_tier: 'standard',
       trend_direction: 'stable',
-      last_updated: '2024-12-17T09:20:00Z',
-      campaign_image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&h=250&fit=crop&auto=format'
+      last_updated: '2025-09-30T09:20:00Z',
+      campaign_image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=250&fit=crop&auto=format'
+    },
+    {
+      campaign_id: '4',
+      campaign_name: 'Winter Wonderland Exclusive',
+      campaign_status: 'active',
+      campaign_type: 'social',
+      start_date: '2025-09-10',
+      end_date: '2025-10-10',
+      duration_days: 31,
+      avg_click_rate: 3.8,
+      total_reach: 312000,
+      total_engagement: 28900,
+      participating_retailers_count: 8,
+      total_emails_sent: 2200,
+      performance_tier: 'high',
+      trend_direction: 'up',
+      last_updated: '2025-10-02T14:15:00Z',
+      campaign_image: 'https://media.rolex.com/image/upload/v1725888690/rolexcom/collection/configurator/config-launcher/2024/config-launcher-watches-day-date-m228235-0055_2403jva_002.jpg'
+    },
+    {
+      campaign_id: '5',
+      campaign_name: 'Artisan Heritage Collection',
+      campaign_status: 'completed',
+      campaign_type: 'social',
+      start_date: '2025-08-15',
+      end_date: '2025-09-15',
+      duration_days: 31,
+      avg_click_rate: 2.1,
+      total_reach: 156000,
+      total_engagement: 12400,
+      participating_retailers_count: 4,
+      total_emails_sent: 0,
+      performance_tier: 'good',
+      trend_direction: 'down',
+      last_updated: '2025-09-15T18:30:00Z',
+      campaign_image: 'http://cdn.shopify.com/s/files/1/0397/2638/3257/files/Rolex-watches-for-man-Australia_480x480.jpg?v=1678314745'
+    },
+    {
+      campaign_id: '6',
+      campaign_name: 'Timeless Elegance Launch',
+      campaign_status: 'active',
+      campaign_type: 'email',
+      start_date: '2025-09-05',
+      end_date: '2025-10-05',
+      duration_days: 30,
+      avg_click_rate: 3.2,
+      total_reach: 245000,
+      total_engagement: 21800,
+      participating_retailers_count: 6,
+      total_emails_sent: 1800,
+      performance_tier: 'high',
+      trend_direction: 'up',
+      last_updated: '2025-10-02T11:45:00Z',
+      campaign_image: 'https://lapatiala.com/wp-content/uploads/2024/12/Why-Is-Rolex-So-Expensive.jpg'
+    },
+    {
+      campaign_id: '7',
+      campaign_name: 'Modern Minimalist Series',
+      campaign_status: 'completed',
+      campaign_type: 'social',
+      start_date: '2025-08-10',
+      end_date: '2025-09-10',
+      duration_days: 31,
+      avg_click_rate: 2.5,
+      total_reach: 189000,
+      total_engagement: 15200,
+      participating_retailers_count: 7,
+      total_emails_sent: 1200,
+      performance_tier: 'standard',
+      trend_direction: 'stable',
+      last_updated: '2025-09-10T16:20:00Z',
+      campaign_image: 'https://images.unsplash.com/photo-1594534475808-b18fc33b045e?w=400&h=250&fit=crop&auto=format'
+    },
+    {
+      campaign_id: '8',
+      campaign_name: 'Luxury Lifestyle Showcase',
+      campaign_status: 'active',
+      campaign_type: 'social',
+      start_date: '2025-09-01',
+      end_date: '2025-10-01',
+      duration_days: 30,
+      avg_click_rate: 3.1,
+      total_reach: 267000,
+      total_engagement: 22300,
+      participating_retailers_count: 9,
+      total_emails_sent: 0,
+      performance_tier: 'high',
+      trend_direction: 'up',
+      last_updated: '2025-10-01T13:10:00Z',
+      campaign_image: 'https://blog.luxehouze.com/wp-content/uploads/2024/02/crop-16-fotor-20230714172425-1024x576.jpg'
     }
   ]
 
@@ -206,34 +306,27 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
       const matchesSearch = !filters.search || campaign.campaign_name.toLowerCase().includes(filters.search.toLowerCase())
       const matchesStatus = filters.status === 'all' || campaign.campaign_status === filters.status
       const matchesType = filters.type === 'all' || campaign.campaign_type === filters.type
-      const matchesPerformance = filters.performanceTier === 'all' || campaign.performance_tier === filters.performanceTier
       
       let matchesDateRange = true
       if (filters.dateRange.from || filters.dateRange.to) {
         const campaignDate = new Date(campaign.start_date)
-        if (filters.dateRange.from && campaignDate < filters.dateRange.from) matchesDateRange = false
-        if (filters.dateRange.to && campaignDate > filters.dateRange.to) matchesDateRange = false
+        console.log('📅 Filtering campaign:', campaign.campaign_name, 'Date:', campaignDate, 'Range:', filters.dateRange)
+        if (filters.dateRange.from && campaignDate < filters.dateRange.from) {
+          console.log('📅 Campaign before start date')
+          matchesDateRange = false
+        }
+        if (filters.dateRange.to && campaignDate > filters.dateRange.to) {
+          console.log('📅 Campaign after end date')
+          matchesDateRange = false
+        }
+        console.log('📅 Campaign matches date range:', matchesDateRange)
       }
       
-      return matchesSearch && matchesStatus && matchesType && matchesPerformance && matchesDateRange
+      return matchesSearch && matchesStatus && matchesType && matchesDateRange
     })
     .sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return a.campaign_name.localeCompare(b.campaign_name)
-        case 'name-desc':
-          return b.campaign_name.localeCompare(a.campaign_name)
-        case 'performance':
-          const performanceOrder = { high: 3, good: 2, standard: 1 }
-          return performanceOrder[b.performance_tier] - performanceOrder[a.performance_tier]
-        case 'start-date':
-          return new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-        case 'engagement':
-          return b.total_engagement - a.total_engagement
-        case 'updated':
-        default:
-          return new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
-      }
+      // Default sort by last updated (newest first)
+      return new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
     })
 
   if (loading) {
@@ -258,8 +351,9 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
   }
 
   const handleCampaignClick = (campaign: Campaign) => {
-    // Handle campaign click - could navigate to detail view
-    console.log('Campaign clicked:', campaign.campaign_name)
+    if (onCampaignClick) {
+      onCampaignClick(campaign.campaign_id)
+    }
   }
 
   return (
@@ -268,8 +362,6 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
       <CampaignFiltersAndViews
         filters={filters}
         onFiltersChange={setFilters}
-        sortBy={sortBy}
-        onSortChange={setSortBy}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         totalResults={filteredAndSortedCampaigns.length}
@@ -286,12 +378,16 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
           {filteredAndSortedCampaigns.map((campaign) => {
           console.log('🔍 RENDERING CAMPAIGN:', campaign.campaign_name, 'HAS IMAGE:', !!campaign.campaign_image, 'IMAGE URL:', campaign.campaign_image)
           return (
-          <Card key={campaign.campaign_id} className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0">
+          <Card 
+            key={campaign.campaign_id} 
+            className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0 flex flex-col h-full"
+            onClick={() => handleCampaignClick(campaign)}
+          >
             {/* Campaign Image */}
             {(campaign.campaign_image || true) && (
-              <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+              <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
                 <img 
-                  src={campaign.campaign_image || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=250&fit=crop&auto=format'} 
+                  src={campaign.campaign_image || 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573'} 
                   alt={campaign.campaign_name}
                   className="w-full h-full object-cover transition-transform hover:scale-105"
                 />
@@ -323,7 +419,10 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
             <CardHeader className="pb-3 px-6 pt-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <CardTitle className="text-lg mb-2">{campaign.campaign_name}</CardTitle>
+                  {/* Reserved space for campaign title - ensures consistent height */}
+                  <div className="h-14 mb-2">
+                    <CardTitle className="text-lg leading-tight">{campaign.campaign_name}</CardTitle>
+                  </div>
                   {!campaign.campaign_image && (
                     <div className="flex items-center gap-2 mb-2">
                       <Badge className={getStatusColor(campaign.campaign_status)}>
@@ -350,7 +449,7 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
               </div>
             </CardHeader>
             
-            <CardContent className="pt-0 px-6 pb-6">
+            <CardContent className="pt-0 px-6 pb-6 flex flex-col h-full">
               {/* Key Metrics - Only Ayrshare available data */}
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
@@ -358,7 +457,11 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
                   <p className="text-xl font-bold">{campaign.avg_click_rate}%</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Performance</p>
+                  <p className="text-sm text-gray-600">
+                    {campaign.campaign_type === 'email' ? 'Email Performance:' : 
+                     campaign.campaign_type === 'social' ? 'Platform Performance:' : 
+                     'Campaign Performance:'}
+                  </p>
                   <Badge className={getPerformanceTierColor(campaign.performance_tier)}>
                     {campaign.performance_tier}
                   </Badge>
@@ -366,7 +469,7 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
               </div>
 
               {/* Performance Metrics */}
-              <div className="space-y-3 mb-4">
+              <div className="space-y-3 flex-grow">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Eye className="h-4 w-4 text-blue-600" />
@@ -402,15 +505,17 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
                 )}
               </div>
 
-              {/* Trend and Date */}
-              <div className="flex items-center justify-between pt-3 border-t">
-                <div className="flex items-center gap-2">
-                  {getTrendIcon(campaign.trend_direction)}
-                  <span className="text-sm text-gray-600">Trending {campaign.trend_direction}</span>
-                </div>
-                <div className="flex items-center gap-1 text-sm text-gray-600">
-                  <Calendar className="h-3 w-3" />
-                  {formatDate(campaign.start_date)}
+              {/* Performance Grading - Aligned at bottom */}
+              <div className="mt-auto">
+                <div className="flex items-center justify-between border-t mt-3 pt-2">
+                  <div className="flex items-center gap-2">
+                    {getTrendIcon(campaign.trend_direction)}
+                    <span className="text-sm text-gray-600">Trending {campaign.trend_direction}</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-sm text-gray-600">
+                    <Calendar className="h-3 w-3" />
+                    {formatDate(campaign.start_date)}
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -429,7 +534,7 @@ export default function CampaignCardView({ role, retailerId }: CampaignCardViewP
             </div>
             <h3 className="text-lg font-medium mb-2">No campaigns found</h3>
             <p className="text-gray-600 mb-4">
-              {filters.search || filters.status !== 'all' || filters.type !== 'all' || filters.performanceTier !== 'all'
+              {filters.search || filters.status !== 'all' || filters.type !== 'all' || filters.dateRange.from || filters.dateRange.to
                 ? 'Try adjusting your search or filters' 
                 : 'No campaigns available for this view'
               }

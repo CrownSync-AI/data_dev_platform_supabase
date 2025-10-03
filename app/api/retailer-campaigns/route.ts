@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
     const retailerId = searchParams.get('retailerId')
     const status = searchParams.get('status')
     const type = searchParams.get('type')
-    const performanceTier = searchParams.get('performanceTier')
     const search = searchParams.get('search')
     const limit = parseInt(searchParams.get('limit') || '20')
     const offset = parseInt(searchParams.get('offset') || '0')
@@ -28,7 +27,7 @@ export async function GET(request: NextRequest) {
         type: 'mixed', 
         tier: 'high', 
         trend: 'up',
-        image: 'https://images.unsplash.com/photo-1587836374828-4dbafa94cf0e?w=400&h=250&fit=crop&auto=format'
+        image: 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573'
       },
       { 
         name: 'Holiday Luxury Campaign', 
@@ -36,7 +35,7 @@ export async function GET(request: NextRequest) {
         type: 'social', 
         tier: 'good', 
         trend: 'stable',
-        image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400&h=250&fit=crop&auto=format'
+        image: 'https://images.unsplash.com/photo-1611652022419-a9419f74343d?w=400&h=250&fit=crop&auto=format'
       },
       { 
         name: 'Summer Elegance 2025', 
@@ -44,7 +43,7 @@ export async function GET(request: NextRequest) {
         type: 'email', 
         tier: 'standard', 
         trend: 'stable',
-        image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=250&fit=crop&auto=format'
+        image: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=250&fit=crop&auto=format'
       },
       { 
         name: 'Winter Wonderland Exclusive', 
@@ -52,7 +51,7 @@ export async function GET(request: NextRequest) {
         type: 'mixed', 
         tier: 'high', 
         trend: 'up',
-        image: 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?w=400&h=250&fit=crop&auto=format'
+        image: 'https://media.rolex.com/image/upload/v1725888690/rolexcom/collection/configurator/config-launcher/2024/config-launcher-watches-day-date-m228235-0055_2403jva_002.jpg'
       },
       { 
         name: 'Artisan Heritage Collection', 
@@ -60,7 +59,7 @@ export async function GET(request: NextRequest) {
         type: 'social', 
         tier: 'good', 
         trend: 'down',
-        image: 'https://images.unsplash.com/photo-1608042314453-ae338d80c427?w=400&h=250&fit=crop&auto=format'
+        image: 'http://cdn.shopify.com/s/files/1/0397/2638/3257/files/Rolex-watches-for-man-Australia_480x480.jpg?v=1678314745'
       },
       { 
         name: 'Timeless Elegance Launch', 
@@ -68,7 +67,7 @@ export async function GET(request: NextRequest) {
         type: 'email', 
         tier: 'high', 
         trend: 'up',
-        image: 'https://images.unsplash.com/photo-1614164185128-e4ec99c436d7?w=400&h=250&fit=crop&auto=format'
+        image: 'https://lapatiala.com/wp-content/uploads/2024/12/Why-Is-Rolex-So-Expensive.jpg'
       },
       { 
         name: 'Modern Minimalist Series', 
@@ -102,8 +101,20 @@ export async function GET(request: NextRequest) {
         campaign_status: template.status,
         campaign_type: template.type,
         campaign_image: template.image,
-        start_date: new Date(2024, 10 + Math.floor(Math.random() * 3), Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0],
-        end_date: template.status === 'completed' ? new Date(2024, 11, Math.floor(Math.random() * 28) + 1).toISOString().split('T')[0] : undefined,
+        start_date: (() => {
+          // Generate dates within last 90 days
+          const today = new Date()
+          const daysAgo = Math.floor(Math.random() * 90) // 0-90 days ago
+          const startDate = new Date(today.getTime() - daysAgo * 24 * 60 * 60 * 1000)
+          return startDate.toISOString().split('T')[0]
+        })(),
+        end_date: template.status === 'completed' ? (() => {
+          // For completed campaigns, end date is between start date and today
+          const today = new Date()
+          const daysAgo = Math.floor(Math.random() * 30) // 0-30 days ago
+          const endDate = new Date(today.getTime() - daysAgo * 24 * 60 * 60 * 1000)
+          return endDate.toISOString().split('T')[0]
+        })() : undefined,
         retailer_id: retailerId,
         platform_performance: {
           facebook: {
@@ -170,7 +181,7 @@ export async function GET(request: NextRequest) {
         const socialCampaign = {
           ...campaign,
           campaign_id: `${campaign.campaign_id}-social`,
-          campaign_name: `${campaign.campaign_name} (Social)`,
+          campaign_name: campaign.campaign_name, // Remove (Social) suffix
           campaign_type: 'social',
           // Keep platform performance data for social
           platform_performance: campaign.platform_performance
@@ -180,7 +191,7 @@ export async function GET(request: NextRequest) {
         const emailCampaign = {
           ...campaign,
           campaign_id: `${campaign.campaign_id}-email`,
-          campaign_name: `${campaign.campaign_name} (Email)`,
+          campaign_name: campaign.campaign_name, // Remove (Email) suffix
           campaign_type: 'email',
           // Remove platform performance for email campaigns
           platform_performance: {},
@@ -224,10 +235,6 @@ export async function GET(request: NextRequest) {
 
     if (type && type !== 'all') {
       filteredCampaigns = filteredCampaigns.filter(c => c.campaign_type === type)
-    }
-
-    if (performanceTier && performanceTier !== 'all') {
-      filteredCampaigns = filteredCampaigns.filter(c => c.performance_tier === performanceTier)
     }
 
     if (search) {

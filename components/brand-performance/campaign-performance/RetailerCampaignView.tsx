@@ -9,9 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Search, TrendingUp, TrendingDown, Minus, Calendar, MoreHorizontal, ArrowLeft } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import PlatformSpecificCharts from '../campaign-performance-new/PlatformSpecificCharts'
-import AllPlatformsTrendChart from '../campaign-performance-new/AllPlatformsTrendChart'
-import PlatformComparisonCharts from '../campaign-performance-new/PlatformComparisonCharts'
+import PlatformSpecificCharts from './PlatformSpecificCharts'
+import AllPlatformsTrendChart from './AllPlatformsTrendChart'
+import PlatformComparisonCharts from './PlatformComparisonCharts'
 import CampaignFiltersAndViews from './CampaignFiltersAndViews'
 import CampaignListView from './CampaignListView'
 
@@ -100,11 +100,9 @@ export default function RetailerCampaignView() {
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null)
   const [selectedPlatform, setSelectedPlatform] = useState<string>('all')
   const [viewMode, setViewMode] = useState<'card' | 'list'>('card')
-  const [sortBy, setSortBy] = useState('updated')
   const [filters, setFilters] = useState({
     status: 'all',
     type: 'all',
-    performanceTier: 'all',
     dateRange: { from: undefined, to: undefined },
     search: ''
   })
@@ -152,7 +150,6 @@ export default function RetailerCampaignView() {
       if (filters.search) params.append('search', filters.search)
       if (filters.status !== 'all') params.append('status', filters.status)
       if (filters.type !== 'all') params.append('type', filters.type)
-      if (filters.performanceTier !== 'all') params.append('performanceTier', filters.performanceTier)
       
       const response = await fetch(`/api/retailer-campaigns?${params}`)
       
@@ -211,6 +208,65 @@ export default function RetailerCampaignView() {
     })
   }
 
+  const getPlatformLogo = (platform: string) => {
+    switch (platform.toLowerCase()) {
+      case 'facebook':
+        return (
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" 
+            alt="Facebook"
+            className="w-5 h-5 object-contain"
+          />
+        )
+      case 'instagram':
+        return (
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" 
+            alt="Instagram"
+            className="w-5 h-5 object-contain"
+          />
+        )
+      case 'linkedin':
+        return (
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
+            alt="LinkedIn"
+            className="w-5 h-5 object-contain"
+          />
+        )
+      case 'twitter':
+      case 'x':
+        return (
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg" 
+            alt="X"
+            className="w-5 h-5 object-contain"
+          />
+        )
+      default:
+        return (
+          <div className="w-5 h-5 rounded bg-gray-500 flex items-center justify-center">
+            <span className="text-white text-xs font-bold">?</span>
+          </div>
+        )
+    }
+  }
+
+  const getPlatformColor = (platform: string) => {
+    switch (platform.toLowerCase()) {
+      case 'facebook': return '#1877F2'
+      case 'instagram': return '#E4405F'
+      case 'linkedin': return '#0A66C2'
+      case 'twitter':
+      case 'x': return '#000000'
+      default: return '#6B7280'
+    }
+  }
+
+  const getPlatformName = (platform: string) => {
+    return platform.toLowerCase() === 'twitter' ? 'X' : platform.charAt(0).toUpperCase() + platform.slice(1)
+  }
+
   const handleCampaignClick = (campaignId: string) => {
     setSelectedCampaignId(campaignId)
   }
@@ -224,41 +280,27 @@ export default function RetailerCampaignView() {
       const matchesSearch = !filters.search || campaign.campaign_name.toLowerCase().includes(filters.search.toLowerCase())
       const matchesStatus = filters.status === 'all' || campaign.campaign_status === filters.status
       const matchesType = filters.type === 'all' || campaign.campaign_type === filters.type
-      const matchesPerformance = filters.performanceTier === 'all' || campaign.performance_tier === filters.performanceTier
       
       let matchesDateRange = true
       if (filters.dateRange.from || filters.dateRange.to) {
         const campaignDate = new Date(campaign.start_date)
-        if (filters.dateRange.from && campaignDate < filters.dateRange.from) matchesDateRange = false
-        if (filters.dateRange.to && campaignDate > filters.dateRange.to) matchesDateRange = false
+        console.log('📅 Filtering retailer campaign:', campaign.campaign_name, 'Date:', campaignDate, 'Range:', filters.dateRange)
+        if (filters.dateRange.from && campaignDate < filters.dateRange.from) {
+          console.log('📅 Campaign before start date')
+          matchesDateRange = false
+        }
+        if (filters.dateRange.to && campaignDate > filters.dateRange.to) {
+          console.log('📅 Campaign after end date')
+          matchesDateRange = false
+        }
+        console.log('📅 Campaign matches date range:', matchesDateRange)
       }
       
-      return matchesSearch && matchesStatus && matchesType && matchesPerformance && matchesDateRange
+      return matchesSearch && matchesStatus && matchesType && matchesDateRange
     })
     .sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return a.campaign_name.localeCompare(b.campaign_name)
-        case 'name-desc':
-          return b.campaign_name.localeCompare(a.campaign_name)
-        case 'performance':
-          const performanceOrder = { high: 3, good: 2, standard: 1 }
-          return performanceOrder[b.performance_tier] - performanceOrder[a.performance_tier]
-        case 'start-date':
-          return new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
-        case 'engagement':
-          // Calculate total engagement for social campaigns
-          const getEngagement = (campaign: RetailerCampaign) => {
-            if (campaign.campaign_type === 'social') {
-              return Object.values(campaign.platform_performance).reduce((total, platform) => total + platform.engagement, 0)
-            }
-            return campaign.email_metrics?.emails_clicked || 0
-          }
-          return getEngagement(b) - getEngagement(a)
-        case 'updated':
-        default:
-          return new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
-      }
+      // Default sort by last updated (newest first)
+      return new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime()
     })
 
   // Show detailed campaign view
@@ -296,7 +338,10 @@ export default function RetailerCampaignView() {
               {Object.entries(campaign.platform_performance).map(([platform, data]) => (
                 <Card key={platform}>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg capitalize">{platform}</CardTitle>
+                    <div className="flex items-center gap-2">
+                      {getPlatformLogo(platform)}
+                      <CardTitle className="text-lg">{getPlatformName(platform)}</CardTitle>
+                    </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
@@ -557,8 +602,6 @@ export default function RetailerCampaignView() {
           <CampaignFiltersAndViews
             filters={filters}
             onFiltersChange={setFilters}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             totalResults={filteredAndSortedCampaigns.length}
@@ -575,12 +618,12 @@ export default function RetailerCampaignView() {
               {filteredAndSortedCampaigns.map((campaign) => (
               <Card 
                 key={campaign.campaign_id} 
-                className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0"
+                className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0 flex flex-col h-full"
                 onClick={() => handleCampaignClick(campaign.campaign_id)}
               >
                 {/* Campaign Image */}
                 {campaign.campaign_image && (
-                  <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+                  <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
                     <img 
                       src={campaign.campaign_image} 
                       alt={campaign.campaign_name}
@@ -615,7 +658,10 @@ export default function RetailerCampaignView() {
                 <CardHeader className="pb-3 px-6 pt-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-lg mb-2">{campaign.campaign_name}</CardTitle>
+                      {/* Reserved space for campaign title - ensures consistent height */}
+                      <div className="h-14 mb-2">
+                        <CardTitle className="text-lg leading-tight">{campaign.campaign_name}</CardTitle>
+                      </div>
                       {!campaign.campaign_image && (
                         <div className="flex items-center gap-2 mb-2">
                           <Badge className={getStatusColor(campaign.campaign_status)}>
@@ -643,9 +689,9 @@ export default function RetailerCampaignView() {
                   </div>
                 </CardHeader>
                 
-                <CardContent className="pt-0 px-6 pb-6">
+                <CardContent className="pt-0 px-6 pb-6 flex flex-col h-full">
                   {/* Type-Specific Performance Summary */}
-                  <div className="space-y-3 mb-4">
+                  <div className="space-y-3 flex-grow">
                     {campaign.campaign_type === 'social' && (
                       <>
                         <div className="text-sm font-medium text-gray-700">Platform Performance:</div>
@@ -694,8 +740,9 @@ export default function RetailerCampaignView() {
                     )}
                   </div>
 
-                  {/* Performance Tier and Trend */}
-                  <div className="flex items-center justify-between pt-3 border-t">
+                  {/* Performance Tier and Trend - Aligned at bottom */}
+                  <div className="mt-auto">
+                    <div className="flex items-center justify-between border-t mt-3 pt-2">
                     <div className="flex items-center gap-2">
                       <Badge className={getPerformanceTierColor(campaign.performance_tier)}>
                         {campaign.performance_tier} performer
@@ -705,6 +752,7 @@ export default function RetailerCampaignView() {
                     <div className="flex items-center gap-1 text-sm text-gray-600">
                       <Calendar className="h-3 w-3" />
                       {formatDate(campaign.start_date)}
+                    </div>
                     </div>
                   </div>
                 </CardContent>
@@ -722,7 +770,7 @@ export default function RetailerCampaignView() {
                 </div>
                 <h3 className="text-lg font-medium mb-2">No campaigns found</h3>
                 <p className="text-gray-600 mb-4">
-                  {filters.search || filters.status !== 'all' || filters.type !== 'all' || filters.performanceTier !== 'all'
+                  {filters.search || filters.status !== 'all' || filters.type !== 'all' || filters.dateRange.from || filters.dateRange.to
                     ? 'Try adjusting your search or filters' 
                     : 'This retailer has no campaigns yet'
                   }

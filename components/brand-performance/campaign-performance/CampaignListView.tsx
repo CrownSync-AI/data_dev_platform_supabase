@@ -48,13 +48,43 @@ interface CampaignListViewProps {
 }
 
 export default function CampaignListView({ campaigns, onCampaignClick }: CampaignListViewProps) {
-  const getStatusColor = (status: string) => {
+  const getStatusIndicator = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'paused': return 'bg-yellow-100 text-yellow-800'
-      case 'completed': return 'bg-blue-100 text-blue-800'
-      case 'draft': return 'bg-gray-100 text-gray-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'active': 
+        return (
+          <div className="flex items-center gap-1 text-sm">
+            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+            <span className="text-green-700 font-medium">Active</span>
+          </div>
+        )
+      case 'completed': 
+        return (
+          <div className="flex items-center gap-1 text-sm">
+            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+            <span className="text-blue-700 font-medium">Complete</span>
+          </div>
+        )
+      case 'paused': 
+        return (
+          <div className="flex items-center gap-1 text-sm">
+            <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+            <span className="text-yellow-700 font-medium">Paused</span>
+          </div>
+        )
+      case 'draft': 
+        return (
+          <div className="flex items-center gap-1 text-sm">
+            <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+            <span className="text-gray-700 font-medium">Draft</span>
+          </div>
+        )
+      default: 
+        return (
+          <div className="flex items-center gap-1 text-sm">
+            <div className="w-2 h-2 rounded-full bg-gray-500"></div>
+            <span className="text-gray-700 font-medium">Unknown</span>
+          </div>
+        )
     }
   }
 
@@ -98,41 +128,43 @@ export default function CampaignListView({ campaigns, onCampaignClick }: Campaig
           className="p-4 hover:shadow-md transition-shadow cursor-pointer"
           onClick={() => onCampaignClick(campaign)}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between gap-4">
             {/* Left Section - Campaign Info */}
-            <div className="flex items-center space-x-4 flex-1">
-              {/* Campaign Image */}
-              {campaign.campaign_image && (
-                <div className="w-16 h-12 rounded-md overflow-hidden flex-shrink-0">
-                  <img 
-                    src={campaign.campaign_image} 
-                    alt={campaign.campaign_name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              )}
+            <div className="flex items-start space-x-4 flex-1">
+              {/* Campaign Image with Status Below */}
+              <div className="flex-shrink-0">
+                {campaign.campaign_image && (
+                  <div className="w-20 h-14 rounded-md overflow-hidden mb-2">
+                    <img 
+                      src={campaign.campaign_image} 
+                      alt={campaign.campaign_name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                {/* Status Indicator Below Image */}
+                {getStatusIndicator(campaign.campaign_status)}
+              </div>
 
               {/* Campaign Details */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2 mb-1">
-                  <h3 className="font-semibold text-gray-900 truncate">
-                    {campaign.campaign_name}
-                  </h3>
-                  {getTrendIcon(campaign.trend_direction)}
-                </div>
+                {/* Campaign Title */}
+                <h3 className="font-semibold text-gray-900 truncate mb-2">
+                  {campaign.campaign_name}
+                </h3>
                 
-                <div className="flex items-center space-x-2 mb-2">
-                  <Badge className={getStatusColor(campaign.campaign_status)}>
-                    {campaign.campaign_status}
-                  </Badge>
+                {/* Campaign Type Between Title and Trend */}
+                <div className="flex items-center space-x-3 mb-2">
                   <Badge className={getTypeColor(campaign.campaign_type)}>
                     {campaign.campaign_type}
                   </Badge>
-                  <Badge className={getPerformanceColor(campaign.performance_tier)}>
-                    {campaign.performance_tier} performer
-                  </Badge>
+                  <div className="flex items-center space-x-1">
+                    {getTrendIcon(campaign.trend_direction)}
+                    <span className="text-sm text-gray-600">Trending {campaign.trend_direction}</span>
+                  </div>
                 </div>
 
+                {/* Campaign Meta Info */}
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <div className="flex items-center space-x-1">
                     <Calendar className="h-4 w-4" />
@@ -151,43 +183,43 @@ export default function CampaignListView({ campaigns, onCampaignClick }: Campaig
               </div>
             </div>
 
-            {/* Middle Section - Key Metrics */}
-            <div className="hidden md:flex items-center space-x-6 px-6">
+            {/* Right Section - Key Metrics */}
+            <div className="hidden md:flex items-start px-4 py-2">
               {campaign.campaign_type === 'email' || campaign.email_metrics ? (
                 <>
-                  <div className="text-center">
-                    <div className="flex items-center space-x-1 text-sm text-gray-500 mb-1">
+                  <div className="text-center w-20">
+                    <div className="flex items-center justify-center space-x-1 text-sm text-gray-500 mb-2">
                       <Mail className="h-4 w-4" />
                       <span>Emails</span>
                     </div>
-                    <div className="font-semibold">
+                    <div className="font-bold text-lg text-gray-900">
                       {formatNumber(campaign.total_emails_sent || campaign.email_metrics?.emails_sent || 0)}
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-sm text-gray-500 mb-1">Open Rate</div>
-                    <div className="font-semibold">
+                  <div className="text-center w-20 ml-8">
+                    <div className="text-sm text-gray-500 mb-2">Open Rate</div>
+                    <div className="font-bold text-lg text-gray-900">
                       {campaign.email_metrics?.open_rate?.toFixed(1) || campaign.avg_click_rate?.toFixed(1) || '0.0'}%
                     </div>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="text-center">
-                    <div className="flex items-center space-x-1 text-sm text-gray-500 mb-1">
+                  <div className="text-center w-20">
+                    <div className="flex items-center justify-center space-x-1 text-sm text-gray-500 mb-2">
                       <Eye className="h-4 w-4" />
                       <span>Reach</span>
                     </div>
-                    <div className="font-semibold">
+                    <div className="font-bold text-lg text-gray-900">
                       {formatNumber(campaign.total_reach || 0)}
                     </div>
                   </div>
-                  <div className="text-center">
-                    <div className="flex items-center space-x-1 text-sm text-gray-500 mb-1">
+                  <div className="text-center w-20 ml-8">
+                    <div className="flex items-center justify-center space-x-1 text-sm text-gray-500 mb-2">
                       <Share2 className="h-4 w-4" />
                       <span>Engagement</span>
                     </div>
-                    <div className="font-semibold">
+                    <div className="font-bold text-lg text-gray-900">
                       {formatNumber(campaign.total_engagement || 0)}
                     </div>
                   </div>
@@ -195,8 +227,8 @@ export default function CampaignListView({ campaigns, onCampaignClick }: Campaig
               )}
             </div>
 
-            {/* Right Section - Actions */}
-            <div className="flex items-center space-x-2">
+            {/* Actions */}
+            <div className="flex items-start space-x-2 pt-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm">

@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 
 export type CalendarProps = React.ComponentProps<typeof DateCalendar>;
 
-function Calendar({
+const Calendar = React.memo(({
   className,
   ...props
-}: CalendarProps) {
+}: CalendarProps) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <DateCalendar
@@ -18,7 +18,7 @@ function Calendar({
       />
     </LocalizationProvider>
   );
-}
+});
 
 Calendar.displayName = "Calendar";
 

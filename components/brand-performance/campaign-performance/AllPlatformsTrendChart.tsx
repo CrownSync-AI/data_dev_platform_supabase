@@ -70,23 +70,63 @@ export default function AllPlatformsTrendChart({
     }
   }
 
-  const getYAxisLabel = (metric: MetricType): string => {
-    switch (metric) {
-      case 'impressions': return 'Impressions'
-      case 'reach': return 'Reach'
-      case 'engagement': return 'Engagement Rate (%)'
-      default: return 'Engagement Rate (%)'
+  const getPlatformLogo = (platform: string) => {
+    switch (platform.toLowerCase()) {
+      case 'facebook':
+        return (
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" 
+            alt="Facebook"
+            className="w-4 h-4 object-contain"
+          />
+        )
+      case 'instagram':
+        return (
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" 
+            alt="Instagram"
+            className="w-4 h-4 object-contain"
+          />
+        )
+      case 'linkedin':
+        return (
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
+            alt="LinkedIn"
+            className="w-4 h-4 object-contain"
+          />
+        )
+      case 'twitter':
+      case 'x':
+        return (
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg" 
+            alt="X"
+            className="w-4 h-4 object-contain"
+          />
+        )
+      default:
+        return (
+          <div className="w-4 h-4 rounded bg-gray-500 flex items-center justify-center">
+            <span className="text-white text-xs font-bold">?</span>
+          </div>
+        )
     }
   }
 
-  // Morandi color palette - muted, sophisticated tones
+  const getPlatformName = (platform: string) => {
+    return platform.toLowerCase() === 'twitter' ? 'X' : platform.charAt(0).toUpperCase() + platform.slice(1)
+  }
+
+  // Platform colors - differentiated for Facebook and LinkedIn
   const platformColors = {
-    facebook: '#B8A082',    // Muted warm beige
-    instagram: '#A8B5A0',   // Sage green
-    twitter: '#9BB5C4',     // Dusty blue
-    linkedin: '#C4A484',    // Warm taupe
-    google: '#D4B896',      // Light camel (if needed)
-    default: '#A8A8A8'      // Neutral gray
+    facebook: '#87CEEB',    // Facebook sky blue (much lighter)
+    instagram: '#E4405F',   // Instagram pink
+    twitter: '#000000',     // X black
+    x: '#000000',           // X black
+    linkedin: '#0A66C2',    // LinkedIn darker blue
+    google: '#4285F4',      // Google blue
+    default: '#6B7280'      // Gray
   }
 
   const trendData = generateTrendData()
@@ -170,10 +210,7 @@ export default function AllPlatformsTrendChart({
                   name.charAt(0).toUpperCase() + name.slice(1)
                 ]}
               />
-              <Legend 
-                wrapperStyle={{ paddingTop: '20px' }}
-                iconType="line"
-              />
+              <Legend content={() => null} />
               
               {/* Render lines for each platform */}
               {Object.keys(platformData).map((platform) => (
@@ -181,15 +218,29 @@ export default function AllPlatformsTrendChart({
                   key={platform}
                   type="monotone"
                   dataKey={platform}
-                  stroke={platformColors[platform as keyof typeof platformColors] || '#6366F1'}
+                  stroke={platformColors[platform as keyof typeof platformColors] || platformColors.default}
                   strokeWidth={2}
                   dot={{ r: 3, strokeWidth: 2 }}
                   activeDot={{ r: 5, strokeWidth: 2 }}
-                  name={platform.charAt(0).toUpperCase() + platform.slice(1)}
+                  name={getPlatformName(platform)}
                 />
               ))}
             </LineChart>
           </ResponsiveContainer>
+        </div>
+        
+        {/* Custom Legend with Platform Logos */}
+        <div className="mt-4 flex flex-wrap justify-center gap-4">
+          {Object.keys(platformData).map((platform) => (
+            <div key={platform} className="flex items-center gap-2">
+              {getPlatformLogo(platform)}
+              <div 
+                className="w-4 h-0.5 rounded"
+                style={{ backgroundColor: platformColors[platform as keyof typeof platformColors] || platformColors.default }}
+              ></div>
+              <span className="text-sm text-gray-600">{getPlatformName(platform)}</span>
+            </div>
+          ))}
         </div>
         
         {/* Insights Panel */}

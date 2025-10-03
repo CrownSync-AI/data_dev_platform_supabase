@@ -69,7 +69,10 @@ export default function CampaignPerformancePage() {
 
         {/* Brand Tab Content */}
         <TabsContent value="brand" className="space-y-6">
-          <CampaignCardView role="brand" />
+          <CampaignCardView 
+            role="brand" 
+            onCampaignClick={(campaignId) => setSelectedCampaignId(campaignId)}
+          />
         </TabsContent>
 
         {/* Retailer Tab Content */}

@@ -144,17 +144,17 @@ function getCampaignName(campaignId: string): string {
   const campaignNames: { [key: string]: string } = {
     '1': 'Spring Collection Preview',
     '2': 'Holiday Luxury Campaign',
-    '3': 'Summer Elegance 2025',
+    '3': 'Winter Elegance Collection',
     '4': 'Winter Wonderland Exclusive',
     '5': 'Artisan Heritage Collection',
-    '6': 'Timeless Elegance Launch'
+    '6': 'Timeless Elegance Launch',
+    '7': 'Modern Minimalist Series',
+    '8': 'Luxury Lifestyle Showcase'
   }
   
   const baseName = campaignNames[baseCampaignId] || 'Campaign Details'
   
-  if (campaignId.endsWith('-social')) return `${baseName} (Social)`
-  if (campaignId.endsWith('-email')) return `${baseName} (Email)`
-  
+  // Remove suffixes since UI already shows campaign type
   return baseName
 }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 interface PlatformData {
   facebook?: {
@@ -36,23 +36,66 @@ interface PlatformComparisonChartsProps {
 }
 
 const PLATFORM_COLORS = {
-  facebook: '#1877F2',
-  instagram: '#E4405F', 
+  facebook: '#87CEEB',
+  instagram: '#E4405F',
   linkedin: '#0A66C2',
-  twitter: '#1DA1F2'
+  twitter: '#000000',
+  x: '#000000'
 }
 
-const MORANDI_COLORS = {
-  facebook: '#8B9DC3',
-  instagram: '#DDB7AB',
-  linkedin: '#7FB3D3',
-  twitter: '#A8C8EC'
+const getPlatformLogo = (platform: string) => {
+  switch (platform.toLowerCase()) {
+    case 'facebook':
+      return (
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" 
+          alt="Facebook"
+          className="w-4 h-4 object-contain"
+        />
+      )
+    case 'instagram':
+      return (
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" 
+          alt="Instagram"
+          className="w-4 h-4 object-contain"
+        />
+      )
+    case 'linkedin':
+      return (
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
+          alt="LinkedIn"
+          className="w-4 h-4 object-contain"
+        />
+      )
+    case 'twitter':
+    case 'x':
+      return (
+        <img 
+          src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg" 
+          alt="X"
+          className="w-4 h-4 object-contain"
+        />
+      )
+    default:
+      return (
+        <div className="w-4 h-4 rounded bg-gray-500 flex items-center justify-center">
+          <span className="text-white text-xs font-bold">?</span>
+        </div>
+      )
+  }
 }
 
-export default function PlatformComparisonCharts({ platformData, campaignName }: PlatformComparisonChartsProps) {
+const getPlatformName = (platform: string) => {
+  return platform.toLowerCase() === 'twitter' ? 'X' : platform.charAt(0).toUpperCase() + platform.slice(1)
+}
+
+export default function PlatformComparisonCharts({ platformData }: PlatformComparisonChartsProps) {
   // Transform data for charts
   const chartData = Object.entries(platformData).map(([platform, data]) => ({
-    platform: platform.charAt(0).toUpperCase() + platform.slice(1),
+    platform: getPlatformName(platform),
+    originalPlatform: platform,
     impressions: data.impressions,
     reach: data.reach,
     engagement: data.engagement,
@@ -63,14 +106,14 @@ export default function PlatformComparisonCharts({ platformData, campaignName }:
   const impressionsPieData = chartData.map(item => ({
     name: item.platform,
     value: item.impressions,
-    color: MORANDI_COLORS[item.platform.toLowerCase() as keyof typeof MORANDI_COLORS]
+    color: PLATFORM_COLORS[item.originalPlatform as keyof typeof PLATFORM_COLORS] || '#6B7280'
   }))
 
   // Pie chart data for engagement distribution
   const engagementPieData = chartData.map(item => ({
     name: item.platform,
     value: item.engagement,
-    color: MORANDI_COLORS[item.platform.toLowerCase() as keyof typeof MORANDI_COLORS]
+    color: PLATFORM_COLORS[item.originalPlatform as keyof typeof PLATFORM_COLORS] || '#6B7280'
   }))
 
   const formatNumber = (num: number) => {
@@ -299,10 +342,7 @@ export default function PlatformComparisonCharts({ platformData, campaignName }:
                   <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: MORANDI_COLORS[item.platform.toLowerCase() as keyof typeof MORANDI_COLORS] }}
-                        ></div>
+                        {getPlatformLogo(item.originalPlatform)}
                         <span className="font-medium">{item.platform}</span>
                       </div>
                     </td>

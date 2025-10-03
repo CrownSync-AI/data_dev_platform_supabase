@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+
 import {
   Select,
   SelectContent,
@@ -19,21 +19,51 @@ import {
 import { Calendar } from '@/components/ui/calendar'
 import { Badge } from '@/components/ui/badge'
 import { 
-  Filter, 
   Search, 
   Calendar as CalendarIcon,
   Grid3X3,
   List,
-  SortAsc,
-  SortDesc,
   X
 } from 'lucide-react'
 import { format } from 'date-fns'
 
+// Custom CSS for date range highlighting on calendar
+const calendarStyles = `
+  .date-range-calendar .MuiPickersDay-root {
+    position: relative;
+  }
+  
+  .date-range-calendar .MuiPickersDay-root.Mui-selected {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    font-weight: 600 !important;
+  }
+  
+  .date-range-calendar .MuiPickersDay-root:hover {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+  }
+  
+  .date-range-calendar .MuiPickersDay-root.range-start {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    font-weight: 600 !important;
+  }
+  
+  .date-range-calendar .MuiPickersDay-root.range-end {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    font-weight: 600 !important;
+  }
+  
+  .date-range-calendar .MuiPickersDay-root.in-range {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    color: #1f2937 !important;
+  }
+`
+
 interface FilterState {
   status: string
   type: string
-  performanceTier: string
   dateRange: {
     from: Date | undefined
     to: Date | undefined
@@ -44,8 +74,6 @@ interface FilterState {
 interface CampaignFiltersAndViewsProps {
   filters: FilterState
   onFiltersChange: (filters: FilterState) => void
-  sortBy: string
-  onSortChange: (sort: string) => void
   viewMode: 'card' | 'list'
   onViewModeChange: (mode: 'card' | 'list') => void
   totalResults: number
@@ -54,27 +82,23 @@ interface CampaignFiltersAndViewsProps {
 export default function CampaignFiltersAndViews({
   filters,
   onFiltersChange,
-  sortBy,
-  onSortChange,
   viewMode,
   onViewModeChange,
   totalResults
 }: CampaignFiltersAndViewsProps) {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
-  const updateFilter = (key: keyof FilterState, value: any) => {
-    onFiltersChange({
-      ...filters,
+  const updateFilter = useCallback((key: keyof FilterState, value: any) => {
+    onFiltersChange(prevFilters => ({
+      ...prevFilters,
       [key]: value
-    })
-  }
+    }));
+  }, [onFiltersChange]);
 
   const clearAllFilters = () => {
     onFiltersChange({
       status: 'all',
       type: 'all',
-      performanceTier: 'all',
       dateRange: { from: undefined, to: undefined },
       search: ''
     })
@@ -84,7 +108,6 @@ export default function CampaignFiltersAndViews({
     let count = 0
     if (filters.status !== 'all') count++
     if (filters.type !== 'all') count++
-    if (filters.performanceTier !== 'all') count++
     if (filters.dateRange.from || filters.dateRange.to) count++
     if (filters.search) count++
     return count
@@ -92,47 +115,14 @@ export default function CampaignFiltersAndViews({
 
   const activeFilterCount = getActiveFilterCount()
 
-  const getSortDisplayName = (sortValue: string) => {
-    switch (sortValue) {
-      case 'updated': return 'Last Updated'
-      case 'name': return 'Name A-Z'
-      case 'name-desc': return 'Name Z-A'
-      case 'performance': return 'Performance'
-      case 'start-date': return 'Start Date'
-      case 'engagement': return 'Engagement'
-      default: return 'Sort by'
-    }
-  }
 
-  const toggleSortDirection = () => {
-    const newDirection = sortDirection === 'asc' ? 'desc' : 'asc'
-    setSortDirection(newDirection)
-    
-    // Update the sort value based on direction
-    let newSortValue = sortBy
-    if (sortBy === 'name' && newDirection === 'desc') {
-      newSortValue = 'name-desc'
-    } else if (sortBy === 'name-desc' && newDirection === 'asc') {
-      newSortValue = 'name'
-    }
-    
-    onSortChange(newSortValue)
-  }
 
-  const handleSortChange = (value: string) => {
-    onSortChange(value)
-    // Update direction based on sort type
-    if (value === 'name') {
-      setSortDirection('asc')
-    } else if (value === 'name-desc') {
-      setSortDirection('desc')
-    } else {
-      setSortDirection('desc') // Default to desc for most sorts
-    }
-  }
+
 
   return (
     <div className="space-y-4">
+      {/* Custom CSS for enhanced calendar */}
+      <style dangerouslySetInnerHTML={{ __html: calendarStyles }} />
       {/* Search Bar */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -171,27 +161,16 @@ export default function CampaignFiltersAndViews({
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="social">Social</SelectItem>
               <SelectItem value="email">Email</SelectItem>
-              <SelectItem value="mixed">Mixed</SelectItem>
+              <SelectItem value="sms">SMS</SelectItem>
             </SelectContent>
           </Select>
 
-          {/* Performance Tier Filter */}
-          <Select value={filters.performanceTier} onValueChange={(value) => updateFilter('performanceTier', value)}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Performance" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Performance</SelectItem>
-              <SelectItem value="high">High Performer</SelectItem>
-              <SelectItem value="good">Good Performer</SelectItem>
-              <SelectItem value="standard">Standard</SelectItem>
-            </SelectContent>
-          </Select>
+
 
           {/* Date Range Filter */}
           <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-[180px] justify-start text-left font-normal">
+              <Button variant="outline" className="w-[200px] justify-start text-left font-normal">
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {filters.dateRange.from ? (
                   filters.dateRange.to ? (
@@ -207,26 +186,150 @@ export default function CampaignFiltersAndViews({
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={filters.dateRange.from}
-                selected={{
-                  from: filters.dateRange.from,
-                  to: filters.dateRange.to
-                }}
-                onSelect={(range) => {
-                  updateFilter('dateRange', {
-                    from: range?.from,
-                    to: range?.to
-                  })
-                  if (range?.from && range?.to) {
-                    setIsDatePickerOpen(false)
-                  }
-                }}
-                numberOfMonths={2}
-              />
+            <PopoverContent className="w-auto p-0" align="start" onInteractOutside={(e) => e.preventDefault()}>
+              <div className="p-4 space-y-3" onClick={(e) => e.stopPropagation()}>
+                {/* Calendar with Date Range Highlighting */}
+                <div 
+                  onClick={(e) => e.stopPropagation()} 
+                  className="date-range-calendar"
+                  ref={(el) => {
+                    if (el && (filters.dateRange.from || filters.dateRange.to)) {
+                      // Add custom classes to highlight date range
+                      setTimeout(() => {
+                        const days = el.querySelectorAll('.MuiPickersDay-root')
+                        days.forEach((day: any) => {
+                          const dayText = day.textContent
+                          const dayNumber = parseInt(dayText)
+                          
+                          // Remove existing range classes
+                          day.classList.remove('range-start', 'range-end', 'in-range')
+                          
+                          if (filters.dateRange.from && filters.dateRange.to) {
+                            const startDay = filters.dateRange.from.getDate()
+                            const endDay = filters.dateRange.to.getDate()
+                            
+                            if (dayNumber === startDay) {
+                              day.classList.add('range-start')
+                            } else if (dayNumber === endDay) {
+                              day.classList.add('range-end')
+                            } else if (dayNumber > startDay && dayNumber < endDay) {
+                              day.classList.add('in-range')
+                            }
+                          } else if (filters.dateRange.from) {
+                            const startDay = filters.dateRange.from.getDate()
+                            if (dayNumber === startDay) {
+                              day.classList.add('range-start')
+                            }
+                          }
+                        })
+                      }, 100)
+                    }
+                  }}
+                >
+                  <Calendar
+                    value={filters.dateRange.from || null}
+                    onChange={(newValue) => {
+                      if (!filters.dateRange.from) {
+                        // First click - set start date, keep calendar open
+                        updateFilter('dateRange', {
+                          from: newValue,
+                          to: undefined
+                        })
+                      } else if (!filters.dateRange.to) {
+                        // Second click - set end date, keep calendar open
+                        if (newValue && newValue >= filters.dateRange.from) {
+                          updateFilter('dateRange', {
+                            from: filters.dateRange.from,
+                            to: newValue
+                          })
+                          // Don't auto-close, let user click Done
+                        } else {
+                          // If selected date is before start date, reset and use as new start
+                          updateFilter('dateRange', {
+                            from: newValue,
+                            to: undefined
+                          })
+                        }
+                      } else {
+                        // Range already selected - reset and start over
+                        updateFilter('dateRange', {
+                          from: newValue,
+                          to: undefined
+                        })
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Range Info */}
+                {filters.dateRange.from && filters.dateRange.to && (
+                  <div className="text-center text-sm text-gray-600 bg-blue-50 p-2 rounded">
+                    {Math.ceil((filters.dateRange.to.getTime() - filters.dateRange.from.getTime()) / (1000 * 60 * 60 * 24)) + 1} days selected
+                  </div>
+                )}
+
+                {/* Quick Presets */}
+                <div className="grid grid-cols-3 gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      const today = new Date()
+                      const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+                      updateFilter('dateRange', { from: lastWeek, to: today })
+                      setIsDatePickerOpen(false)
+                    }}
+                  >
+                    Last 7d
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      const today = new Date()
+                      const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
+                      updateFilter('dateRange', { from: lastMonth, to: today })
+                      setIsDatePickerOpen(false)
+                    }}
+                  >
+                    Last 30d
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      const today = new Date()
+                      const lastQuarter = new Date(today.getTime() - 90 * 24 * 60 * 60 * 1000)
+                      updateFilter('dateRange', { from: lastQuarter, to: today })
+                      setIsDatePickerOpen(false)
+                    }}
+                  >
+                    Last 90d
+                  </Button>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-between items-center pt-2 border-t">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      updateFilter('dateRange', { from: undefined, to: undefined })
+                    }}
+                  >
+                    Clear
+                  </Button>
+                  <div className="text-xs text-gray-500">
+                    {filters.dateRange.from && !filters.dateRange.to && "Click another date to complete range"}
+                  </div>
+                  <Button 
+                    size="sm"
+                    onClick={() => setIsDatePickerOpen(false)}
+                  >
+                    Done
+                  </Button>
+                </div>
+              </div>
             </PopoverContent>
           </Popover>
 
@@ -244,38 +347,8 @@ export default function CampaignFiltersAndViews({
           )}
         </div>
 
-        {/* Sort and View Controls */}
-        <div className="flex items-center gap-4">
-          {/* Sort By */}
-          <div className="flex items-center border rounded-md">
-            <Select value={sortBy} onValueChange={handleSortChange}>
-              <SelectTrigger className="w-[180px] border-0 rounded-r-none">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="updated">Last Updated</SelectItem>
-                <SelectItem value="name">Name A-Z</SelectItem>
-                <SelectItem value="name-desc">Name Z-A</SelectItem>
-                <SelectItem value="performance">Performance</SelectItem>
-                <SelectItem value="start-date">Start Date</SelectItem>
-                <SelectItem value="engagement">Engagement</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleSortDirection}
-              className="border-0 rounded-l-none px-2 border-l"
-              title={`Sort ${sortDirection === 'asc' ? 'Ascending' : 'Descending'}`}
-            >
-              {sortDirection === 'asc' ? (
-                <SortAsc className="h-4 w-4" />
-              ) : (
-                <SortDesc className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
-
+        {/* View Controls */}
+        <div className="flex items-center">
           {/* View Mode Toggle */}
           <div className="flex border rounded-md">
             <Button
@@ -320,15 +393,7 @@ export default function CampaignFiltersAndViews({
               />
             </Badge>
           )}
-          {filters.performanceTier !== 'all' && (
-            <Badge variant="secondary" className="capitalize">
-              Performance: {filters.performanceTier}
-              <X 
-                className="h-3 w-3 ml-1 cursor-pointer" 
-                onClick={() => updateFilter('performanceTier', 'all')}
-              />
-            </Badge>
-          )}
+
           {(filters.dateRange.from || filters.dateRange.to) && (
             <Badge variant="secondary">
               Date Range
