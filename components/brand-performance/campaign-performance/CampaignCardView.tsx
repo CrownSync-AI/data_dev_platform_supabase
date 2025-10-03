@@ -130,7 +130,7 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
       performance_tier: 'high',
       trend_direction: 'up',
       last_updated: '2025-10-02T10:30:00Z',
-      campaign_image: 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573'
+      campaign_image: 'https://dwj.dickson.com.tw/wp-content/uploads/2025/04/rolex-new-watches-2025-new-dials_m126518ln-0014_2501stojan_001-portrait.jpg'
     },
     {
       campaign_id: '2',

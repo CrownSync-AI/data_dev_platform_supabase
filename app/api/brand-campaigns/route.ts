@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         campaign_name: 'Spring Collection Preview',
         campaign_status: 'active',
         campaign_type: 'social',
-        campaign_image: 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573',
+        campaign_image: 'https://dwj.dickson.com.tw/wp-content/uploads/2025/04/rolex-new-watches-2025-new-dials_m126518ln-0014_2501stojan_001-portrait.jpg',
         start_date: '2025-09-15',
         end_date: '2025-10-15',
         duration_days: 30,
