@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
         type: 'social', 
         tier: 'high', 
         trend: 'up',
-        image: 'https://images.unsplash.com/photo-1549972574-8e3e1ed6a347?w=400&h=250&fit=crop&auto=format'
+        image: 'https://cdn.wristler.eu/blog-image-2x/cef28a378ab4b189be513b6e0d0e8cc7-'
       }
     ]
 

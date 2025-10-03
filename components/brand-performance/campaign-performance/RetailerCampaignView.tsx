@@ -623,7 +623,7 @@ export default function RetailerCampaignView() {
               >
                 {/* Campaign Image */}
                 {campaign.campaign_image && (
-                  <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
+                  <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
                     <img 
                       src={campaign.campaign_image} 
                       alt={campaign.campaign_name}
@@ -655,11 +655,11 @@ export default function RetailerCampaignView() {
                   </div>
                 )}
                 
-                <CardHeader className="pb-3 px-6 pt-6">
+                <CardHeader className="pb-2 px-6 pt-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       {/* Reserved space for campaign title - ensures consistent height */}
-                      <div className="h-14 mb-2">
+                      <div className="h-12 mb-1">
                         <CardTitle className="text-lg leading-tight">{campaign.campaign_name}</CardTitle>
                       </div>
                       {!campaign.campaign_image && (
@@ -689,9 +689,9 @@ export default function RetailerCampaignView() {
                   </div>
                 </CardHeader>
                 
-                <CardContent className="pt-0 px-6 pb-6 flex flex-col h-full">
+                <CardContent className="pt-0 px-6 pb-4 flex flex-col h-full">
                   {/* Type-Specific Performance Summary */}
-                  <div className="space-y-3 flex-grow">
+                  <div className="space-y-2 flex-grow">
                     {campaign.campaign_type === 'social' && (
                       <>
                         <div className="text-sm font-medium text-gray-700">Platform Performance:</div>
@@ -742,7 +742,7 @@ export default function RetailerCampaignView() {
 
                   {/* Performance Tier and Trend - Aligned at bottom */}
                   <div className="mt-auto">
-                    <div className="flex items-center justify-between border-t mt-3 pt-2">
+                    <div className="flex items-center justify-between border-t mt-2 pt-2">
                     <div className="flex items-center gap-2">
                       <Badge className={getPerformanceTierColor(campaign.performance_tier)}>
                         {campaign.performance_tier} performer

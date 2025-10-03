@@ -385,7 +385,7 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
           >
             {/* Campaign Image */}
             {(campaign.campaign_image || true) && (
-              <div className="relative h-56 w-full overflow-hidden rounded-t-lg">
+              <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
                 <img 
                   src={campaign.campaign_image || 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573'} 
                   alt={campaign.campaign_name}
@@ -416,11 +416,11 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
               </div>
             )}
             
-            <CardHeader className="pb-3 px-6 pt-6">
+            <CardHeader className="pb-2 px-6 pt-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   {/* Reserved space for campaign title - ensures consistent height */}
-                  <div className="h-14 mb-2">
+                  <div className="h-12 mb-1">
                     <CardTitle className="text-lg leading-tight">{campaign.campaign_name}</CardTitle>
                   </div>
                   {!campaign.campaign_image && (
@@ -449,9 +449,9 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
               </div>
             </CardHeader>
             
-            <CardContent className="pt-0 px-6 pb-6 flex flex-col h-full">
+            <CardContent className="pt-0 px-6 pb-4 flex flex-col h-full">
               {/* Key Metrics - Only Ayrshare available data */}
-              <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="grid grid-cols-2 gap-4 mb-3">
                 <div>
                   <p className="text-sm text-gray-600">Engagement Rate</p>
                   <p className="text-xl font-bold">{campaign.avg_click_rate}%</p>
@@ -469,7 +469,7 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
               </div>
 
               {/* Performance Metrics */}
-              <div className="space-y-3 flex-grow">
+              <div className="space-y-2 flex-grow">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Eye className="h-4 w-4 text-blue-600" />
@@ -507,7 +507,7 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
 
               {/* Performance Grading - Aligned at bottom */}
               <div className="mt-auto">
-                <div className="flex items-center justify-between border-t mt-3 pt-2">
+                <div className="flex items-center justify-between border-t mt-2 pt-2">
                   <div className="flex items-center gap-2">
                     {getTrendIcon(campaign.trend_direction)}
                     <span className="text-sm text-gray-600">Trending {campaign.trend_direction}</span>
