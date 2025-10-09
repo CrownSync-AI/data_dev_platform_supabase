@@ -618,14 +618,13 @@ export default function RetailerCampaignView() {
               {filteredAndSortedCampaigns.map((campaign) => (
               <Card 
                 key={campaign.campaign_id} 
-                className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0 flex flex-col h-full"
+                className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0 flex flex-col h-[520px]"
                 onClick={() => handleCampaignClick(campaign.campaign_id)}
               >
                 {/* Campaign Image */}
-                {campaign.campaign_image && (
-                  <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+                <div className="relative h-64 w-full overflow-hidden rounded-t-lg">
                     <img 
-                      src={campaign.campaign_image} 
+                      src={campaign.campaign_image || 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573'} 
                       alt={campaign.campaign_name}
                       className="w-full h-full object-cover transition-transform hover:scale-105"
                     />
@@ -653,14 +652,13 @@ export default function RetailerCampaignView() {
                       </Badge>
                     </div>
                   </div>
-                )}
                 
-                <CardHeader className="pb-2 px-6 pt-4">
+                <CardHeader className="pb-0 px-4 pt-2">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       {/* Reserved space for campaign title - ensures consistent height */}
-                      <div className="h-12 mb-1">
-                        <CardTitle className="text-lg leading-tight">{campaign.campaign_name}</CardTitle>
+                      <div className="h-6 mb-0">
+                        <CardTitle className="text-base leading-tight">{campaign.campaign_name}</CardTitle>
                       </div>
                       {!campaign.campaign_image && (
                         <div className="flex items-center gap-2 mb-2">
@@ -689,9 +687,9 @@ export default function RetailerCampaignView() {
                   </div>
                 </CardHeader>
                 
-                <CardContent className="pt-0 px-6 pb-4 flex flex-col h-full">
+                <CardContent className="pt-0 px-4 pb-2 flex flex-col flex-1">
                   {/* Type-Specific Performance Summary */}
-                  <div className="space-y-2 flex-grow">
+                  <div className="space-y-1 flex-grow">
                     {campaign.campaign_type === 'social' && (
                       <>
                         <div className="text-sm font-medium text-gray-700">Platform Performance:</div>
@@ -702,9 +700,10 @@ export default function RetailerCampaignView() {
                                 platform === 'facebook' ? 'bg-blue-500' :
                                 platform === 'instagram' ? 'bg-pink-500' :
                                 platform === 'linkedin' ? 'bg-blue-700' :
+                                platform === 'twitter' ? 'bg-black' :
                                 'bg-sky-500'
                               }`}></div>
-                              <span className="text-sm capitalize">{platform}</span>
+                              <span className="text-sm">{getPlatformName(platform)}</span>
                             </div>
                             <span className="text-sm font-medium">{formatNumber(data.engagement)} eng.</span>
                           </div>
@@ -725,13 +724,20 @@ export default function RetailerCampaignView() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                            <span className="text-sm">Emails Opened</span>
+                          </div>
+                          <span className="text-sm font-medium">{formatNumber(campaign.email_metrics.emails_opened)}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
                             <span className="text-sm">Open Rate</span>
                           </div>
                           <span className="text-sm font-medium">{campaign.email_metrics.open_rate.toFixed(1)}%</span>
                         </div>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                            <div className="w-2 h-2 rounded-full bg-orange-500"></div>
                             <span className="text-sm">Click Rate</span>
                           </div>
                           <span className="text-sm font-medium">{campaign.email_metrics.click_rate.toFixed(1)}%</span>

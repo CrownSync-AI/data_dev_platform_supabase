@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Search, TrendingUp, TrendingDown, Minus, Calendar, Users, Mail, Eye, MousePointer, MoreHorizontal } from 'lucide-react'
+import { Search, TrendingUp, TrendingDown, Minus, Calendar, Users, Mail, Eye, MousePointer, MoreHorizontal, Share2 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import CampaignFiltersAndViews from './CampaignFiltersAndViews'
 import CampaignListView from './CampaignListView'
@@ -202,7 +202,7 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
       performance_tier: 'good',
       trend_direction: 'down',
       last_updated: '2025-09-15T18:30:00Z',
-      campaign_image: 'http://cdn.shopify.com/s/files/1/0397/2638/3257/files/Rolex-watches-for-man-Australia_480x480.jpg?v=1678314745'
+      campaign_image: 'https://blog.luxehouze.com/wp-content/uploads/2024/02/crop-16-fotor-20230714172425-1024x576.jpg'
     },
     {
       campaign_id: '6',
@@ -380,12 +380,11 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
           return (
           <Card 
             key={campaign.campaign_id} 
-            className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0 flex flex-col h-full"
+            className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0 flex flex-col h-[520px]"
             onClick={() => handleCampaignClick(campaign)}
           >
             {/* Campaign Image */}
-            {(campaign.campaign_image || true) && (
-              <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+            <div className="relative h-64 w-full overflow-hidden rounded-t-lg">
                 <img 
                   src={campaign.campaign_image || 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573'} 
                   alt={campaign.campaign_name}
@@ -414,14 +413,13 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
                   </Badge>
                 </div>
               </div>
-            )}
             
-            <CardHeader className="pb-2 px-6 pt-4">
+            <CardHeader className="pb-0 px-4 pt-2">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   {/* Reserved space for campaign title - ensures consistent height */}
-                  <div className="h-12 mb-1">
-                    <CardTitle className="text-lg leading-tight">{campaign.campaign_name}</CardTitle>
+                  <div className="h-6 mb-0">
+                    <CardTitle className="text-base leading-tight">{campaign.campaign_name}</CardTitle>
                   </div>
                   {!campaign.campaign_image && (
                     <div className="flex items-center gap-2 mb-2">
@@ -449,18 +447,18 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
               </div>
             </CardHeader>
             
-            <CardContent className="pt-0 px-6 pb-4 flex flex-col h-full">
-              {/* Key Metrics - Only Ayrshare available data */}
-              <div className="grid grid-cols-2 gap-4 mb-3">
+            <CardContent className="pt-0 px-4 pb-2 flex flex-col flex-1">
+              {/* Key Metrics - Campaign Type Specific */}
+              <div className="grid grid-cols-2 gap-2 mb-1">
                 <div>
-                  <p className="text-sm text-gray-600">Engagement Rate</p>
-                  <p className="text-xl font-bold">{campaign.avg_click_rate}%</p>
+                  <p className="text-sm text-gray-600">
+                    {campaign.campaign_type === 'email' ? 'Click Rate' : 'Engagement Rate'}
+                  </p>
+                  <p className="text-base font-bold">{campaign.avg_click_rate}%</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">
-                    {campaign.campaign_type === 'email' ? 'Email Performance:' : 
-                     campaign.campaign_type === 'social' ? 'Platform Performance:' : 
-                     'Campaign Performance:'}
+                    {campaign.campaign_type === 'email' ? 'Email Performance:' : 'Platform Performance:'}
                   </p>
                   <Badge className={getPerformanceTierColor(campaign.performance_tier)}>
                     {campaign.performance_tier}
@@ -468,40 +466,76 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
                 </div>
               </div>
 
-              {/* Performance Metrics */}
-              <div className="space-y-2 flex-grow">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Eye className="h-4 w-4 text-blue-600" />
-                    <span className="text-sm">Reach</span>
-                  </div>
-                  <span className="font-medium">{formatNumber(campaign.total_reach)}</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <MousePointer className="h-4 w-4 text-purple-600" />
-                    <span className="text-sm">Engagement</span>
-                  </div>
-                  <span className="font-medium">{formatNumber(campaign.total_engagement)}</span>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-orange-600" />
-                    <span className="text-sm">Retailers</span>
-                  </div>
-                  <span className="font-medium">{campaign.participating_retailers_count}</span>
-                </div>
-
-                {campaign.total_emails_sent > 0 && (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-green-600" />
-                      <span className="text-sm">Emails Sent</span>
+              {/* Performance Metrics - Campaign Type Specific */}
+              <div className="space-y-1 flex-grow">
+                {campaign.campaign_type === 'email' ? (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-green-600" />
+                        <span className="text-sm">Emails Sent</span>
+                      </div>
+                      <span className="font-medium">{formatNumber(campaign.total_emails_sent)}</span>
                     </div>
-                    <span className="font-medium">{formatNumber(campaign.total_emails_sent)}</span>
-                  </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Eye className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm">Email Opens</span>
+                      </div>
+                      <span className="font-medium">{formatNumber(Math.round(campaign.total_emails_sent * 0.25))}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MousePointer className="h-4 w-4 text-purple-600" />
+                        <span className="text-sm">Email Clicks</span>
+                      </div>
+                      <span className="font-medium">{formatNumber(Math.round(campaign.total_emails_sent * 0.029))}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-orange-600" />
+                        <span className="text-sm">Retailers</span>
+                      </div>
+                      <span className="font-medium">{campaign.participating_retailers_count}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Eye className="h-4 w-4 text-blue-600" />
+                        <span className="text-sm">Social Reach</span>
+                      </div>
+                      <span className="font-medium">{formatNumber(campaign.total_reach)}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MousePointer className="h-4 w-4 text-purple-600" />
+                        <span className="text-sm">Social Engagement</span>
+                      </div>
+                      <span className="font-medium">{formatNumber(campaign.total_engagement)}</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Share2 className="h-4 w-4 text-indigo-600" />
+                        <span className="text-sm">Platforms</span>
+                      </div>
+                      <span className="font-medium">4</span>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-orange-600" />
+                        <span className="text-sm">Retailers</span>
+                      </div>
+                      <span className="font-medium">{campaign.participating_retailers_count}</span>
+                    </div>
+                  </>
                 )}
               </div>
 
