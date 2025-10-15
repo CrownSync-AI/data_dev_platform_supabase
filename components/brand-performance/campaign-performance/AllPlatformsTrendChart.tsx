@@ -18,36 +18,55 @@ import { TrendingUp } from 'lucide-react'
 interface AllPlatformsTrendChartProps {
   platformData: Record<string, any>
   campaignName: string
+  platformFilter?: string
+  dateRange?: { from?: Date, to?: Date }
 }
 
 type MetricType = 'impressions' | 'reach' | 'engagement'
 
 export default function AllPlatformsTrendChart({ 
   platformData, 
-  campaignName 
+  campaignName,
+  platformFilter = 'all',
+  dateRange = {}
 }: AllPlatformsTrendChartProps) {
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('engagement')
 
-  // Generate trend data for the last 21 days (3 weeks)
+  // Generate trend data respecting platform filter and date range
   const generateTrendData = () => {
     const days = 21
+    const endDate = dateRange.to || new Date()
+    const startDate = dateRange.from || new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000)
+    const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
+    const actualDays = Math.min(daysDiff, days)
+    
     const trendData = []
     
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date()
-      date.setDate(date.getDate() - i)
+    for (let i = actualDays - 1; i >= 0; i--) {
+      const date = new Date(startDate.getTime() + (actualDays - 1 - i) * 24 * 60 * 60 * 1000)
       
       const dayData: any = {
         date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         fullDate: date.toLocaleDateString()
       }
       
-      // Generate data for each platform
-      Object.entries(platformData).forEach(([platform, data]) => {
-        const variation = 0.7 + Math.random() * 0.6 // 70% to 130% variation
-        const baseValue = data[selectedMetric] || 0
-        dayData[platform] = Math.round(baseValue * variation)
-      })
+      // Generate data based on platform filter
+      if (platformFilter === 'all') {
+        // Generate data for each platform
+        Object.entries(platformData).forEach(([platform, data]) => {
+          const variation = 0.7 + Math.random() * 0.6 // 70% to 130% variation
+          const baseValue = data[selectedMetric] || 0
+          dayData[platform] = Math.round(baseValue * variation)
+        })
+      } else {
+        // Generate data for specific platform only
+        const data = platformData[platformFilter]
+        if (data) {
+          const variation = 0.7 + Math.random() * 0.6
+          const baseValue = data[selectedMetric] || 0
+          dayData[platformFilter] = Math.round(baseValue * variation)
+        }
+      }
       
       trendData.push(dayData)
     }
@@ -175,7 +194,8 @@ export default function AllPlatformsTrendChart({
           </div>
         </div>
         <p className="text-sm text-muted-foreground">
-          21-day trend analysis across all platforms for {campaignName}
+          Trend analysis for {platformFilter === 'all' ? 'all platforms' : getPlatformName(platformFilter)} - {campaignName}
+          {(dateRange.from || dateRange.to) && ` (${dateRange.from?.toLocaleDateString() || 'start'} to ${dateRange.to?.toLocaleDateString() || 'end'})`}
         </p>
       </CardHeader>
       
@@ -212,8 +232,8 @@ export default function AllPlatformsTrendChart({
               />
               <Legend content={() => null} />
               
-              {/* Render lines for each platform */}
-              {Object.keys(platformData).map((platform) => (
+              {/* Render lines for filtered platforms */}
+              {(platformFilter === 'all' ? Object.keys(platformData) : [platformFilter]).map((platform) => (
                 <Line
                   key={platform}
                   type="monotone"

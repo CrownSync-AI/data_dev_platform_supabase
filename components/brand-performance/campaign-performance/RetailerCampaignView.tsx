@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Search, TrendingUp, TrendingDown, Minus, Calendar, MoreHorizontal, ArrowLeft } from 'lucide-react'
+import { Search, TrendingUp, TrendingDown, Minus, Calendar, MoreHorizontal, ArrowLeft, Filter, ArrowUpDown } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import PlatformSpecificCharts from './PlatformSpecificCharts'
 import AllPlatformsTrendChart from './AllPlatformsTrendChart'
 import PlatformComparisonCharts from './PlatformComparisonCharts'
@@ -106,6 +107,13 @@ export default function RetailerCampaignView() {
     dateRange: { from: undefined, to: undefined },
     search: ''
   })
+  
+  // Enhanced detailed view states
+  const [detailDateRange, setDetailDateRange] = useState<{ from?: Date, to?: Date }>({})
+  const [trendPlatformFilter, setTrendPlatformFilter] = useState<string>('all')
+
+  const [platformSortField, setPlatformSortField] = useState<'platform' | 'impressions' | 'reach' | 'engagement' | 'engagement_rate'>('engagement')
+  const [platformSortDirection, setPlatformSortDirection] = useState<'asc' | 'desc'>('desc')
 
   useEffect(() => {
     fetchRetailers()
@@ -275,6 +283,49 @@ export default function RetailerCampaignView() {
     setSelectedCampaignId(null)
   }
 
+  // Enhanced detailed view helper functions
+
+
+
+
+
+  const getSortedPlatformData = (platformData: any) => {
+    const platforms = Object.entries(platformData).map(([platform, data]: [string, any]) => ({
+      platform,
+      impressions: data.impressions || 0,
+      reach: data.reach || 0,
+      engagement: data.engagement || 0,
+      engagement_rate: data.impressions ? ((data.engagement / data.impressions) * 100) : 0
+    }))
+
+    return platforms.sort((a, b) => {
+      const aValue = a[platformSortField]
+      const bValue = b[platformSortField]
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return platformSortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
+      }
+      
+      return platformSortDirection === 'asc' ? aValue - bValue : bValue - aValue
+    })
+  }
+
+  const handlePlatformSort = (field: typeof platformSortField) => {
+    if (platformSortField === field) {
+      setPlatformSortDirection(platformSortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setPlatformSortField(field)
+      setPlatformSortDirection('desc')
+    }
+  }
+
+  const getSortIcon = (field: typeof platformSortField) => {
+    if (platformSortField !== field) return <ArrowUpDown className="h-4 w-4 text-gray-400" />
+    return platformSortDirection === 'asc' ? 
+      <TrendingUp className="h-4 w-4 text-blue-600" /> : 
+      <TrendingDown className="h-4 w-4 text-blue-600" />
+  }
+
   const filteredAndSortedCampaigns = campaigns
     .filter(campaign => {
       const matchesSearch = !filters.search || campaign.campaign_name.toLowerCase().includes(filters.search.toLowerCase())
@@ -333,6 +384,57 @@ export default function RetailerCampaignView() {
         {/* Type-Specific Content */}
         {campaign.campaign_type === 'social' && (
           <div className="space-y-6">
+            {/* 4. Global Date Range Filter */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Date Range Filter
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="date"
+                      value={detailDateRange.from ? detailDateRange.from.toISOString().split('T')[0] : ''}
+                      onChange={(e) => {
+                        const newDate = e.target.value ? new Date(e.target.value) : undefined
+                        setDetailDateRange(prev => ({ ...prev, from: newDate }))
+                      }}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      placeholder="Start date"
+                    />
+                    <span className="text-gray-500">to</span>
+                    <input
+                      type="date"
+                      value={detailDateRange.to ? detailDateRange.to.toISOString().split('T')[0] : ''}
+                      onChange={(e) => {
+                        const newDate = e.target.value ? new Date(e.target.value) : undefined
+                        setDetailDateRange(prev => ({ ...prev, to: newDate }))
+                      }}
+                      className="px-3 py-2 border border-gray-300 rounded-md text-sm"
+                      placeholder="End date"
+                    />
+                  </div>
+                  {(detailDateRange.from || detailDateRange.to) && (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setDetailDateRange({})}
+                    >
+                      Clear Filter
+                    </Button>
+                  )}
+                </div>
+                {(detailDateRange.from || detailDateRange.to) && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Showing data from {detailDateRange.from?.toLocaleDateString() || 'start'} to {detailDateRange.to?.toLocaleDateString() || 'end'}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Platform Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {Object.entries(campaign.platform_performance).map(([platform, data]) => (
@@ -357,23 +459,160 @@ export default function RetailerCampaignView() {
                         <span className="text-sm text-gray-600">Engagement</span>
                         <span className="font-medium">{formatNumber(data.engagement)}</span>
                       </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-gray-600">Rate</span>
+                        <span className="font-medium text-green-600">
+                          {((data.engagement / data.impressions) * 100).toFixed(2)}%
+                        </span>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
 
-            {/* All Platforms Trend Visualization */}
-            <AllPlatformsTrendChart
-              platformData={campaign.platform_performance}
-              campaignName={campaign.campaign_name}
-            />
+            {/* 3. Enhanced Trend Analysis with Platform Filter */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Trend Analysis
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <Filter className="h-4 w-4 text-gray-500" />
+                    <Select value={trendPlatformFilter} onValueChange={setTrendPlatformFilter}>
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Platforms</SelectItem>
+                        {Object.keys(campaign.platform_performance).map((platform) => (
+                          <SelectItem key={platform} value={platform}>
+                            {getPlatformName(platform)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <AllPlatformsTrendChart
+                  platformData={campaign.platform_performance}
+                  campaignName={campaign.campaign_name}
+                  platformFilter={trendPlatformFilter}
+                  dateRange={detailDateRange}
+                />
+              </CardContent>
+            </Card>
 
-            {/* Platform Comparison Charts */}
+            {/* Platform Performance Comparison */}
             <PlatformComparisonCharts
               platformData={campaign.platform_performance}
               campaignName={campaign.campaign_name}
             />
+
+            {/* Platform Performance Summary */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Platform Performance Summary</CardTitle>
+                <p className="text-sm text-muted-foreground">
+                  Click column headers to sort by different metrics
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th 
+                          className="text-left py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
+                          onClick={() => handlePlatformSort('platform')}
+                        >
+                          <div className="flex items-center gap-2">
+                            Platform
+                            {getSortIcon('platform')}
+                          </div>
+                        </th>
+                        <th 
+                          className="text-right py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
+                          onClick={() => handlePlatformSort('impressions')}
+                        >
+                          <div className="flex items-center justify-end gap-2">
+                            Impressions
+                            {getSortIcon('impressions')}
+                          </div>
+                        </th>
+                        <th 
+                          className="text-right py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
+                          onClick={() => handlePlatformSort('reach')}
+                        >
+                          <div className="flex items-center justify-end gap-2">
+                            Reach
+                            {getSortIcon('reach')}
+                          </div>
+                        </th>
+                        <th 
+                          className="text-right py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
+                          onClick={() => handlePlatformSort('engagement')}
+                        >
+                          <div className="flex items-center justify-end gap-2">
+                            Engagement
+                            {getSortIcon('engagement')}
+                          </div>
+                        </th>
+                        <th 
+                          className="text-right py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
+                          onClick={() => handlePlatformSort('engagement_rate')}
+                        >
+                          <div className="flex items-center justify-end gap-2">
+                            Engagement Rate
+                            {getSortIcon('engagement_rate')}
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {getSortedPlatformData(campaign.platform_performance).map((platform) => (
+                        <tr key={platform.platform} className="border-b hover:bg-gray-50">
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-3">
+                              {getPlatformLogo(platform.platform)}
+                              <span className="font-medium">{getPlatformName(platform.platform)}</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-right font-medium">
+                            {formatNumber(platform.impressions)}
+                          </td>
+                          <td className="py-4 px-4 text-right font-medium">
+                            {formatNumber(platform.reach)}
+                          </td>
+                          <td className="py-4 px-4 text-right font-medium">
+                            {formatNumber(platform.engagement)}
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <span className={`font-medium ${
+                                platform.engagement_rate >= 6 ? 'text-green-600' :
+                                platform.engagement_rate >= 3 ? 'text-yellow-600' : 'text-gray-600'
+                              }`}>
+                                {platform.engagement_rate.toFixed(2)}%
+                              </span>
+                              {platform.engagement_rate >= 6 ? (
+                                <TrendingUp className="h-3 w-3 text-green-500" />
+                              ) : platform.engagement_rate < 3 ? (
+                                <TrendingDown className="h-3 w-3 text-red-500" />
+                              ) : null}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
 

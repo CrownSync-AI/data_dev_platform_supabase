@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
 interface PlatformData {
@@ -43,55 +45,15 @@ const PLATFORM_COLORS = {
   x: '#000000'
 }
 
-const getPlatformLogo = (platform: string) => {
-  switch (platform.toLowerCase()) {
-    case 'facebook':
-      return (
-        <img 
-          src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" 
-          alt="Facebook"
-          className="w-4 h-4 object-contain"
-        />
-      )
-    case 'instagram':
-      return (
-        <img 
-          src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" 
-          alt="Instagram"
-          className="w-4 h-4 object-contain"
-        />
-      )
-    case 'linkedin':
-      return (
-        <img 
-          src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
-          alt="LinkedIn"
-          className="w-4 h-4 object-contain"
-        />
-      )
-    case 'twitter':
-    case 'x':
-      return (
-        <img 
-          src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg" 
-          alt="X"
-          className="w-4 h-4 object-contain"
-        />
-      )
-    default:
-      return (
-        <div className="w-4 h-4 rounded bg-gray-500 flex items-center justify-center">
-          <span className="text-white text-xs font-bold">?</span>
-        </div>
-      )
-  }
-}
-
 const getPlatformName = (platform: string) => {
   return platform.toLowerCase() === 'twitter' ? 'X' : platform.charAt(0).toUpperCase() + platform.slice(1)
 }
 
+type ComparisonMetric = 'engagement' | 'impressions' | 'reach' | 'engagement_rate'
+
 export default function PlatformComparisonCharts({ platformData }: PlatformComparisonChartsProps) {
+  const [selectedComparison, setSelectedComparison] = useState<ComparisonMetric>('engagement')
+
   // Transform data for charts
   const chartData = Object.entries(platformData).map(([platform, data]) => ({
     platform: getPlatformName(platform),
@@ -99,21 +61,7 @@ export default function PlatformComparisonCharts({ platformData }: PlatformCompa
     impressions: data.impressions,
     reach: data.reach,
     engagement: data.engagement,
-    engagementRate: ((data.engagement / data.reach) * 100).toFixed(2)
-  }))
-
-  // Pie chart data for impressions distribution
-  const impressionsPieData = chartData.map(item => ({
-    name: item.platform,
-    value: item.impressions,
-    color: PLATFORM_COLORS[item.originalPlatform as keyof typeof PLATFORM_COLORS] || '#6B7280'
-  }))
-
-  // Pie chart data for engagement distribution
-  const engagementPieData = chartData.map(item => ({
-    name: item.platform,
-    value: item.engagement,
-    color: PLATFORM_COLORS[item.originalPlatform as keyof typeof PLATFORM_COLORS] || '#6B7280'
+    engagement_rate: Number(((data.engagement / data.impressions) * 100).toFixed(2))
   }))
 
   const formatNumber = (num: number) => {
@@ -122,17 +70,37 @@ export default function PlatformComparisonCharts({ platformData }: PlatformCompa
     return num.toString()
   }
 
+  const getChartTitle = () => {
+    switch (selectedComparison) {
+      case 'engagement': return 'Engagement Comparison'
+      case 'impressions': return 'Impressions Comparison'
+      case 'reach': return 'Reach Comparison'
+      case 'engagement_rate': return 'Engagement Rate Comparison'
+    }
+  }
+
+  const getChartColor = () => {
+    switch (selectedComparison) {
+      case 'engagement': return '#7FB3D3'
+      case 'impressions': return '#8B9DC3'
+      case 'reach': return '#DDB7AB'
+      case 'engagement_rate': return '#82ca9d'
+    }
+  }
+
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
+      const value = payload[0].value
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium">{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }}>
-              {entry.dataKey}: {formatNumber(entry.value)}
-              {entry.dataKey === 'engagementRate' && '%'}
-            </p>
-          ))}
+          <p style={{ color: payload[0].color }}>
+            {getChartTitle().replace(' Comparison', '')}: {
+              selectedComparison === 'engagement_rate' 
+                ? `${value}%` 
+                : formatNumber(value)
+            }
+          </p>
         </div>
       )
     }
@@ -142,11 +110,14 @@ export default function PlatformComparisonCharts({ platformData }: PlatformCompa
   const PieTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const data = payload[0]
+      const total = chartData.reduce((sum, item) => sum + item[selectedComparison], 0)
+      const percentage = ((data.value / total) * 100).toFixed(1)
+      
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
           <p className="font-medium">{data.name}</p>
           <p style={{ color: data.payload.color }}>
-            {formatNumber(data.value)} ({((data.value / impressionsPieData.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%)
+            {selectedComparison === 'engagement_rate' ? `${data.value}%` : formatNumber(data.value)} ({percentage}%)
           </p>
         </div>
       )
@@ -154,16 +125,52 @@ export default function PlatformComparisonCharts({ platformData }: PlatformCompa
     return null
   }
 
-  return (
-    <div className="space-y-6">
-      {/* Platform Comparison Bar Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Impressions vs Reach Comparison */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Impressions vs Reach by Platform</CardTitle>
-          </CardHeader>
-          <CardContent>
+  // Prepare data for pie chart
+  const pieData = chartData.map(item => ({
+    name: item.platform,
+    value: item[selectedComparison],
+    color: PLATFORM_COLORS[item.originalPlatform as keyof typeof PLATFORM_COLORS] || '#6B7280'
+  }))
+
+  // Choose visualization type based on metric
+  const renderChart = () => {
+    // Use pie chart for distribution metrics, bar chart for comparisons
+    if (selectedComparison === 'engagement_rate') {
+      // Bar chart is better for engagement rate comparison
+      return (
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+            <XAxis 
+              dataKey="platform" 
+              tick={{ fontSize: 12 }}
+              axisLine={{ stroke: '#e0e0e0' }}
+            />
+            <YAxis 
+              tick={{ fontSize: 12 }}
+              axisLine={{ stroke: '#e0e0e0' }}
+              tickFormatter={(value) => `${value}%`}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar 
+              dataKey={selectedComparison}
+              name={getChartTitle().replace(' Comparison', '')}
+              radius={[4, 4, 0, 0]}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={PLATFORM_COLORS[entry.originalPlatform as keyof typeof PLATFORM_COLORS] || '#6B7280'} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      )
+    } else {
+      // Use combined view: bar chart on left, pie chart on right
+      return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Bar Chart */}
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Platform Comparison</h4>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -179,184 +186,73 @@ export default function PlatformComparisonCharts({ platformData }: PlatformCompa
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar 
-                  dataKey="impressions" 
-                  fill="#8B9DC3" 
-                  name="Impressions"
-                  radius={[2, 2, 0, 0]}
-                />
-                <Bar 
-                  dataKey="reach" 
-                  fill="#DDB7AB" 
-                  name="Reach"
-                  radius={[2, 2, 0, 0]}
-                />
+                  dataKey={selectedComparison}
+                  name={getChartTitle().replace(' Comparison', '')}
+                  radius={[4, 4, 0, 0]}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={PLATFORM_COLORS[entry.originalPlatform as keyof typeof PLATFORM_COLORS] || '#6B7280'} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Engagement Comparison */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Engagement by Platform</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="platform" 
-                  tick={{ fontSize: 12 }}
-                  axisLine={{ stroke: '#e0e0e0' }}
-                />
-                <YAxis 
-                  tick={{ fontSize: 12 }}
-                  axisLine={{ stroke: '#e0e0e0' }}
-                  tickFormatter={formatNumber}
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="engagement" 
-                  fill="#7FB3D3" 
-                  name="Engagement"
-                  radius={[2, 2, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Platform Distribution Pie Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Impressions Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Impressions Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={impressionsPieData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
-                  labelLine={false}
-                >
-                  {impressionsPieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip content={<PieTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        {/* Engagement Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Engagement Distribution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={engagementPieData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
-                  labelLine={false}
-                >
-                  {engagementPieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip content={<PieTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Engagement Rate Comparison */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Engagement Rate Comparison</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey="platform" 
-                tick={{ fontSize: 12 }}
-                axisLine={{ stroke: '#e0e0e0' }}
-              />
-              <YAxis 
-                tick={{ fontSize: 12 }}
-                axisLine={{ stroke: '#e0e0e0' }}
-                label={{ value: 'Engagement Rate (%)', angle: -90, position: 'insideLeft' }}
-              />
-              <Tooltip 
-                content={<CustomTooltip />}
-                formatter={(value: any) => [`${value}%`, 'Engagement Rate']}
-              />
-              <Bar 
-                dataKey="engagementRate" 
-                fill="#A8C8EC" 
-                name="Engagement Rate"
-                radius={[2, 2, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
-
-      {/* Platform Performance Summary Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Platform Performance Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium text-gray-700">Platform</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-700">Impressions</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-700">Reach</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-700">Engagement</th>
-                  <th className="text-right py-3 px-4 font-medium text-gray-700">Engagement Rate</th>
-                </tr>
-              </thead>
-              <tbody>
-                {chartData.map((item, index) => (
-                  <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2">
-                        {getPlatformLogo(item.originalPlatform)}
-                        <span className="font-medium">{item.platform}</span>
-                      </div>
-                    </td>
-                    <td className="text-right py-3 px-4">{formatNumber(item.impressions)}</td>
-                    <td className="text-right py-3 px-4">{formatNumber(item.reach)}</td>
-                    <td className="text-right py-3 px-4">{formatNumber(item.engagement)}</td>
-                    <td className="text-right py-3 px-4">{item.engagementRate}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+
+          {/* Pie Chart */}
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Distribution</h4>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(1)}%`}
+                  labelLine={false}
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip content={<PieTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle>Platform Performance Comparison</CardTitle>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">View:</span>
+            <Select value={selectedComparison} onValueChange={(value) => setSelectedComparison(value as ComparisonMetric)}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="engagement">Engagement Comparison</SelectItem>
+                <SelectItem value="impressions">Impressions Comparison</SelectItem>
+                <SelectItem value="reach">Reach Comparison</SelectItem>
+                <SelectItem value="engagement_rate">Engagement Rate Comparison</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Cross-platform {selectedComparison.replace('_', ' ')} analysis
+        </p>
+      </CardHeader>
+      <CardContent>
+        {renderChart()}
+      </CardContent>
+    </Card>
   )
 }
