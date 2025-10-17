@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
+    // Use nextUrl.searchParams instead of new URL(request.url) for static compatibility
+    const searchParams = request.nextUrl.searchParams
     
     // Get query parameters
     const role = searchParams.get('role') || 'brand'
