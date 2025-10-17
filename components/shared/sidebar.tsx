@@ -8,23 +8,11 @@ import {
   ChevronLeft,
   ChevronRight,
   TrendingUp,
-  Bot,
   Share2,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const sidebarGroups = [
-  {
-    title: "AI Assistant",
-    items: [
-      {
-        title: "Chat",
-        href: "/dashboard/chat",
-        icon: Bot,
-        description: "AI-powered data assistant and knowledge base",
-      },
-    ],
-  },
   {
     title: "Brand View",
     items: [

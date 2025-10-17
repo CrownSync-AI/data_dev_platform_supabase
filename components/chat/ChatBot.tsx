@@ -99,20 +99,22 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount 
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="flex-1 overflow-auto">
+    <div className="flex h-full flex-col max-w-full ml-20">
+      <div className="flex-1 overflow-auto px-4 py-2">
         {showQuickActions && (
           <QuickActions onActionClick={handleQuickAction} />
         )}
         <MessageList messages={messages} />
       </div>
-      <div className="border-t p-4">
-        <ChatInput 
-          input={input}
-          handleInputChange={handleInputChange}
-          handleSubmit={handleFormSubmit}
-          isLoading={isLoading}
-        />
+      <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="px-4 py-4 max-w-4xl">
+          <ChatInput 
+            input={input}
+            handleInputChange={handleInputChange}
+            handleSubmit={handleFormSubmit}
+            isLoading={isLoading}
+          />
+        </div>
       </div>
     </div>
   );

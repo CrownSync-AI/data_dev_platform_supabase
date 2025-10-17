@@ -13,15 +13,15 @@ export default function ChatPage() {
   const { messages, addMessage, updateLastMessage, clearMessages, messageCount } = useChatPersistence();
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-screen flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between border-b px-6 py-4">
+      <div className="flex items-center justify-between border-b px-8 py-4 ml-20">
         <div>
           <h1 className="text-2xl font-semibold flex items-center gap-2">
             <Bot className="h-6 w-6 text-primary" />
             AI Data Assistant
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Ask questions about your data, upload documents, or get platform help - database queries included!
           </p>
         </div>
@@ -51,8 +51,8 @@ export default function ChatPage() {
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-          <div className="border-b px-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+          <div className="border-b px-8 py-2 ml-20">
             <TabsList className="grid w-full max-w-md grid-cols-2">
               <TabsTrigger value="chat" className="flex items-center gap-2">
                 <Bot className="h-4 w-4" />
@@ -65,7 +65,7 @@ export default function ChatPage() {
             </TabsList>
           </div>
 
-          <TabsContent value="chat" className="h-full mt-0">
+          <TabsContent value="chat" className="flex-1 mt-0 pb-20">
             <ChatBot 
               messages={messages}
               addMessage={addMessage}
@@ -74,7 +74,7 @@ export default function ChatPage() {
             />
           </TabsContent>
 
-          <TabsContent value="documents" className="h-full mt-0 p-6">
+          <TabsContent value="documents" className="flex-1 mt-0 p-8 pb-20 ml-20">
             <DocumentUpload />
           </TabsContent>
         </Tabs>
