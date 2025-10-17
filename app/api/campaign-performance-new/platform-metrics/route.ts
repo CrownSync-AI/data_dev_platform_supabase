@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseAdmin } from '@/lib/supabase'
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic'
+
 // Platform-Specific Metrics API endpoint
 // Provides detailed platform-specific analytics based on Ayrshare data structure
 
