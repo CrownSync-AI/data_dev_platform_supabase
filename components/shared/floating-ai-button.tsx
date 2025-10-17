@@ -2,14 +2,16 @@
 
 import { Bot, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 export function FloatingAIButton() {
   const pathname = usePathname()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const isChatPage = pathname === '/dashboard/chat'
+  const isEmbeddedMode = searchParams.get('mode') === 'embedded'
 
   const handleClick = () => {
     if (isChatPage) {
@@ -19,6 +21,11 @@ export function FloatingAIButton() {
   }
 
   if (isChatPage) {
+    // Hide back button in embedded mode
+    if (isEmbeddedMode) {
+      return null
+    }
+    
     // Back button on chat page - positioned higher to avoid input area
     return (
       <TooltipProvider>

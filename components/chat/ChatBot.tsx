@@ -6,7 +6,11 @@ import { QuickActions } from './QuickActions';
 import { useState, useEffect, useRef } from 'react';
 import { Message, ChatBotProps } from '@/lib/types/chat';
 
-export function ChatBot({ messages, addMessage, updateLastMessage, messageCount }: ChatBotProps) {
+interface ExtendedChatBotProps extends ChatBotProps {
+  isEmbeddedMode?: boolean;
+}
+
+export function ChatBot({ messages, addMessage, updateLastMessage, messageCount, isEmbeddedMode = false }: ExtendedChatBotProps) {
   const [showQuickActions, setShowQuickActions] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -114,10 +118,10 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount 
   };
 
   return (
-    <div className="ml-20 h-full flex flex-col">
+    <div className={`${isEmbeddedMode ? '' : 'ml-20'} h-full flex flex-col`}>
       <div 
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto px-4 py-2"
+        className="flex-1 overflow-y-auto px-6 py-4"
         style={{ 
           maxHeight: 'calc(100vh - 180px)',
           minHeight: '400px'
@@ -129,15 +133,13 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount 
         <MessageList messages={messages} />
         <div ref={messagesEndRef} className="h-4" />
       </div>
-      <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-4">
-        <div className="max-w-4xl">
-          <ChatInput 
-            input={input}
-            handleInputChange={handleInputChange}
-            handleSubmit={handleFormSubmit}
-            isLoading={isLoading}
-          />
-        </div>
+      <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6 py-4">
+        <ChatInput 
+          input={input}
+          handleInputChange={handleInputChange}
+          handleSubmit={handleFormSubmit}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );
