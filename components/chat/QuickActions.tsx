@@ -81,15 +81,6 @@ export function QuickActions({ onActionClick }: QuickActionsProps) {
           </Button>
         ))}
       </div>
-      
-      <div className="mt-6 p-4 bg-muted/30 rounded-lg">
-        <h4 className="font-medium text-sm mb-2">💡 Tips</h4>
-        <ul className="text-xs text-muted-foreground space-y-1">
-          <li>• Ask specific questions about your data for better results</li>
-          <li>• Upload documents to get answers based on their content</li>
-          <li>• Use natural language - no need for technical queries</li>
-        </ul>
-      </div>
     </div>
   );
 }

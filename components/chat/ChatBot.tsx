@@ -3,18 +3,33 @@
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { QuickActions } from './QuickActions';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Message, ChatBotProps } from '@/lib/types/chat';
 
 export function ChatBot({ messages, addMessage, updateLastMessage, messageCount }: ChatBotProps) {
   const [showQuickActions, setShowQuickActions] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Hide quick actions if we have more than just the welcome message
   useEffect(() => {
     setShowQuickActions(messageCount <= 1);
   }, [messageCount]);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesEndRef.current && scrollContainerRef.current) {
+      const scrollContainer = scrollContainerRef.current;
+      const isNearBottom = scrollContainer.scrollHeight - scrollContainer.scrollTop - scrollContainer.clientHeight < 100;
+      
+      // Only auto-scroll if user is near the bottom or if it's a new message
+      if (isNearBottom || messages.length > 0) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [messages]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -99,15 +114,23 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount 
   };
 
   return (
-    <div className="flex h-full flex-col max-w-full ml-20">
-      <div className="flex-1 overflow-auto px-4 py-2">
+    <div className="ml-20 h-full flex flex-col">
+      <div 
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto px-4 py-2"
+        style={{ 
+          maxHeight: 'calc(100vh - 180px)',
+          minHeight: '400px'
+        }}
+      >
         {showQuickActions && (
           <QuickActions onActionClick={handleQuickAction} />
         )}
         <MessageList messages={messages} />
+        <div ref={messagesEndRef} className="h-4" />
       </div>
-      <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="px-4 py-4 max-w-4xl">
+      <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-4">
+        <div className="max-w-4xl">
           <ChatInput 
             input={input}
             handleInputChange={handleInputChange}

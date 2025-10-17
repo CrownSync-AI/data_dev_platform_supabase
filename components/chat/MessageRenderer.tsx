@@ -48,7 +48,7 @@ function StandardMessage({ content }: { content: string }) {
 
   return (
     <div 
-      className="whitespace-pre-wrap"
+      className="whitespace-pre-wrap break-words overflow-wrap-anywhere"
       dangerouslySetInnerHTML={{ 
         __html: formatContent(content) 
       }} 

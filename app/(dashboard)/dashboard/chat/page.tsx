@@ -13,18 +13,33 @@ export default function ChatPage() {
   const { messages, addMessage, updateLastMessage, clearMessages, messageCount } = useChatPersistence();
 
   return (
-    <div className="flex h-screen flex-col">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="flex h-screen flex-col">
       {/* Header */}
       <div className="flex items-center justify-between border-b px-8 py-4 ml-20">
-        <div>
-          <h1 className="text-2xl font-semibold flex items-center gap-2">
-            <Bot className="h-6 w-6 text-primary" />
-            AI Data Assistant
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Ask questions about your data, upload documents, or get platform help - database queries included!
-          </p>
+        <div className="flex items-center gap-6">
+          <div>
+            <h1 className="text-2xl font-semibold flex items-center gap-2">
+              <Bot className="h-6 w-6 text-primary" />
+              AI Data Assistant
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Ask questions about your data, upload documents, or get platform help - database queries included!
+            </p>
+          </div>
+          
+          {/* Integrated Tab Switch */}
+          <TabsList className="grid w-56 grid-cols-2">
+            <TabsTrigger value="chat" className="flex items-center gap-2">
+              <Bot className="h-4 w-4" />
+              Chat
+            </TabsTrigger>
+            <TabsTrigger value="documents" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Documents
+            </TabsTrigger>
+          </TabsList>
         </div>
+        
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">
             {messageCount} messages
@@ -51,34 +66,19 @@ export default function ChatPage() {
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-          <div className="border-b px-8 py-2 ml-20">
-            <TabsList className="grid w-full max-w-md grid-cols-2">
-              <TabsTrigger value="chat" className="flex items-center gap-2">
-                <Bot className="h-4 w-4" />
-                Chat
-              </TabsTrigger>
-              <TabsTrigger value="documents" className="flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Documents
-              </TabsTrigger>
-            </TabsList>
-          </div>
+        <TabsContent value="chat" className="h-full">
+          <ChatBot 
+            messages={messages}
+            addMessage={addMessage}
+            updateLastMessage={updateLastMessage}
+            messageCount={messageCount}
+          />
+        </TabsContent>
 
-          <TabsContent value="chat" className="flex-1 mt-0 pb-20">
-            <ChatBot 
-              messages={messages}
-              addMessage={addMessage}
-              updateLastMessage={updateLastMessage}
-              messageCount={messageCount}
-            />
-          </TabsContent>
-
-          <TabsContent value="documents" className="flex-1 mt-0 p-8 pb-20 ml-20">
-            <DocumentUpload />
-          </TabsContent>
-        </Tabs>
+        <TabsContent value="documents" className="h-full p-8 ml-20">
+          <DocumentUpload />
+        </TabsContent>
       </div>
-    </div>
+    </Tabs>
   );
 }
