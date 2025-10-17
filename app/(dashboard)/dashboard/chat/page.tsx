@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ChatBot } from '@/components/chat/ChatBot';
 import { DocumentUpload } from '@/components/chat/DocumentUpload';
@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-export default function ChatPage() {
+function ChatPageContent() {
   const [activeTab, setActiveTab] = useState('chat');
   const { messages, addMessage, updateLastMessage, clearMessages, messageCount } = useChatPersistence();
   const searchParams = useSearchParams();
@@ -104,5 +104,20 @@ export default function ChatPage() {
         </TabsContent>
       </div>
     </Tabs>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <Bot className="h-8 w-8 mx-auto mb-2 text-primary animate-pulse" />
+          <p className="text-sm text-muted-foreground">Loading AI Assistant...</p>
+        </div>
+      </div>
+    }>
+      <ChatPageContent />
+    </Suspense>
   );
 }

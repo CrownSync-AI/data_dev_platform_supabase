@@ -1,6 +1,6 @@
 "use client"
 import { useSearchParams, useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -125,7 +125,7 @@ const getResponseQualityBadge = (quality: string) => {
   return <Badge variant={variants[quality as keyof typeof variants] || "outline"}>{quality}</Badge>
 }
 
-export default function AnalyticsPage() {
+function AnalyticsPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const currentTab = searchParams.get("tab_name") || "brandAssets"
@@ -818,5 +818,20 @@ export default function AnalyticsPage() {
         </TabsContent>
       </Tabs>
     </div>
+  )
+}
+
+export default function AnalyticsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="h-8 w-8 mx-auto mb-2 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-muted-foreground">Loading Analytics...</p>
+        </div>
+      </div>
+    }>
+      <AnalyticsPageContent />
+    </Suspense>
   )
 }

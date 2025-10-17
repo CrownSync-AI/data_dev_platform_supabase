@@ -5,8 +5,9 @@ import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Suspense } from 'react'
 
-export function FloatingAIButton() {
+function FloatingAIButtonContent() {
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -68,5 +69,13 @@ export function FloatingAIButton() {
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
+  )
+}
+
+export function FloatingAIButton() {
+  return (
+    <Suspense fallback={null}>
+      <FloatingAIButtonContent />
+    </Suspense>
   )
 }
