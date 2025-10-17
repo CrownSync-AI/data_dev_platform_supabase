@@ -71,13 +71,7 @@ export default function CampaignListView({ campaigns, onCampaignClick }: Campaig
             <span className="text-yellow-700 font-medium">Paused</span>
           </div>
         )
-      case 'draft': 
-        return (
-          <div className="flex items-center gap-1 text-sm">
-            <div className="w-2 h-2 rounded-full bg-gray-500"></div>
-            <span className="text-gray-700 font-medium">Draft</span>
-          </div>
-        )
+
       default: 
         return (
           <div className="flex items-center gap-1 text-sm">

@@ -12,7 +12,7 @@ import CampaignListView from './CampaignListView'
 interface Campaign {
   campaign_id: string
   campaign_name: string
-  campaign_status: 'active' | 'paused' | 'completed' | 'draft'
+  campaign_status: 'active' | 'paused' | 'completed'
   campaign_type: 'email' | 'social' | 'mixed'
   start_date: string
   end_date?: string
@@ -153,7 +153,7 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
     {
       campaign_id: '3',
       campaign_name: 'Winter Elegance Collection',
-      campaign_status: 'draft',
+      campaign_status: 'active',
       campaign_type: 'social',
       start_date: '2025-09-25',
       end_date: '2025-10-25',
@@ -265,7 +265,6 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
       case 'active': return 'bg-green-100 text-green-800'
       case 'paused': return 'bg-yellow-100 text-yellow-800'
       case 'completed': return 'bg-blue-100 text-blue-800'
-      case 'draft': return 'bg-gray-100 text-gray-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }

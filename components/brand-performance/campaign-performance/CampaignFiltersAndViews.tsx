@@ -148,7 +148,6 @@ export default function CampaignFiltersAndViews({
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="paused">Paused</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="draft">Draft</SelectItem>
             </SelectContent>
           </Select>
 
