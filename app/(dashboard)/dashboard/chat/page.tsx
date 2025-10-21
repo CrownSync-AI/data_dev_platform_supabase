@@ -99,7 +99,7 @@ function ChatPageContent() {
           />
         </TabsContent>
 
-        <TabsContent value="documents" className={`h-full p-8 ${isEmbeddedMode ? '' : 'ml-20'}`}>
+        <TabsContent value="documents" className={`h-full overflow-y-auto ${isEmbeddedMode ? 'p-8' : 'p-8 ml-20'}`}>
           <DocumentUpload />
         </TabsContent>
       </div>
