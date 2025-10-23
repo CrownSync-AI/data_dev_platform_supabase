@@ -111,10 +111,50 @@ export default function ChatPage() {
   return (
     <Suspense fallback={
       <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <Bot className="h-8 w-8 mx-auto mb-2 text-primary animate-pulse" />
-          <p className="text-sm text-muted-foreground">Loading AI Assistant...</p>
+        <div className="text-center space-y-4">
+          <Bot className="h-8 w-8 mx-auto text-primary" />
+          <div>
+            <p className="text-sm font-medium text-foreground mb-2">Loading AI Assistant</p>
+            <div className="page-loader" />
+          </div>
         </div>
+        
+        <style jsx>{`
+          .page-loader {
+            height: 24px;
+            aspect-ratio: 2;
+            border-bottom: 2px solid transparent;
+            background: linear-gradient(90deg, #3b82f6 50%, transparent 0) -25% 100%/50% 2px repeat-x border-box;
+            position: relative;
+            animation: page-loader-track 0.75s linear infinite;
+            margin: 0 auto;
+          }
+          
+          .page-loader:before {
+            content: "";
+            position: absolute;
+            inset: auto 42.5% 0;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: #1d4ed8;
+            animation: page-loader-ball 0.75s cubic-bezier(0, 900, 1, 900) infinite;
+          }
+          
+          @keyframes page-loader-track {
+            to {
+              background-position: -125% 100%;
+            }
+          }
+          
+          @keyframes page-loader-ball {
+            0%, 2% {
+              bottom: 0%;
+            }
+            98%, 100% {
+              bottom: 0.1%;
+            }
+          }
+        `}</style>
       </div>
     }>
       <ChatPageContent />

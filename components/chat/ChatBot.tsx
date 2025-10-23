@@ -3,7 +3,7 @@
 import { MessageList } from './MessageList';
 import { ChatInput } from './ChatInput';
 import { QuickActions } from './QuickActions';
-import { ContextualThinkingIndicator, MultiStageThinkingIndicator } from './ThinkingIndicator';
+import { ContextualThinkingIndicator, DynamicThinkingIndicator } from './ThinkingIndicator';
 import { EnhancementIndicator } from './EnhancementIndicator';
 import { PresetResponsesService } from '@/lib/services/presetResponsesService';
 import { useState, useEffect, useRef } from 'react';

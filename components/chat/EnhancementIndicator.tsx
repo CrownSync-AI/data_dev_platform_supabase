@@ -1,42 +1,62 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Sparkles, Database, TrendingUp } from 'lucide-react';
 
 export function EnhancementIndicator() {
-  const [dots, setDots] = useState('');
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setDots(prev => {
-        if (prev === '...') return '';
-        return prev + '.';
-      });
-    }, 500);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
-    <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200 mt-4">
-      <div className="relative">
-        <Sparkles className="h-4 w-4 text-blue-500 animate-pulse" />
-        <div className="absolute -inset-1 rounded-full border border-blue-500 opacity-20 animate-ping" />
+    <div className="flex items-center gap-3">
+      <Sparkles className="h-4 w-4 text-blue-500 animate-pulse" />
+      
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-blue-600">
+            Enhancing with live data
+          </span>
+          <div className="flex items-center gap-1">
+            <Database className="h-3 w-3 text-blue-400" />
+            <TrendingUp className="h-3 w-3 text-blue-400" />
+          </div>
+        </div>
+        
+        {/* Enhanced CSS Loader for Enhancement */}
+        <div className="enhancement-loader mt-2" />
       </div>
       
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-medium text-blue-700">
-          Enhancing with live data
-        </span>
-        <span className="text-sm text-blue-600 font-mono w-6">
-          {dots}
-        </span>
-      </div>
-      
-      <div className="flex items-center gap-1 ml-auto">
-        <Database className="h-3 w-3 text-blue-400" />
-        <TrendingUp className="h-3 w-3 text-blue-400" />
-      </div>
+      <style jsx>{`
+        .enhancement-loader {
+          height: 18px;
+          aspect-ratio: 2;
+          border-bottom: 2px solid transparent;
+          background: linear-gradient(90deg, #3b82f6 50%, transparent 0) -25% 100%/50% 2px repeat-x border-box;
+          position: relative;
+          animation: enhancement-loader-track 0.6s linear infinite;
+        }
+        
+        .enhancement-loader:before {
+          content: "";
+          position: absolute;
+          inset: auto 42.5% 0;
+          aspect-ratio: 1;
+          border-radius: 50%;
+          background: #1d4ed8;
+          animation: enhancement-loader-ball 0.6s cubic-bezier(0, 900, 1, 900) infinite;
+        }
+        
+        @keyframes enhancement-loader-track {
+          to {
+            background-position: -125% 100%;
+          }
+        }
+        
+        @keyframes enhancement-loader-ball {
+          0%, 2% {
+            bottom: 0%;
+          }
+          98%, 100% {
+            bottom: 0.1%;
+          }
+        }
+      `}</style>
     </div>
   );
 }
