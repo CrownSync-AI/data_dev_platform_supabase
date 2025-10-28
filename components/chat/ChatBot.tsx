@@ -60,27 +60,46 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount,
     setInput('');
     setShowQuickActions(false);
 
-    // Check for preset response (Phase 1: Immediate Response)
+    // Check for preset response (New Mock Response Approach)
     const presetResponse = PresetResponsesService.getPresetResponse(userMessage);
     
     if (presetResponse) {
-      // Show preset response immediately (0ms delay)
+      // NEW FLOW: Mock thinking animation for 5-7 seconds
+      const stages = getProcessingStages(userMessage);
+      let currentStageIndex = 0;
+      
+      setProcessingStage(stages[0]);
+
+      // Progress through stages with realistic timing (5-7 seconds total)
+      const stageInterval = setInterval(() => {
+        currentStageIndex++;
+        if (currentStageIndex < stages.length) {
+          setProcessingStage(stages[currentStageIndex]);
+        } else {
+          clearInterval(stageInterval);
+        }
+      }, Math.floor((6000) / stages.length)); // Distribute 6 seconds across stages
+
+      // Wait for the full thinking animation (6 seconds)
+      await new Promise(resolve => setTimeout(resolve, 6000));
+      
+      // Clear thinking indicator
+      setProcessingStage(null);
+      
+      // Add assistant message and start typing effect
       const assistantMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: presetResponse.response
+        content: ''
       };
       
       addMessage(assistantMsg);
       
-      // Show enhancement indicator
-      setIsEnhancing(true);
-      setProcessingStage('querying');
+      // Typing effect: Display response character by character
+      await simulateTypingEffect(presetResponse.response);
       
-      // Small delay to show the preset response before enhancement
-      await new Promise(resolve => setTimeout(resolve, 1000));
     } else {
-      // No preset available, show thinking process
+      // No preset available, show thinking process for regular queries
       const stages = getProcessingStages(userMessage);
       let currentStageIndex = 0;
       
@@ -97,75 +116,72 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount,
       }, 800);
     }
 
-    try {
-      // Phase 2: Fetch live data enhancement
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [...messages, userMsg]
-        }),
-      });
+    // Only fetch live data for non-preset responses
+    if (!presetResponse) {
+      try {
+        // Fetch live data for regular queries
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: [...messages, userMsg]
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
+        if (!response.ok) {
+          throw new Error('Failed to send message');
+        }
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('No response body');
-      }
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('No response body');
+        }
 
-      // Clear indicators
-      setProcessingStage(null);
-      setIsEnhancing(false);
+        // Clear indicators
+        setProcessingStage(null);
 
-      if (!presetResponse) {
-        // No preset was shown, add new assistant message
+        // Add new assistant message for streaming response
         const assistantMsg: Message = {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
           content: ''
         };
         addMessage(assistantMsg);
-      }
 
-      const decoder = new TextDecoder();
-      let done = false;
-      let fullContent = presetResponse ? presetResponse.response + '\n\n---\n\n**🔄 Enhanced with Live Data:**\n\n' : '';
+        const decoder = new TextDecoder();
+        let done = false;
+        let fullContent = '';
 
-      while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
+        while (!done) {
+          const { value, done: readerDone } = await reader.read();
+          done = readerDone;
 
-        if (value) {
-          const chunk = decoder.decode(value, { stream: true });
-          fullContent += chunk;
-          updateLastMessage(fullContent);
+          if (value) {
+            const chunk = decoder.decode(value, { stream: true });
+            fullContent += chunk;
+            updateLastMessage(fullContent);
+          }
         }
-      }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setProcessingStage(null);
-      setIsEnhancing(false);
-      
-      if (!presetResponse) {
+      } catch (error) {
+        console.error('Error sending message:', error);
+        setProcessingStage(null);
+        
         const errorMsg: Message = {
           id: (Date.now() + 2).toString(),
           role: 'assistant',
           content: 'Sorry, I encountered an error. Please try again.'
         };
         addMessage(errorMsg);
-      } else {
-        // If preset was shown but enhancement failed, update with error note
-        updateLastMessage(presetResponse.response + '\n\n*⚠️ Unable to fetch live data enhancement. Showing cached information.*');
       }
-    } finally {
-      setIsLoading(false);
-      setCurrentQuery('');
     }
+
+    // Clean up
+    setIsLoading(false);
+    setCurrentQuery('');
+    setProcessingStage(null);
+    setIsEnhancing(false);
   };
 
   // Determine processing stages based on query content
@@ -188,6 +204,21 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount,
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     sendMessage(input);
+  };
+
+  // Simulate typing effect for preset responses
+  const simulateTypingEffect = async (text: string) => {
+    const words = text.split(' ');
+    let currentText = '';
+    
+    for (let i = 0; i < words.length; i++) {
+      currentText += (i > 0 ? ' ' : '') + words[i];
+      updateLastMessage(currentText);
+      
+      // Vary typing speed: faster for short words, slower for longer words
+      const delay = words[i].length > 6 ? 100 : 50;
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
   };
 
   const handleQuickAction = (message: string) => {
