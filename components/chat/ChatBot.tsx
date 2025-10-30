@@ -14,7 +14,6 @@ interface ExtendedChatBotProps extends ChatBotProps {
 }
 
 export function ChatBot({ messages, addMessage, updateLastMessage, messageCount, isEmbeddedMode = false }: ExtendedChatBotProps) {
-  const [showQuickActions, setShowQuickActions] = useState(true);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [processingStage, setProcessingStage] = useState<'analyzing' | 'searching' | 'querying' | 'generating' | null>(null);
@@ -22,11 +21,6 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount,
   const [isEnhancing, setIsEnhancing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  // Hide quick actions if we have more than just the welcome message
-  useEffect(() => {
-    setShowQuickActions(messageCount <= 1);
-  }, [messageCount]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -58,7 +52,6 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount,
     setIsLoading(true);
     setCurrentQuery(userMessage);
     setInput('');
-    setShowQuickActions(false);
 
     // Check for preset response (New Mock Response Approach)
     const presetResponse = PresetResponsesService.getPresetResponse(userMessage);
@@ -235,9 +228,7 @@ export function ChatBot({ messages, addMessage, updateLastMessage, messageCount,
           minHeight: '400px'
         }}
       >
-        {showQuickActions && (
-          <QuickActions onActionClick={handleQuickAction} />
-        )}
+        <QuickActions onActionClick={handleQuickAction} />
         <MessageList messages={messages} />
         
         {/* Show thinking indicator when processing */}

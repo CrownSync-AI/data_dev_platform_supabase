@@ -216,6 +216,35 @@ export default function AllPlatformsTrendChart({
     return `${Math.round(days / 30)} months`
   }
 
+  // Calculate period date ranges for legend
+  const getPeriodRanges = () => {
+    const endDate = dateRange.to || new Date()
+    const startDate = dateRange.from || new Date(Date.now() - 20 * 24 * 60 * 60 * 1000)
+    const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
+    const actualDays = Math.max(daysDiff, 7)
+    
+    // Current period
+    const currentStart = startDate
+    const currentEnd = endDate
+    
+    // Previous period (same duration, ending when current period starts)
+    const previousEnd = new Date(startDate.getTime() - 24 * 60 * 60 * 1000) // Day before current starts
+    const previousStart = new Date(previousEnd.getTime() - (actualDays - 1) * 24 * 60 * 60 * 1000)
+    
+    const formatDateRange = (start: Date, end: Date) => {
+      const startStr = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      const endStr = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      return `${startStr} - ${endStr}`
+    }
+    
+    return {
+      current: formatDateRange(currentStart, currentEnd),
+      previous: formatDateRange(previousStart, previousEnd)
+    }
+  }
+
+  const periodRanges = getPeriodRanges()
+
   return (
     <Card>
       <CardHeader>
@@ -314,7 +343,13 @@ export default function AllPlatformsTrendChart({
               <Legend 
                 wrapperStyle={{ paddingTop: '15px' }}
                 iconType="line"
-                formatter={(value) => value === 'current' ? 'Current Period' : 'Previous Period'}
+                formatter={(value) => {
+                  if (value === 'current') {
+                    return `Current Period (${periodRanges.current})`
+                  } else {
+                    return `Previous Period (${periodRanges.previous})`
+                  }
+                }}
               />
               
               {/* Current Period Line - Solid */}
@@ -341,18 +376,6 @@ export default function AllPlatformsTrendChart({
               />
             </LineChart>
           </ResponsiveContainer>
-        </div>
-        
-        {/* Period Comparison Legend */}
-        <div className="mt-4 flex justify-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-0.5 bg-blue-500 rounded"></div>
-            <span className="text-sm text-gray-600">Current Period</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-0.5 bg-gray-400 rounded border-dashed border-t-2 border-gray-400"></div>
-            <span className="text-sm text-gray-600">Previous Period</span>
-          </div>
         </div>
         
         {/* Enhanced Insights Panel with Period Comparison */}
