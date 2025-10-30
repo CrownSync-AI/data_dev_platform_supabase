@@ -13,7 +13,7 @@ import {
   Legend, 
   ResponsiveContainer
 } from 'recharts'
-import { TrendingUp } from 'lucide-react'
+import { TrendingUp, TrendingDown, Calendar } from 'lucide-react'
 
 interface AllPlatformsTrendChartProps {
   platformData: Record<string, any>
@@ -32,16 +32,17 @@ export default function AllPlatformsTrendChart({
 }: AllPlatformsTrendChartProps) {
   const [selectedMetric, setSelectedMetric] = useState<MetricType>('engagement')
 
-  // Generate trend data respecting platform filter and date range
+  // Generate trend data with current and previous period comparison
   const generateTrendData = () => {
-    const days = 21
+    // Calculate dynamic timeframe based on date range
     const endDate = dateRange.to || new Date()
-    const startDate = dateRange.from || new Date(Date.now() - (days - 1) * 24 * 60 * 60 * 1000)
+    const startDate = dateRange.from || new Date(Date.now() - 20 * 24 * 60 * 60 * 1000) // Default 21 days
     const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1
-    const actualDays = Math.min(daysDiff, days)
+    const actualDays = Math.max(daysDiff, 7) // Minimum 7 days
     
     const trendData = []
     
+    // Generate current period data
     for (let i = actualDays - 1; i >= 0; i--) {
       const date = new Date(startDate.getTime() + (actualDays - 1 - i) * 24 * 60 * 60 * 1000)
       
@@ -52,19 +53,42 @@ export default function AllPlatformsTrendChart({
       
       // Generate data based on platform filter
       if (platformFilter === 'all') {
-        // Generate data for each platform
+        // Aggregate all platforms into single values
+        let currentTotal = 0
+        let previousTotal = 0
+        
         Object.entries(platformData).forEach(([platform, data]) => {
-          const variation = 0.7 + Math.random() * 0.6 // 70% to 130% variation
           const baseValue = data[selectedMetric] || 0
-          dayData[platform] = Math.round(baseValue * variation)
+          
+          // Current period variation (more realistic trending)
+          const trendFactor = 1 + (actualDays - 1 - i) * 0.015 // 1.5% improvement per day
+          const dailyVariation = 0.8 + Math.random() * 0.4 // 80% to 120% daily variation
+          const currentValue = Math.round(baseValue * trendFactor * dailyVariation)
+          
+          // Previous period (slightly lower performance)
+          const previousVariation = 0.7 + Math.random() * 0.4 // 70% to 110% variation
+          const previousValue = Math.round(baseValue * 0.85 * previousVariation) // 15% lower baseline
+          
+          currentTotal += currentValue
+          previousTotal += previousValue
         })
+        
+        dayData.current = currentTotal
+        dayData.previous = previousTotal
       } else {
         // Generate data for specific platform only
         const data = platformData[platformFilter]
         if (data) {
-          const variation = 0.7 + Math.random() * 0.6
           const baseValue = data[selectedMetric] || 0
-          dayData[platformFilter] = Math.round(baseValue * variation)
+          
+          // Current period
+          const trendFactor = 1 + (actualDays - 1 - i) * 0.02 // 2% improvement per day for single platform
+          const dailyVariation = 0.8 + Math.random() * 0.4
+          dayData.current = Math.round(baseValue * trendFactor * dailyVariation)
+          
+          // Previous period
+          const previousVariation = 0.7 + Math.random() * 0.4
+          dayData.previous = Math.round(baseValue * 0.8 * previousVariation) // 20% lower baseline
         }
       }
       
@@ -150,18 +174,47 @@ export default function AllPlatformsTrendChart({
 
   const trendData = generateTrendData()
 
-  // Calculate engagement rate for display
+  // Calculate engagement rate for display and period comparison
   const processedData = selectedMetric === 'engagement' 
     ? trendData.map(day => {
         const processed = { ...day }
-        Object.keys(platformData).forEach(platform => {
-          const impressions = platformData[platform]?.impressions || 1
-          const engagement = day[platform] || 0
-          processed[platform] = Number(((engagement / impressions) * 100).toFixed(1))
-        })
+        
+        // Calculate total impressions for engagement rate calculation
+        const totalImpressions = Object.values(platformData).reduce((sum: number, data: any) => {
+          return sum + (data.impressions || 0)
+        }, 0)
+        
+        // Convert to engagement rates
+        processed.current = Number(((day.current / totalImpressions) * 100).toFixed(1))
+        processed.previous = Number(((day.previous / totalImpressions) * 100).toFixed(1))
+        
         return processed
       })
     : trendData
+
+  // Calculate period comparison metrics
+  const calculatePeriodComparison = () => {
+    if (processedData.length === 0) return { change: 0, direction: 'stable', currentAvg: 0, previousAvg: 0 }
+    
+    const currentAvg = processedData.reduce((sum, day) => sum + (day.current || 0), 0) / processedData.length
+    const previousAvg = processedData.reduce((sum, day) => sum + (day.previous || 0), 0) / processedData.length
+    
+    const change = previousAvg > 0 ? ((currentAvg - previousAvg) / previousAvg * 100) : 0
+    const direction = change > 5 ? 'up' : change < -5 ? 'down' : 'stable'
+    
+    return { change: Math.abs(change), direction, currentAvg, previousAvg }
+  }
+
+  const periodComparison = calculatePeriodComparison()
+
+  // Calculate timeframe display
+  const getTimeframeDisplay = () => {
+    const days = processedData.length
+    if (days <= 7) return `${days} days`
+    if (days <= 14) return `${Math.round(days / 7)} weeks`
+    if (days <= 31) return `${Math.round(days / 7)} weeks`
+    return `${Math.round(days / 30)} months`
+  }
 
   return (
     <Card>
@@ -193,10 +246,37 @@ export default function AllPlatformsTrendChart({
             ))}
           </div>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Trend analysis for {platformFilter === 'all' ? 'all platforms' : getPlatformName(platformFilter)} - {campaignName}
-          {(dateRange.from || dateRange.to) && ` (${dateRange.from?.toLocaleDateString() || 'start'} to ${dateRange.to?.toLocaleDateString() || 'end'})`}
-        </p>
+        
+        {/* Enhanced Description with Period Comparison */}
+        <div className="space-y-2">
+          <p className="text-sm text-muted-foreground">
+            Trend analysis for {platformFilter === 'all' ? 'all platforms combined' : getPlatformName(platformFilter)} - {campaignName}
+          </p>
+          <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-gray-500" />
+              <span className="text-gray-600">
+                {getTimeframeDisplay()} 
+                {(dateRange.from || dateRange.to) && ` (${dateRange.from?.toLocaleDateString() || 'start'} to ${dateRange.to?.toLocaleDateString() || 'end'})`}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              {periodComparison.direction === 'up' ? (
+                <TrendingUp className="h-4 w-4 text-green-600" />
+              ) : periodComparison.direction === 'down' ? (
+                <TrendingDown className="h-4 w-4 text-red-600" />
+              ) : (
+                <div className="h-4 w-4 rounded-full bg-gray-400"></div>
+              )}
+              <span className={`font-medium ${
+                periodComparison.direction === 'up' ? 'text-green-600' : 
+                periodComparison.direction === 'down' ? 'text-red-600' : 'text-gray-600'
+              }`}>
+                {periodComparison.change.toFixed(1)}% vs previous period
+              </span>
+            </div>
+          </div>
+        </div>
       </CardHeader>
       
       <CardContent>
@@ -225,107 +305,132 @@ export default function AllPlatformsTrendChart({
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
                 labelFormatter={(label) => `Date: ${label}`}
-                formatter={(value: any, name: string) => [
-                  selectedMetric === 'engagement' ? `${value}%` : formatNumber(value),
-                  name.charAt(0).toUpperCase() + name.slice(1)
-                ]}
+                formatter={(value: any, name: string) => {
+                  const formattedValue = selectedMetric === 'engagement' ? `${value}%` : formatNumber(value)
+                  const periodLabel = name === 'current' ? 'Current Period' : 'Previous Period'
+                  return [formattedValue, periodLabel]
+                }}
               />
-              <Legend content={() => null} />
+              <Legend 
+                wrapperStyle={{ paddingTop: '15px' }}
+                iconType="line"
+                formatter={(value) => value === 'current' ? 'Current Period' : 'Previous Period'}
+              />
               
-              {/* Render lines for filtered platforms */}
-              {(platformFilter === 'all' ? Object.keys(platformData) : [platformFilter]).map((platform) => (
-                <Line
-                  key={platform}
-                  type="monotone"
-                  dataKey={platform}
-                  stroke={platformColors[platform as keyof typeof platformColors] || platformColors.default}
-                  strokeWidth={2}
-                  dot={{ r: 3, strokeWidth: 2 }}
-                  activeDot={{ r: 5, strokeWidth: 2 }}
-                  name={getPlatformName(platform)}
-                />
-              ))}
+              {/* Current Period Line - Solid */}
+              <Line
+                type="monotone"
+                dataKey="current"
+                stroke="#3B82F6"
+                strokeWidth={3}
+                dot={{ r: 4, strokeWidth: 2, fill: '#3B82F6' }}
+                activeDot={{ r: 6, strokeWidth: 2, fill: '#3B82F6' }}
+                name="current"
+              />
+              
+              {/* Previous Period Line - Dotted */}
+              <Line
+                type="monotone"
+                dataKey="previous"
+                stroke="#94A3B8"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                dot={{ r: 3, strokeWidth: 2, fill: '#94A3B8' }}
+                activeDot={{ r: 5, strokeWidth: 2, fill: '#94A3B8' }}
+                name="previous"
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
         
-        {/* Custom Legend with Platform Logos */}
-        <div className="mt-4 flex flex-wrap justify-center gap-4">
-          {Object.keys(platformData).map((platform) => (
-            <div key={platform} className="flex items-center gap-2">
-              {getPlatformLogo(platform)}
-              <div 
-                className="w-4 h-0.5 rounded"
-                style={{ backgroundColor: platformColors[platform as keyof typeof platformColors] || platformColors.default }}
-              ></div>
-              <span className="text-sm text-gray-600">{getPlatformName(platform)}</span>
-            </div>
-          ))}
+        {/* Period Comparison Legend */}
+        <div className="mt-4 flex justify-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-0.5 bg-blue-500 rounded"></div>
+            <span className="text-sm text-gray-600">Current Period</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-0.5 bg-gray-400 rounded border-dashed border-t-2 border-gray-400"></div>
+            <span className="text-sm text-gray-600">Previous Period</span>
+          </div>
         </div>
         
-        {/* Insights Panel */}
+        {/* Enhanced Insights Panel with Period Comparison */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 bg-blue-50 rounded-lg">
             <h4 className="font-medium text-blue-800 mb-2">📈 Trend Insights</h4>
             <div className="text-sm text-blue-700 space-y-1">
               <div>Metric: {getMetricLabel(selectedMetric)}</div>
-              <div>Time Period: 21 days</div>
-              <div>Platforms: {Object.keys(platformData).length} active</div>
+              <div>Time Period: {getTimeframeDisplay()}</div>
+              <div>View: {platformFilter === 'all' ? 'All Platforms Combined' : getPlatformName(platformFilter)}</div>
             </div>
           </div>
           
-          <div className="p-4 bg-green-50 rounded-lg">
-            <h4 className="font-medium text-green-800 mb-2">🎯 Best Performer</h4>
-            <div className="text-sm text-green-700 space-y-1">
-              {(() => {
-                const bestPlatform = Object.entries(platformData).reduce((best, [platform, data]) => {
-                  const currentValue = data[selectedMetric] || 0
-                  const bestValue = platformData[best]?.[selectedMetric] || 0
-                  return currentValue > bestValue ? platform : best
-                }, Object.keys(platformData)[0])
-                
-                return (
-                  <>
-                    <div>Platform: {bestPlatform.charAt(0).toUpperCase() + bestPlatform.slice(1)}</div>
-                    <div>
-                      {getMetricLabel(selectedMetric)}: {
-                        selectedMetric === 'engagement' 
-                          ? `${((platformData[bestPlatform][selectedMetric] / platformData[bestPlatform].impressions) * 100).toFixed(1)}%`
-                          : formatNumber(platformData[bestPlatform][selectedMetric])
-                      }
-                    </div>
-                  </>
-                )
-              })()}
+          <div className={`p-4 rounded-lg ${
+            periodComparison.direction === 'up' ? 'bg-green-50' : 
+            periodComparison.direction === 'down' ? 'bg-red-50' : 'bg-gray-50'
+          }`}>
+            <h4 className={`font-medium mb-2 ${
+              periodComparison.direction === 'up' ? 'text-green-800' : 
+              periodComparison.direction === 'down' ? 'text-red-800' : 'text-gray-800'
+            }`}>
+              📊 Period Comparison
+            </h4>
+            <div className={`text-sm space-y-1 ${
+              periodComparison.direction === 'up' ? 'text-green-700' : 
+              periodComparison.direction === 'down' ? 'text-red-700' : 'text-gray-700'
+            }`}>
+              <div className="flex items-center gap-2">
+                {periodComparison.direction === 'up' ? (
+                  <TrendingUp className="h-3 w-3" />
+                ) : periodComparison.direction === 'down' ? (
+                  <TrendingDown className="h-3 w-3" />
+                ) : (
+                  <div className="h-3 w-3 rounded-full bg-gray-400"></div>
+                )}
+                <span>{periodComparison.change.toFixed(1)}% change</span>
+              </div>
+              <div>
+                Current Avg: {
+                  selectedMetric === 'engagement' 
+                    ? `${periodComparison.currentAvg.toFixed(1)}%`
+                    : formatNumber(Math.round(periodComparison.currentAvg))
+                }
+              </div>
+              <div>
+                Previous Avg: {
+                  selectedMetric === 'engagement' 
+                    ? `${periodComparison.previousAvg.toFixed(1)}%`
+                    : formatNumber(Math.round(periodComparison.previousAvg))
+                }
+              </div>
             </div>
           </div>
           
           <div className="p-4 bg-purple-50 rounded-lg">
-            <h4 className="font-medium text-purple-800 mb-2">📊 Total Performance</h4>
+            <h4 className="font-medium text-purple-800 mb-2">🎯 Performance Summary</h4>
             <div className="text-sm text-purple-700 space-y-1">
               {(() => {
-                const total = Object.values(platformData).reduce((sum: number, data: any) => {
-                  return sum + (data[selectedMetric] || 0)
-                }, 0)
-                
-                const average = total / Object.keys(platformData).length
+                const currentTotal = processedData.reduce((sum, day) => sum + (day.current || 0), 0)
+                const dailyAverage = currentTotal / processedData.length
                 
                 return (
                   <>
                     <div>
-                      Total: {
-                        selectedMetric === 'engagement'
-                          ? `${(average / Object.values(platformData).reduce((sum: number, data: any) => sum + (data.impressions || 0), 0) * Object.keys(platformData).length * 100).toFixed(1)}%`
-                          : formatNumber(total)
+                      Daily Average: {
+                        selectedMetric === 'engagement' 
+                          ? `${dailyAverage.toFixed(1)}%`
+                          : formatNumber(Math.round(dailyAverage))
                       }
                     </div>
                     <div>
-                      Average: {
-                        selectedMetric === 'engagement'
-                          ? `${(average / (Object.values(platformData).reduce((sum: number, data: any) => sum + (data.impressions || 0), 0) / Object.keys(platformData).length) * 100).toFixed(1)}%`
-                          : formatNumber(average)
+                      Total Period: {
+                        selectedMetric === 'engagement' 
+                          ? `${(currentTotal / processedData.length).toFixed(1)}% avg`
+                          : formatNumber(Math.round(currentTotal))
                       }
                     </div>
+                    <div>Platforms: {Object.keys(platformData).length} active</div>
                   </>
                 )
               })()}
