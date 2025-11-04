@@ -6,7 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
-import { Eye, MousePointer, Heart, Clock, Hash, Target, Users, TrendingUp, ChevronDown, ChevronUp, BarChart3 } from 'lucide-react';
+import { Eye, MousePointer, Heart, Clock, Hash, Target, Users, TrendingUp, ChevronDown, ChevronUp, BarChart3, ArrowUp, ArrowDown } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface PostDiagnostics {
   timing: 'optimal' | 'good' | 'poor';
@@ -38,14 +39,28 @@ interface ExpandedPost {
   [postId: string]: boolean;
 }
 
+type SortMetric = 'views' | 'engagement' | 'likes' | 'engagementRate';
+type SortDirection = 'asc' | 'desc';
+
 export default function TopPostsSection({ posts }: TopPostsSectionProps) {
   const [expandedPosts, setExpandedPosts] = useState<ExpandedPost>({});
+  const [sortMetric, setSortMetric] = useState<SortMetric>('engagement');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   const togglePostExpansion = (postId: string) => {
     setExpandedPosts(prev => ({
       ...prev,
       [postId]: !prev[postId]
     }));
+  };
+
+  const handleSortChange = (metric: SortMetric) => {
+    if (sortMetric === metric) {
+      setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc');
+    } else {
+      setSortMetric(metric);
+      setSortDirection('desc');
+    }
   };
 
   const formatNumber = (num: number) => {
@@ -62,6 +77,32 @@ export default function TopPostsSection({ posts }: TopPostsSectionProps) {
       minute: '2-digit'
     });
   };
+
+  const getSortValue = (post: TopPost, metric: SortMetric): number => {
+    switch (metric) {
+      case 'views':
+        return post.metrics.impressions || post.metrics.views || post.metrics.viewsCount || 0;
+      case 'engagement':
+        return post.metrics.engagement || post.metrics.engagementCount || 0;
+      case 'likes':
+        return post.metrics.likes || post.metrics.likeCount || 0;
+      case 'engagementRate':
+        return post.metrics.engagementRate || 0;
+      default:
+        return 0;
+    }
+  };
+
+  const sortedPosts = [...posts].sort((a, b) => {
+    const aValue = getSortValue(a, sortMetric);
+    const bValue = getSortValue(b, sortMetric);
+    
+    if (sortDirection === 'desc') {
+      return bValue - aValue;
+    } else {
+      return aValue - bValue;
+    }
+  });
 
   const getPlatformLogo = (platform: string) => {
     switch (platform.toLowerCase()) {
@@ -150,19 +191,82 @@ export default function TopPostsSection({ posts }: TopPostsSectionProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          🏆 Top Performing Posts & Assets
-        </CardTitle>
-        <p className="text-gray-600">
-          Highest contributing posts with expandable diagnostics and improvement recommendations
-        </p>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              🏆 Top Performing Posts & Assets
+            </CardTitle>
+            <p className="text-gray-600">
+              Highest contributing posts with expandable diagnostics and improvement recommendations
+            </p>
+          </div>
+          
+          {/* Sorting Controls */}
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <span className="text-sm text-gray-600 font-medium whitespace-nowrap">Sort by:</span>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Select value={sortMetric} onValueChange={(value: SortMetric) => handleSortChange(value)}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end" side="bottom" sideOffset={4} className="w-[140px]">
+                    <SelectItem value="views">Views</SelectItem>
+                    <SelectItem value="engagement">Engagement</SelectItem>
+                    <SelectItem value="likes">Likes</SelectItem>
+                    <SelectItem value="engagementRate">ER</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc')}
+                className="flex items-center gap-1 whitespace-nowrap"
+              >
+                {sortDirection === 'desc' ? (
+                  <ArrowDown className="h-4 w-4" />
+                ) : (
+                  <ArrowUp className="h-4 w-4" />
+                )}
+                <span className="hidden sm:inline">
+                  {sortDirection === 'desc' ? 'High to Low' : 'Low to High'}
+                </span>
+                <span className="sm:hidden">
+                  {sortDirection === 'desc' ? 'Desc' : 'Asc'}
+                </span>
+              </Button>
+            </div>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
 
 
         <div className="space-y-4">
+          {/* Sort Status Indicator */}
+          <div className="flex items-center justify-between text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+            <span>
+              Showing {sortedPosts.length} posts sorted by{' '}
+              <span className="font-medium">
+                {sortMetric === 'views' ? 'Views' : 
+                 sortMetric === 'engagement' ? 'Engagement' :
+                 sortMetric === 'likes' ? 'Likes' : 'Engagement Rate'}
+              </span>
+              {' '}({sortDirection === 'desc' ? 'highest first' : 'lowest first'})
+            </span>
+            <div className="flex items-center gap-1">
+              {sortDirection === 'desc' ? (
+                <ArrowDown className="h-3 w-3" />
+              ) : (
+                <ArrowUp className="h-3 w-3" />
+              )}
+            </div>
+          </div>
+          
           <div className="grid gap-4">
-              {posts.map((post, index) => (
+              {sortedPosts.map((post, index) => (
                 <Card key={post.id} className={`transition-all hover:shadow-md border ${expandedPosts[post.id] ? 'border-blue-200 shadow-sm' : 'border-gray-200'}`}>
                   <CardContent className="p-0">
                     {/* Main Post Content */}
@@ -208,36 +312,72 @@ export default function TopPostsSection({ posts }: TopPostsSectionProps) {
 
                           {/* Metrics Grid */}
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
-                            <div className="flex items-center gap-2">
+                            <div className={`flex items-center gap-2 p-2 rounded ${sortMetric === 'views' ? 'bg-blue-100 border border-blue-200' : ''}`}>
                               <Eye className="h-4 w-4 text-blue-600" />
                               <div>
                                 <p className="text-sm font-medium">{formatNumber(post.metrics.impressions || post.metrics.views || 0)}</p>
                                 <p className="text-xs text-gray-500">Views</p>
                               </div>
+                              {sortMetric === 'views' && (
+                                <div className="ml-auto">
+                                  {sortDirection === 'desc' ? (
+                                    <ArrowDown className="h-3 w-3 text-blue-600" />
+                                  ) : (
+                                    <ArrowUp className="h-3 w-3 text-blue-600" />
+                                  )}
+                                </div>
+                              )}
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className={`flex items-center gap-2 p-2 rounded ${sortMetric === 'engagement' ? 'bg-purple-100 border border-purple-200' : ''}`}>
                               <MousePointer className="h-4 w-4 text-purple-600" />
                               <div>
                                 <p className="text-sm font-medium">{formatNumber(post.metrics.engagement || post.metrics.engagementCount || 0)}</p>
                                 <p className="text-xs text-gray-500">Engagement</p>
                               </div>
+                              {sortMetric === 'engagement' && (
+                                <div className="ml-auto">
+                                  {sortDirection === 'desc' ? (
+                                    <ArrowDown className="h-3 w-3 text-purple-600" />
+                                  ) : (
+                                    <ArrowUp className="h-3 w-3 text-purple-600" />
+                                  )}
+                                </div>
+                              )}
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className={`flex items-center gap-2 p-2 rounded ${sortMetric === 'likes' ? 'bg-red-100 border border-red-200' : ''}`}>
                               <Heart className="h-4 w-4 text-red-600" />
                               <div>
                                 <p className="text-sm font-medium">{formatNumber(post.metrics.likes || post.metrics.likeCount || 0)}</p>
                                 <p className="text-xs text-gray-500">Likes</p>
                               </div>
+                              {sortMetric === 'likes' && (
+                                <div className="ml-auto">
+                                  {sortDirection === 'desc' ? (
+                                    <ArrowDown className="h-3 w-3 text-red-600" />
+                                  ) : (
+                                    <ArrowUp className="h-3 w-3 text-red-600" />
+                                  )}
+                                </div>
+                              )}
                             </div>
 
-                            <div className="flex items-center gap-2">
+                            <div className={`flex items-center gap-2 p-2 rounded ${sortMetric === 'engagementRate' ? 'bg-green-100 border border-green-200' : ''}`}>
                               <TrendingUp className="h-4 w-4 text-green-600" />
                               <div>
                                 <p className="text-sm font-medium">{post.metrics.engagementRate?.toFixed(2) || '0.00'}%</p>
                                 <p className="text-xs text-gray-500">ER</p>
                               </div>
+                              {sortMetric === 'engagementRate' && (
+                                <div className="ml-auto">
+                                  {sortDirection === 'desc' ? (
+                                    <ArrowDown className="h-3 w-3 text-green-600" />
+                                  ) : (
+                                    <ArrowUp className="h-3 w-3 text-green-600" />
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
 
