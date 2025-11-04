@@ -1,0 +1,746 @@
+{
+    "bluesky": {
+        "id": "at://did:plc:n7atrjd22xgkmgwig6dzlhzd/app.bsky.feed.post/3lez7fwx457", // Bluesky Social Post ID
+        "postUrl": "https://bsky.app/profile/madworlds.bsky.social/post/3lez7fwx457",
+        "analytics": {
+            "cid": "bafyreigh7nz7x6pl4atgsextqtcbh33mg66yqt3caeihutn7ojkmpdtnzm", // Bluesky Content ID
+            "created": "2025-01-05T18:04:28.316Z",
+            "id": "at://did:plc:n7atrjd22xgkmgwig6dzlhzd/app.bsky.feed.post/3lfb57nxgxs2e", // Bluesky Social Post ID
+            "indexedAt": "2025-01-05T18:04:29.150Z",
+            "labels": [],
+            "likeCount": 3,
+            "post": "The day is what you make it!",
+            "postUrl": "https://bsky.app/profile/madworlds.bsky.social/post/3lez7fwx45723",
+            "quoteCount": 2,
+            "replyCount": 1,
+            "repostCount": 1,
+            "viewer": { // Information about the viewing user's relationship
+                "threadMuted": false, // Whether the viewing user has muted the thread containing this content
+                "embeddingDisabled": false // Whether embedding/sharing of this content is disabled for the viewing user
+            }
+        }
+    },
+    /* If the FB page has fewer than 100 likes then not all analytics data available. */
+    "facebook": {
+        "id": "1397547544885713_2159201585286968", // Facebook Social Post ID
+        "postUrl": "https://www.facebook.com/1397547544885713_2159201585286968",
+        "analytics": {
+            "blueReelsPlayCount": 136, // Reels: The number of times your reel starts to play after an impression is already counted. This is defined as reels sessions with 1ms or more of playback and excludes replays.
+            "commentsCount": 1, // Count of comment for the post
+            "impressions": 23, // The number of times your Page's post entered a person's screen. Posts include statuses, photos, links, videos and more.
+            "impressionsFanPaidUnique": 3, // The number of people who have like your Page and saw your Page post in an Ad or Sponsored Story.
+            "impressionsFanUnique": 1, // The number of people who have like your Page who saw your Page post.
+            "impressionsOrganicUnique": 4, // The number of people who had your Page's post enter their screen through unpaid distribution.
+            "impressionsPaidUnique": 2, // The number of people who had your Page's post enter their screen through paid distribution such as an ad.
+            "impressionsUnique": 12, // The number of people who had your Page's post enter their screen. Posts include statuses, photos, links, videos and more.
+            "likeCount": 23, // Count of likes for the post
+            "likedBy": [ // Users who liked the post
+                {
+                    "id": "7101149746568432",
+                    "name": "John Smith"
+                }
+            ],
+            "mediaUrls": [
+                {
+                    "media": {
+                        "image": {
+                            "height": 405,
+                            "src": "https://scontent-lga3-1.xx.fbcdn.net/v/t",
+                            "width": 720
+                        },
+                        "source": "https://video-lga3-2.xx.fbcdn.net/o1/v/t2/f2/m69/AQN"
+                    },
+                    "mediaType": "video",
+                    "type": "story"
+                }
+            ],
+            "postImpressionsUnique": 126, // Reels: The number of people who saw your reel at least once, whether or not your reel was played. People reached is different from impressions, which may include multiple views of your reel by the same people
+            "postVideoAvgTimeWatched": 4470, // Reels: The average time (in ms) your reel was played, including any time spent replaying the reel during a single instance of it playing. Because this metric includes replays, this number could be greater than the total length of the reel
+            "postVideoSocialActions": { // Reels: The number of comments, shares, and reactions on your reel
+                "share": 1
+            },
+            "postVideoViewTime": 608011, // Reels: Total time (in ms) your reel was played, including any time spent replaying your reel.
+            "reactions": {
+                "like": 1, // Like reactions - The "like" reaction counts include both "like" and "care" reactions.
+                "love": 1, // Love reactions
+                "anger": 1, // Anger reactions
+                "haha": 1, // Haha reactions
+                "wow": 1, // Wow reactions
+                "sorry": 1, // Sorry reactions
+                "total": 6 // Total number of reactions
+            },
+            "reactionsByType": 6, // The total types of reactions
+            "sharesCount": 34, // Total number of times post shared
+            /** The following fields are available for videos */
+            "totalVideo10SViews": 621, // Total number of times your video was viewed for 10 seconds or viewed to the end, whichever came first.
+            "totalVideo10SViewsAutoPlayed": 564, // Number of times people clicked to play your video and viewed it for 10 seconds or viewed it to the end, whichever came first.
+            "totalVideo10SViewsClickedToPlay": 46, // Number of times your video started automatically playing and people viewed it for 10 seconds, or viewed it to the end, whichever came first.
+            "totalVideo10SViewsOrganic": 621, // Number of times your video was viewed for 10 seconds or viewed to the end, whichever came first, without a paid promotion.
+            "totalVideo10SViewsPaid": 0, // Number of times your video was viewed for 10 seconds or viewed to the end, whichever came first, after a paid promotion.
+            "totalVideo10SViewsSoundOn": 380, // Number of times your video sound was turned on and was viewed for 10 seconds or viewed to the end, whichever came first.
+            "totalVideo10SViewsUnique": 621, // Number of unique people who viewed your video for 10 seconds or viewed to the end, whichever came first.
+            "totalVideo15SViews": 525, // Total number of times your video was viewed for at least 15 seconds.
+            "totalVideo60SExcludesShorterViews": 0, // Total number of times your video was viewed for 60 seconds only if the video is 60 seconds or longer.
+            "totalVideoAvgTimeWatched": 8494, // Lifetime: Average time video viewed
+            "totalVideoCompleteViews": 430, // Total number of times your video was watched at 95% of its length, including watches that skipped to this point.
+            "totalVideoCompleteViewsAutoPlayed": 374, // Number of times your video started automatically playing and people watched it at 95% of its length, including watches that skipped to this point.
+            "totalVideoCompleteViewsClickedToPlay": 56, // Number of times people clicked to play your video and watched it at 95% of its length, including watches that skipped to this point.
+            "totalVideoCompleteViewsOrganic": 430, // Number of times your video was watches at 95% of its length without any paid promotion, including watches that skipped to this point.
+            "totalVideoCompleteViewsOrganicUnique": 430, // The number of unique people who watched your video at 95% of its length without any paid promotion, including people that skipped to this point
+            "totalVideoCompleteViewsPaid": 0, // Number of times your video was watched at 95% of its length after paid promotion, including watches that skipped to this point.
+            "totalVideoCompleteViewsPaidUnique": 0, // The number of unique people who watched your video at 95% of its length after paid promotion, including people that skipped to this point.
+            "totalVideoCompleteViewsUnique": 430, // Total number of unique people who watched your video at 95% of its length or more, including people that skipped to this point.
+            "totalVideoImpressions": 3163, // The number of impressions of the video.
+            "totalVideoImpressionsFan": 0, // Number of impressions of your Page Video to people who have liked your Page.
+            "totalVideoImpressionsFanPaid": 0, // Number of paid impressions of your Page Video Asset to people who have liked your Page.
+            "totalVideoImpressionsFanPaidUnique": 0, // Number of people who like your Page and who saw your Page Video in an ad or sponsored story.
+            "totalVideoImpressionsFanUnique": 0, // Number of people who saw your Page video because they've liked your Page
+            "totalVideoImpressionsOrganic": 3163, // The number of impressions of your Video in Feed or ticker or on your Page's Timeline
+            "totalVideoImpressionsOrganicUnique": 3131, // Number of people who saw your Page Video in Feed or ticker, or on your Page's timeline.
+            "totalVideoImpressionsPaid": 0, // Number of impressions of your Page Video in an Ad or Sponsored Story.
+            "totalVideoImpressionsPaidUnique": 0, // Number of people your advertised Page Video was served to.
+            "totalVideoImpressionsUnique": 3131, // The total number of people your video was served to.
+            "totalVideoImpressionsViral": 0, // The number of impressions of your Page Video in a story generated by a friend.
+            "totalVideoImpressionsViralUnique": 0, // Number of people who saw your Page Video in a story from a friend.
+            "totalVideoReactionsByTypeTotal": { // The total number of reactions to your post by type.
+                "like": 13,
+                "haha": 2
+            },
+            "totalVideoStoriesByActionType": { // Number of stories created about your Page Video, by action type.
+                "like": 15
+            },
+            "totalVideoViewTimeByAgeBucketAndGender": { // Video view time (in ms) by age bucket and gender.
+                "f1317": 23521,
+                "m1317": 184052,
+                "u1824": 2774,
+                "f1824": 118193,
+                "m1824": 1340281,
+                "u2534": 11975,
+                "f2534": 407006,
+                "m2534": 3960750,
+                "u3544": 27054,
+                "f3544": 332576,
+                "m3544": 5477331,
+                "u4554": 41804,
+                "f4554": 375449,
+                "m4554": 3794202,
+                "u5564": 35717,
+                "f5564": 159041,
+                "m5564": 3582574,
+                "u65+": 8245,
+                "f65+": 423739,
+                "m65+": 2866201
+            },
+            "totalVideoViewTimeByDistributionType": { // Video view time (in ms) by distribution type. On asset level, there are three possible distribution types: (page_owned/shared/crossposted)
+                "pageOwned": 23172485
+            },
+            "totalVideoViewTimeByRegionId": { // Video view time (in ms) by region ID.
+                "californiaUnitedStates": 791788,
+                "texasUnitedStates": 480891,
+                "karnatakaIndia": 390297,
+                "uttarPradeshIndia": 368698,
+                "tamilNaduIndia": 359103,
+                "queenslandAustralia": 295491,
+                "newSouthWalesAustralia": 284222,
+                "newYorkUnitedStates": 250035,
+                "maharashtraIndia": 248465,
+                "washingtonUnitedStates": 237430
+            },
+            "totalVideoViewTotalTime": 23172485, // Total time (in ms) video has been viewed.
+            "totalVideoViewTotalTimeOrganic": 23172485, // Total time (in ms) video has been viewed in Feed or ticker or on your Page's Timeline.
+            "totalVideoViewTotalTimePaid": 0, // Total time (in ms) video has been viewed after paid promotion.
+            "totalVideoViews": 1283,
+            "totalVideoViewsAutoplayed": 1237, // Number of times your video started automatically playing and people viewed it for 3 seconds or viewed it to the end, whichever came first.
+            "totalVideoViewsByDistributionType": { // Video views by distribution type. On asset level, there are three possible distribution types: (page_owned/shared/crossposted)
+                "pageOwned": 1283
+            },
+            "totalVideoViewsClickedToPlay": 46, // Number of times people clicked to play your video and viewed it for 3 seconds or viewed it to the end, whichever came first.
+            "totalVideoViewsOrganic": 1283, // Number of times your video was viewed for 3 seconds or viewed to the end, whichever came first, without any paid promotion.
+            "totalVideoViewsOrganicUnique": 1283, // Number unique viewers who viewed for 3 seconds or viewed to the end, whichever came first, without any paid promotion.
+            "totalVideoViewsPaid": 0, // Number of times your video was viewed for 3 seconds or viewed to the end, whichever came first, after paid promotion.
+            "totalVideoViewsPaidUnique": 0, // Number of unique viewers who viewed for 3 seconds or viewed to the end, whichever came first, after paid promotion.
+            "totalVideoViewsSoundOn": 743, // Number of times your video sound was turned on and was viewed for 3 seconds or viewed to the end, whichever came first.
+            "totalVideoViewsUnique": 1283,
+            "videoViews": 3, // Times your videos played for at least 3 seconds, or for nearly their total length if they're shorter than 3 seconds. During a single instance of a video playing, we'll exclude any time spent replaying the video. This includes live views.
+            "videoViewsUnique": 2 // Unique times your videos played for at least 3 seconds, or for nearly their total length if they're shorter than 3 seconds. During a single instance of a video playing, we'll exclude any time spent replaying the video. This includes live views.
+        },
+        "lastUpdated": "2022-04-23T18:44:29.778Z",
+        "nextUpdate": "2022-04-23T19:19:29.778Z"
+    },
+    "instagram": {
+        "id": "17856916804532520", // Instagram Social Post ID
+        "postUrl": "https://www.instagram.com/p/ChALNdaOT3G/",
+        "analytics": {
+            /* FEED Data */
+            "caption": "It always seems impossible until it's done. - Nelson Mandela",
+            "commentsCount": 1, // Comments total
+            "created": "2022-09-07T22:39:06Z", // Time post was created
+            "engagementCount": 3, // Likes, comments, and saves
+            "followsCount": 2, // Number of followers gained
+            "likeCount": 1, // Likes total - organic likes, promoted post likes not included
+            "mediaProductType": "FEED", // Type of IG Share: AD, FEED, STORY or REELS
+            "mediaType": "IMAGE", // Media type: CAROUSEL_ALBUM, IMAGE, or VIDEO
+            "mediaUrls": [
+                {
+                    "mediaUrl": "https://scontent.cdninstagram.com/v/t51.82787-15/516601117_17872451562389336_3472858781474899926_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=107&ccb=1-7&_nc_sid=18de74&_nc_ohc=-LOY7upopXoQ7kNvwEkqUMq&_nc_oc=AdmN47ZBlmciajpv7udoP1ku6J-FBgBGIrRskGgPmIOjT5D3WI9F21_Fg1Gi60-aI70&_nc_zt=23&_nc_ht=scontent.cdninstagram.com&edm=AEQ6tj4EAAAA&_nc_gid=PZY4V4Pvo8ePuq2CfSBp1A&oh=00_AfQplZLqrCEYwXkCutbmMAGIgpcBUkKqGcfRdDLZU4QHRA&oe=6872DFF9"
+                }
+            ],
+            "profileActivityCount": 1, // The number of actions people take when they visit your profile after engaging with your post
+            "profileVisitsCount": 11, // The number of times your profile was visited.
+            "reachCount": 71, // Unique accounts that have seen the post
+            "savedCount": 1, // Unique accounts have saved the post
+            "sharesCount": 12, // Number of times the post was shared
+            "username": "jackthegiant",
+            "viewsCount": 71, // Total number of times the post has been seen.
+            /* REELS Data */
+            "caption": "Gorgeous gifts for new Mum & Bub \n\n@mikimoocreations @romperandco @obdesigns @salusbody @enaproducts",
+            "clipsReplaysCount": 21, // The number of times your reel starts to play again after an initial play of your reel. This is defined as replays of 1ms or more in the same reel session.
+            "commentsCount": 1, // Comments total
+            "created": "2022-09-15T06:58:55Z",
+            "engagementCount": 183, // Number of likes, saves, comments, and shares on the reel, minus the number of unlikes, unsaves, and deleted comments.
+            "igReelsAggregatedAllPlaysCount": 42, // The number of times your reel starts to play or replay after an impression is already counted. This is defined as plays of 1ms or more. Replays are counted after the initial play in the same reel session. Organic plays only; promoted post plays are not included.
+            "igReelsAvgWatchTimeCount": 23, // The average amount of time spent playing the reel. This is calculated by the watch time divided by the number of plays.
+            "igReelsVideoViewTotalTimeCount": 21, // The total amount of time the reel was played, including any time spent replaying the reel.
+            "likeCount": 21, // Likes total on the reel
+            "mediaProductType": "REELS", // Type of IG Share: AD, FEED, STORY or REELS
+            "mediaType": "VIDEO", // Always "VIDEO"
+            "mediaUrls": [
+                {
+                    "mediaUrl": "https://instagram.flis9-1.fna.fbcdn.net/o1/v...amug&oe=686ED4D3"
+                }
+            ],
+            "playsCount": 680, // Number of times the reels starts to play after an impression is already counted. This is defined as video sessions with 1 ms or more of playback and excludes replays. Organic plays only; promoted post plays are not included.
+            "reachCount": 689, // Number of unique accounts that have seen the reel at least once. Reach is different from impressions, which can include multiple views of a reel by the same account.
+            "savedCount": 0, // Number of saves of the reel.
+            "sharesCount": 2, // Number of shares of the reel.
+            "username": "mordiallocflorist",
+            "viewsCount": 40, // Total number of times the reel has been seen.
+            /* STORY Data - Fewer than 5 insights will not show metric data. */
+            "commentsCount": 2,
+            "created": "2024-09-16T08:37:57Z",
+            "engagementCount": 10,
+            "followsCount": 0,
+            "likeCount": 3,
+            "mediaProductType": "STORY",
+            "mediaType": "IMAGE",
+            "mediaUrls": [
+                {
+                    "mediaUrl": "https://scontent.cdninstagram.com/v/t51.82787-15/517935...we32"
+                }
+            ],
+            "notEnoughViews": true, // True if fewer than 5 unique insights. If fewer than 5 unique insights, metric data not available.
+            "navigationCount": 15, // Total nav interactions of taps and swipes
+            "profileActivityCount": 3,
+            "profileVisitsCount": 1,
+            "reachCount": 10,
+            "repliesCount": 3,
+            "sharesCount": 2,
+            "swipeForwardCount": 1, // Swipes "Next Story" on the native interface.
+            "tapBackCount": 2, // Taps "Back" on the native interface.
+            "tapForwardCount": 9, // Taps "Forward" on the native interface.
+            "tapExitCount": 3, // Taps "Exit" on the native interface.
+            "username": "ayrshare",
+            "viewsCount": 10, // Total number of times the story has been seen.
+        },
+        "lastUpdated": "2022-04-23T18:44:29.778Z",
+        "nextUpdate": "2022-04-23T19:19:29.778Z"
+    },
+    /* Corporate LinkedIn Account Example. Past 12 months, using a rolling 12-month window. */
+    "linkedin": {
+        "id": "6783586276949000192", // LinkedIn Social Post ID
+        "postUrl": "https://www.linkedin.com/feed/update/urn:li:share:6783586276949000192",
+        "type": "corporate", // corporate or personal. Please see notes on personal analytics
+        "analytics": {
+            "clickCount": 0, // Clicks on a post - company only
+            "commentCount": 0, // Comments count
+            "comments": [ // Comment IDs - can be used to look up comments
+                "urn:li:comment:(urn:li:activity:7226002855806021632,7226004971362627585)"
+            ],
+            "commentsState": "OPEN", // Comments allowed or not
+            "engagement": 0, // Organic clicks, likes, comments, and shares over impressions - company only
+            "impressionCount": 0, // Impressions on a post - company only
+            "likeBy": [
+                "urn:li:person:Z_yXaxh_AB" // Look up the user with the brands endpoint
+            ],
+            "likeCount": 1, // Likes on a count
+            "reactions": { // Get reactions on a LinkedIn share
+                "like": 1, // "Like in the UI
+                "praise": 2, // "Celebrate" in the UI
+                "maybe": 3, // "Curious" in the UI
+                "empathy": 3, // "Love" in the UI
+                "interest": 2, // "Insightful" in the UI
+                "appreciation": 5 // "Support" in the UI
+            },
+            "shareCount": 0, // Shares on a post - company only
+            "totalFirstLevelComments": 1, // COunt of the firt level comments
+            "uniqueImpressionsCount": 0, // Unique impressions for a post - company only
+            "videoViews": 1 // Number of times video viewed - company only
+        },
+        "lastUpdated": "2022-04-23T18:44:29.778Z",
+        "nextUpdate": "2022-04-23T19:19:29.778Z"
+    },
+    /* Personal LinkedIn Account Example. Past 12 months, using a rolling 12-month window. */
+    "linkedin": {
+        "id": "urn:li:share:7221186087895920444",
+        "type": "personal",
+        "analytics": {
+            "commentCount": 1,
+            "comments": [
+                "urn:li:comment:(urn:li:activity:7221186088390799360,7224469537784479744)"
+            ],
+            "commentsState": "OPEN",
+            "likeBy": [
+                {
+                    "from": {
+                        "name": "John Smith",
+                        "id": "qDyUWJx2s",
+                        "url": "https://www.linkedin.com/in/js",
+                        "description": "Business Analyst at Ayrshare"
+                    },
+                    "media": {
+                        "id": "urn:li:image:C4D03AQG_8MpwM6tDzw",
+                        "mediaExpiresSeconds": 1728518400000,
+                        "url": "https://media.licdn.com/dms/image/C4D03AQG_8MpwM6tDzw"
+                    },
+                    "platform": "linkedin",
+                    "profileImageUrl": "https://media.licdn.com/dms/image/C4D03AQG_8MpwM",
+                    "userName": "js",
+                    "originalUrn": "urn:li:like:(urn:li:person:qDyUWJxqIO,urn:li:activity:722118608839074444)",
+                    "type": "like"
+                }
+            ],
+            "likeCount": 1,
+            "reactions": {
+                "like": 1,
+                "praise": 0,
+                "maybe": 0,
+                "empathy": 0,
+                "interest": 0,
+                "appreciation": 0
+            },
+            "share": "urn:li:activity:7221186088390794444",
+            "totalFirstLevelComments": 1
+        },
+        "lastUpdated": "2024-08-04T22:46:15.660Z",
+        "nextUpdate": "2024-08-04T22:57:15.660Z"
+    },
+    "pinterest": {
+        "id": "718464946813167315", // Pinterest Social Post ID
+        "postUrl": "https://www.pinterest.com/pin/718464946813167315/",
+        "analytics": {
+            "altText": "Hello",
+            "boardId": "480126078963936788",
+            "boardOwner": {
+                "username": "johnsmith"
+            },
+            "boardSectionId": 12232,
+            "createdAt": "2024-10-20T06:25:08",
+            "creativeType": "REGULAR",
+            "description": "The most amazing board",
+            "dominantColor": "#4e6279",
+            "hasBeenPromoted": false,
+            "id": "480126010294119688",
+            "impression": 26,
+            "isOwner": true,
+            "isStandard": true,
+            "link": "https://www.mywebsite.com",
+            "media": {
+                "media_type": "image",
+                "images": {
+                    "150x150": {
+                        "width": 150,
+                        "height": 150,
+                        "url": "https://i.pinimg.com/150x150/2b/86/64/2b.jpg"
+                    },
+                    "400x300": {
+                        "width": 400,
+                        "height": 300,
+                        "url": "https://i.pinimg.com/400x300/2b/86/64/2b.jpg"
+                    },
+                    "600x": {
+                        "width": 564,
+                        "height": 296,
+                        "url": "https://i.pinimg.com/564x/2b/86/64/2b.jpg"
+                    },
+                    "1200x": {
+                        "width": 1200,
+                        "height": 630,
+                        "url": "https://i.pinimg.com/1200x/2b/86/64/2b.jpg"
+                    }
+                }
+            },
+            "note": "",
+            "outboundClick": 4,
+            "parentPinId": 23233,
+            "pinClick": 2,
+            "pinMetrics": null,
+            "productTags": [],
+            "profileVisit": 5, // Available for images only
+            "quartile95PercentView": 4,
+            "save": 1,
+            "saveRate": 1,
+            "title": "Looking great",
+            "totalComments": 2,
+            "totalReactions": 1,
+            "userFollow": 1, // Available for images only
+            /* Available for videos */
+            "video10sView": 3,
+            "videoAvgWatchTime": 0,
+            "videoMrcView": 0,
+            "videoStart": 0,
+            "videoV50WatchTime": 0
+        },
+        "lastUpdated": "2022-04-23T18:44:29.778Z",
+        "nextUpdate": "2022-04-23T19:19:29.778Z"
+    },
+    "reddit": {
+        "id": "182zitr",
+        "postUrl": "https://www.reddit.com/r/test/comments/182zitr/reddit_post_title/",
+        "analytics": {
+            "author": "ayrshare",
+            "created": "2023-11-24T19:10:06.000Z",
+            "permalink": "/r/test/comments/182zitr/reddit_post_title/",
+            "subreddit": "test",
+            "title": "Reddit Post Title",
+            "ups": 2,
+            "upvoteRatio": 1,
+            "url": "https://www.reddit.com/r/test/comments/182zitr/reddit_post_title/"
+        },
+        "lastUpdated": "2023-11-24T19:10:41.635Z",
+        "nextUpdate": "2023-11-24T19:21:41.635Z"
+    },
+    "snapchat": {
+        "id": "490edf20-4068-5bab-bf65-a5882b1ezuec",
+        "postUrl": "https://www.snapchat.com/add/chrisalpha1980/490edf20-4068-5bab-bf65-a5882b1ezuecc",
+        "analytics": [
+            {
+                "avgViewTime": 5230, // Average view time in milliseconds
+                "completes": 187, // Number of times the post was played to completion
+                "interactions": 42, // Number of times a user interacted with an asset. These include: tap forwards/backwards, swipe-away
+                "mediaId": "490edf20-4068-5bab-bf65-a5882b1ezuec",
+                "replies": 8, // Number of replies to this snap/story
+                "shares": 12, // Number of times this post has been shared
+                "snapCombinedUniques": 642, // Combined total of snapPaidUniques and storyUniques
+                "snapCombinedViews": 829, // Combined total of snapPaidViews and views
+                "snapPaidUniques": 174, // The sum of paid uniques for ads promoting the snaps within the Public Story
+                "snapPaidViews": 203, // The sum of paid impression for ads promoting the snaps within the Public Story
+                "storyAvgViewTime": 4870, // The calculation of the storyViewTime divided by storyUniques (milliseconds)
+                "storyFavorites": 28, // Number of times the post has been liked
+                "storySubscribes": 5, // Number of subscribe events occuring on the story post
+                "storyUniques": 468, // Unique users who have viewed a story/snap within a story
+                "storyViewTime": 2279160, // Milliseconds a story & snap in story asset has been viewed
+                "storyViews": 626, // Views for Story container
+                "swipeDowns": 15, // Number of swipe downs on this post
+                "swipeUps": 23, // Number of swipe ups on this post
+                "uniqueSessions": 512, // Number of unique sessions an asset has been engaged in
+                "viewTime": 3264000, // Milliseconds this post has been viewed
+                "viewers": 598, // Number of unique users who have viewed this post
+                "views": 712 // Number of times an asset has been viewed
+            }
+        ],
+        "lastUpdated": "2025-05-21T11:14:40.570Z",
+        "nextUpdate": "2025-05-21T11:25:40.570Z"
+    },
+    "threads": {
+        "id": "17890643139123701",
+        "postUrl": "https://www.threads.com/@ayrshare/post/DI4nmXrNQA1",
+        "analytics": {
+            "views": 2,
+            "likes": 1,
+            "replies": 1,
+            "reposts": 0,
+            "shares": 0,
+            "quotes": 0
+        },
+        "lastUpdated": "2025-04-25T22:41:05.752Z",
+        "nextUpdate": "2025-04-25T22:52:05.752Z"
+    },
+    "tiktok": {
+        "id": "7034682002927550598", // TikTok Social Post ID
+        "postUrl": "https://www.tiktok.com/@borneild/video/7034682002927550598?utm_campaign=tt4d_open_api&utm_source=awawnhyictaos7o",
+        "analytics": {
+            "audienceCities": [ // Available 24-48 hours after posting. City distribution of video viewers for the top 10 cities. Must be an active post. See endpoint details.
+                {
+                    "city_name": "US Teton County",
+                    "percentage": 3.1
+                },
+                {
+                    "city_name": "US Queens",
+                    "percentage": 6.3
+                }
+            ],
+            "audienceCountries": [ // Available 24-48 hours after posting. Country distribution of video viewers for the top 10 countries. Must be an active post. See endpoint details.
+                {
+                    "country": "GB",
+                    "percentage": 0.0029
+                },
+                {
+                    "country": "US",
+                    "percentage": 0.9604
+                }
+            ],
+            "audienceGenders": [ // Updated by TikTok every 24-48 hours.
+                {
+                    "percentage": 0.25,
+                    "gender": "Female"
+                },
+                {
+                    "percentage": 0.5,
+                    "gender": "Male"
+                },
+                {
+                    "percentage": 0.25,
+                    "gender": "Other"
+                }
+            ],
+            "audienceTypes": [
+                {
+                    "percentage": 0,
+                    "type": "FOLLOWER_PERCENT"
+                },
+                {
+                    "percentage": 0,
+                    "type": "NEW_VIEWER"
+                },
+                {
+                    "percentage": 0,
+                    "type": "NON_FOLLOWER_PERCENT"
+                },
+                {
+                    "percentage": 0,
+                    "type": "RETURN_VIEWER"
+                }
+            ],
+            "averageTimeWatched": 5.6679, // Available 24-48 hours after posting.
+            "commentsCount": 23, // Total number of lifetime comments. Available 24-48 hours after posting.
+            "created": "2022-08-09T15:08:22Z",
+            "embedUrl": "https://www.tiktok.com/embed/v2/7129893524253756713",
+            "fullVideoWatchedRate": 0.0866, // Percentage of views that completed watching the full video. Available 24-48 hours after posting.
+            "impressionSources": [ // Different sources for the impressions, ranked from the largest contribution to the smallest. Available 24-48 hours after posting.
+                {
+                    "impression_source": "Search",
+                    "percentage": 0.0217
+                },
+                {
+                    "impression_source": "Sound",
+                    "percentage": 0
+                },
+                {
+                    "impression_source": "Follow",
+                    "percentage": 0
+                },
+                {
+                    "impression_source": "For You",
+                    "percentage": 0.917
+                },
+                {
+                    "impression_source": "Hashtag",
+                    "percentage": 0
+                },
+                {
+                    "impression_source": "Personal Profile",
+                    "percentage": 0
+                }
+            ],
+            "likeCount": 22, // Total number of lifetime likes. Available 24-48 hours after posting.
+            "mediaType": "video",
+            "musicTitle": "♬ original sound - tiff", // If available
+            "musicUrl": "https://www.tiktok.com/music/original-sound-6689804660171082501?refer=embed", // If available
+            "name": "Mackly",
+            "post": "Scramble up ur name & I'll try to guess it😍❤️ #foryoupage #petsoftiktok #aesthetic",
+            "postUrl": "https://www.tiktok.com/@tiktoktime/video/7129893524253756713?utm_campaign=tt4d_open_api&utm_source=awawnhyictaos7o7",
+            "reach": 252, // The number of people who watched your published content at least once. Available 24-48 hours after posting.
+            "shareCount": 1, // Total number of lifetime shares. Available 24-48 hours after posting.
+            "tags": [ // Tags included in the description
+                {
+                    "tag": "#foryoupage",
+                    "url": "https://www.tiktok.com/tag/foryoupage"
+                },
+                {
+                    "tag": "#petsoftiktok",
+                    "url": "https://www.tiktok.com/tag/petsoftiktok"
+                },
+                {
+                    "tag": "#aesthetic",
+                    "url": "https://www.tiktok.com/tag/aesthetic"
+                }
+            ],
+            "thumbnailHeight": 576,
+            "thumbnailUrl": "https://p16-sign.tiktokcdn-us.com/obj/tos-useast5-p-0068-tx",
+            "thumbnailWidth": 1006,
+            "url": "https://www.tiktok.com/@tiktoktime",
+            "videoDuration": 13.984, // Video duration in seconds.
+            "videoViewRetention": [ // This metric indicates how many of your viewers are still watching after a certain amount of time.
+                {
+                    "percentage": 0.1,
+                    "second": "155"
+                },
+                {
+                    "percentage": 0.07,
+                    "second": "234"
+                }
+            ],
+            /* Total number of lifetime users who viewed the video. Available 24-48 hours after posting.
+               If the user swipes away from the ad then swipes back, it would be counted as 2 impressions.
+               Therefore, a new video view will be counted again with the new impression session.
+            */
+            "videoViews": 34
+        },
+        "lastUpdated": "2022-04-23T18:44:29.778Z",
+        "nextUpdate": "2022-04-23T19:19:29.778Z"
+    },
+    /* Note: if the post was sent as a Twitter Thread, the return will be an array, "twitter": [] */
+    "twitter": {
+        "id": "1313589441919827982", // Twitter Social Post ID
+        "postUrl": "https://www.twitter.com/myaccount/1313589441919827982",
+        "analytics": {
+            "created": "2022-09-07T22:12:10.000Z",
+            "media": [
+                {
+                    "width": 1920,
+                    "durationMs": 28240,
+                    "height": 1080,
+                    "mediaKey": "7_1739849636389814272",
+                    "previewImageUrl": "https://pbs.twimg.com/ext_tw_video_thumb/1739849636389814272/pu/img/bCkAdkD0R00-ZlkY.jpg",
+                    "type": "video",
+                    "mediaUrls": [ // available for videos and gifs
+                        {
+                            "bitRate": 256000,
+                            "contentType": "video/mp4",
+                            "mediaUrl": "https://video.twimg.com/ext_tw_video/1739849636389814272/pu/vid/avc1/480x270/4RoZCqynednVMFgy.mp4?tag=12"
+                        },
+                        {
+                            "bitRate": 832000,
+                            "contentType": "video/mp4",
+                            "mediaUrl": "https://video.twimg.com/ext_tw_video/1739849636389814272/pu/vid/avc1/640x360/RYy5iHTIxu7_iyZm.mp4?tag=12"
+                        },
+                        {
+                            "bitRate": 2176000,
+                            "contentType": "video/mp4",
+                            "mediaUrl": "https://video.twimg.com/ext_tw_video/1739849636389814272/pu/vid/avc1/1280x720/9UpR90ekFA-9Ucxo.mp4?tag=12"
+                        },
+                        {
+                            "contentType": "application/x-mpegURL",
+                            "mediaUrl": "https://video.twimg.com/ext_tw_video/1739849636389814272/pu/pl/0AVy2xIOLQcsrEZG.m3u8?tag=12&container=fmp4"
+                        }
+                    ]
+                }
+            ],
+            "name": "Wonder World",
+            "post": "Today is a great day!",
+            "publicMetrics": { // Organic and paid metrics available publicly. Use this to measure Tweet engagement.
+                "retweetCount": 0, // Retweets count
+                "quoteCount": 0, // Times the Tweet was quoted count
+                "likeCount": 0, // Likes for the Tweet count
+                "replyCount": 0, // Replies count
+                "quoteCount": 0, // Times the Tweet was quoted count
+                "bookmarkCount": 0, // Bookmarks count
+                "impressionCount": 23 // How many times the Tweet has been viewed (not unique by user). A view is counted if any part of the Tweet is visible on the screen.
+            },
+            "nonPublicMetrics": { // Organic and paid metrics not available publicly. Not available for Tweets older than 30 days. Use this to determine the total number of impressions generated for the Tweet.
+                "userProfileClicks": 1, // User profile clicks
+                "engagements": 1, // How many times the Tweet has been engaged with.
+                "impressionCount": 5, // How many times the Tweet has been viewed (not unique by user). A view is counted if any part of the Tweet is visible on the screen.
+                "video": { // Users who played through to each quartile in a video. This reflects the number of quartile views across all Tweets in which the given video has been posted.
+                    "playback25Count": 4,
+                    "playback50Count": 2,
+                    "playback75Count": 1,
+                    "playback0Count": 4,
+                    "playback100Count": 1
+                }
+            },
+            "organicMetrics": { // Non-paid metrics.  Not available for Tweets older than 30 days. Use this to measure organic engagement for the Tweet.
+                "likeCount": 0, // Tweet likes
+                "impressionCount": 5, // How many times the Tweet has been viewed (not unique by user). A view is counted if any part of the Tweet is visible on the screen.
+                "replyCount": 0, // Replies count
+                "retweetCount": 0, // R countetweets
+                "userProfileClicks": 1, // User profile clicks
+                "video": { // Users who played through to each quartile in a video. This reflects the number of quartile views across all Tweets in which the given video has been posted.
+                    "playback25Count": 4,
+                    "playback0Count": 4,
+                    "playback100Count": 1,
+                    "viewCount": 4,
+                    "playback50Count": 2,
+                    "playback75Count": 1
+                }
+            },
+            "poll": { // Present if Tweet has a poll
+                "durationMinutes": 5, // Duration in minutes
+                "endDatetime": "2023-05-29T17:28:05.000Z",
+                "votingStatus": "open", // "open" or "closed"
+                "id": "1663234520718371960",
+                "options": [
+                    {
+                        "position": 1,
+                        "label": "yes",
+                        "votes": 3
+                    },
+                    {
+                        "position": 2,
+                        "label": "maybe",
+                        "votes": 1
+                    },
+                    {
+                        "position": 3,
+                        "label": "no",
+                        "votes": 0
+                    }
+                ]
+            },
+            "urls": [ // Available for long Tweets only
+                {
+                    "start": 866,
+                    "end": 889,
+                    "url": "https://t.co/3r6xz4hBnM",
+                    "expandedUrl": "https://www.cnn.com",
+                    "displayUrl": "cnn.com"
+                }
+            ],
+            "username": "wondrous"
+        },
+        "lastUpdated": "2022-04-23T18:44:29.778Z",
+        "nextUpdate": "2022-04-23T19:19:29.778Z"
+    },
+    "youtube": {
+        "id": "RWJMpOUGicU", // YouTube Social Post ID
+        "postUrl": "https://youtu.be/RWJMpOUGicU",
+        "analytics": {
+            "averageViewDuration": 6, // The average length, in seconds, of video playbacks.
+            "averageViewPercentage": 92.01, // The average percentage of a video watched during a video playback.
+            "channelTitle": "youtubeHandle",
+            "comments": 22,
+            "created": "2022-08-15T19:14:44Z",
+            "description": "Doubt is not a pleasant condition, but certainty is absurd. - Voltaire",
+            "dislikes": 3,
+            "estimatedMinutesWatched": 23, // The number of minutes that users watched videos for the specified channel, content owner, video, or playlist.
+            "likes": 54,
+            "liveBroadcastDetails": { // Only present if liveBroadcast is "live" or "upcoming"
+                "activeLiveChatId": "Cg0KC3Ez", // The ID of the currently active live chat attached to this video. Not present if broadcast complete and chat no longer live
+                "actualStartTime": "2023-05-04T10:14:56Z", // The time that the broadcast actually started.
+                "actualEndTime": "2023-05-04T10:15:15Z", // The time that the broadcast actually ended.
+                "concurrentViewers": 384343, // The number of viewers currently watching the broadcast. Not present if the broadcast has ended.
+                "scheduledEndTime": "2023-05-04T10:15:00Z", // The time that the broadcast is scheduled to end if a scheduled end time was set.
+                "scheduledStartTime": "2023-05-04T10:15:00Z" // The time that the broadcast is scheduled to begin.
+            },
+            "liveBroadcast": "live", // Values: "none", "live", "upcoming"
+            "madeForKids": false,
+            "privacyStatus": "public",
+            "publishedAt": "2023-05-08T12:30:26Z",
+            "subscribersGained": 23, // The number of times that users subscribed to a channel.
+            "subscribersLost": 1, // The number of times that users unsubscribed from a channel.
+            "tags": [
+                "sweet",
+                "sour"
+            ], // Tags assigned to video
+            "thumbnailUrl": "https://i.ytimg.com/vi/RWJMpOUGicU/default.jpg",
+            "title": "Yo time",
+            "videosAddedToPlaylists": 2, // The number of times that videos were added to any YouTube playlists. The videos could have been added to the video owner's playlist or to other channels' playlists.
+            "views": 153
+        },
+        "lastUpdated": "2022-04-23T18:44:29.778Z",
+        "nextUpdate": "2022-04-23T19:19:29.778Z"
+    },
+    "status": "success",
+    "code": 200,
+    "id": "IHvCLacgPc6hMU9IQ6oK"
+}

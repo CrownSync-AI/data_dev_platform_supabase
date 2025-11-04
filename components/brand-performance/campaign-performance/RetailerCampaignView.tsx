@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Search, TrendingUp, TrendingDown, Minus, Calendar, MoreHorizontal, ArrowLeft, Filter, ArrowUpDown } from 'lucide-react'
+import { Search, TrendingUp, TrendingDown, Minus, Calendar, MoreHorizontal, ArrowLeft, Filter, ArrowUpDown, BarChart3 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { useRouter } from 'next/navigation'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import PlatformSpecificCharts from './PlatformSpecificCharts'
 import AllPlatformsTrendChart from './AllPlatformsTrendChart'
@@ -94,6 +95,7 @@ interface Retailer {
 }
 
 export default function RetailerCampaignView() {
+  const router = useRouter()
   const [retailers, setRetailers] = useState<Retailer[]>([])
   const [selectedRetailerId, setSelectedRetailerId] = useState<string>('')
   const [campaigns, setCampaigns] = useState<RetailerCampaign[]>([])
@@ -282,6 +284,11 @@ export default function RetailerCampaignView() {
     setSelectedCampaignId(null)
   }
 
+  const handleAnalyticsNewClick = (campaignId: string, event: React.MouseEvent) => {
+    event.stopPropagation()
+    router.push(`/dashboard/retailer-view/campaign-performance/analytics-new/${campaignId}`)
+  }
+
   // Enhanced detailed view helper functions
 
 
@@ -434,41 +441,7 @@ export default function RetailerCampaignView() {
               </CardContent>
             </Card>
 
-            {/* Platform Overview Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {Object.entries(campaign.platform_performance).map(([platform, data]) => (
-                <Card key={platform}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-2">
-                      {getPlatformLogo(platform)}
-                      <CardTitle className="text-lg">{getPlatformName(platform)}</CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Impressions</span>
-                        <span className="font-medium">{formatNumber(data.impressions)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Reach</span>
-                        <span className="font-medium">{formatNumber(data.reach)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Engagement</span>
-                        <span className="font-medium">{formatNumber(data.engagement)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-gray-600">Rate</span>
-                        <span className="font-medium text-green-600">
-                          {((data.engagement / data.impressions) * 100).toFixed(2)}%
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+
 
             {/* 3. Enhanced Trend Analysis with Platform Filter */}
             <Card>
@@ -982,6 +955,19 @@ export default function RetailerCampaignView() {
                         </div>
                       </>
                     )}
+                  </div>
+
+                  {/* Analytics New Button */}
+                  <div className="mt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={(e) => handleAnalyticsNewClick(campaign.campaign_id, e)}
+                    >
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Analytics New
+                    </Button>
                   </div>
 
                   {/* Performance Tier and Trend - Aligned at bottom */}

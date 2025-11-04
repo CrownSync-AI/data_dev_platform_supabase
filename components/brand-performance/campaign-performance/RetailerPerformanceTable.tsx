@@ -6,20 +6,20 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Search, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Search,
   Mail,
-  Users, 
-  Eye, 
+  Users,
+  Eye,
   MousePointer,
   MapPin,
   Trophy,
@@ -36,10 +36,10 @@ interface RetailerPerformanceTableProps {
   selectedPlatforms?: Platform[];
 }
 
-export function RetailerPerformanceTable({ 
-  retailers = [], 
-  role, 
-  selectedPlatforms = [] 
+export function RetailerPerformanceTable({
+  retailers = [],
+  role,
+  selectedPlatforms = []
 }: RetailerPerformanceTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('engagement');
@@ -569,7 +569,7 @@ export function RetailerPerformanceTable({
                     className="max-w-sm"
                   />
                 </div>
-                
+
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Sort by" />
@@ -614,13 +614,13 @@ export function RetailerPerformanceTable({
         <Card>
           <CardHeader>
             <CardTitle>
-              {role === 'brand' 
-                ? `${campaignType === 'social' ? 'Social' : 'Email'} Campaign Performance Rankings` 
+              {role === 'brand'
+                ? `${campaignType === 'social' ? 'Social' : 'Email'} Campaign Performance Rankings`
                 : `${campaignType === 'social' ? 'Social' : 'Email'} Performance Breakdown`
               }
             </CardTitle>
             <p className="text-sm text-muted-foreground">
-              {role === 'brand' 
+              {role === 'brand'
                 ? `${campaignType === 'social' ? 'Social media' : 'Email marketing'} performance metrics across all retailers`
                 : `Your ${campaignType} campaign performance breakdown`
               }
@@ -662,7 +662,7 @@ export function RetailerPerformanceTable({
                   {filteredRetailers.map((retailer, index) => {
                     const tier = getPerformanceTier(retailer.avg_engagement_rate || 0, campaignType);
                     const rank = getRankBadge(index + 1);
-                    
+
                     return (
                       <tr key={retailer.retailer_id} className="border-b hover:bg-gray-50">
                         {role === 'brand' && (
@@ -675,8 +675,24 @@ export function RetailerPerformanceTable({
                         <td className="py-4 px-4">
                           <div>
                             <div className="font-medium">{retailer.retailer_name}</div>
-                            <div className="text-xs text-gray-400 capitalize">
-                              {campaignType} campaign
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="text-xs text-gray-400 capitalize">
+                                {campaignType} campaign
+                              </div>
+                              {role === 'brand' && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-5 px-2 text-xs text-blue-600 hover:text-blue-800"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Navigate to retailer's campaign performance
+                                    window.open(`/dashboard/brand-performance/campaign-performance?retailer=${retailer.retailer_id}`, '_blank');
+                                  }}
+                                >
+                                  View Campaigns
+                                </Button>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -696,10 +712,9 @@ export function RetailerPerformanceTable({
                             </td>
                             <td className="py-4 px-4 text-right">
                               <div className="flex items-center justify-end gap-2">
-                                <span className={`font-medium ${
-                                  (retailer.avg_engagement_rate || 0) >= 6 ? 'text-green-600' : 
+                                <span className={`font-medium ${(retailer.avg_engagement_rate || 0) >= 6 ? 'text-green-600' :
                                   (retailer.avg_engagement_rate || 0) >= 3 ? 'text-yellow-600' : 'text-gray-600'
-                                }`}>
+                                  }`}>
                                   {(retailer.avg_engagement_rate || 0).toFixed(2)}%
                                 </span>
                                 {(retailer.avg_engagement_rate || 0) >= 6 ? (
@@ -735,10 +750,9 @@ export function RetailerPerformanceTable({
                             </td>
                             <td className="py-4 px-4 text-right">
                               <div className="flex items-center justify-end gap-2">
-                                <span className={`font-medium ${
-                                  (retailer.open_rate || 0) >= 30 ? 'text-green-600' : 
+                                <span className={`font-medium ${(retailer.open_rate || 0) >= 30 ? 'text-green-600' :
                                   (retailer.open_rate || 0) >= 25 ? 'text-yellow-600' : 'text-gray-600'
-                                }`}>
+                                  }`}>
                                   {(retailer.open_rate || 0).toFixed(1)}%
                                 </span>
                               </div>
@@ -748,10 +762,9 @@ export function RetailerPerformanceTable({
                             </td>
                             <td className="py-4 px-4 text-right">
                               <div className="flex items-center justify-end gap-2">
-                                <span className={`font-medium ${
-                                  (retailer.click_rate || 0) >= 3.5 ? 'text-green-600' : 
+                                <span className={`font-medium ${(retailer.click_rate || 0) >= 3.5 ? 'text-green-600' :
                                   (retailer.click_rate || 0) >= 2.5 ? 'text-yellow-600' : 'text-gray-600'
-                                }`}>
+                                  }`}>
                                   {(retailer.click_rate || 0).toFixed(1)}%
                                 </span>
                                 {(retailer.click_rate || 0) >= 3.5 ? (
@@ -778,8 +791,8 @@ export function RetailerPerformanceTable({
             {filteredRetailers.length === 0 && (
               <div className="text-center py-8">
                 <p className="text-muted-foreground">No retailers match your current filters</p>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setSearchTerm('');
                     setFilterRegion('all');
@@ -807,10 +820,10 @@ export function RetailerPerformanceTable({
                 <div className="space-y-3">
                   {regions.map(region => {
                     const regionRetailers = filteredRetailers.filter(r => r.region === region);
-                    const avgEngagement = regionRetailers.length > 0 
+                    const avgEngagement = regionRetailers.length > 0
                       ? regionRetailers.reduce((sum, r) => sum + (r.avg_engagement_rate || 0), 0) / regionRetailers.length
                       : 0;
-                    
+
                     return (
                       <div key={region} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-2">
@@ -858,11 +871,11 @@ export function RetailerPerformanceTable({
                       if (tier.max) return rate < tier.max;
                       return false;
                     }).length;
-                    
-                    const percentage = filteredRetailers.length > 0 
-                      ? (count / filteredRetailers.length) * 100 
+
+                    const percentage = filteredRetailers.length > 0
+                      ? (count / filteredRetailers.length) * 100
                       : 0;
-                    
+
                     return (
                       <div key={tier.label} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-2">
