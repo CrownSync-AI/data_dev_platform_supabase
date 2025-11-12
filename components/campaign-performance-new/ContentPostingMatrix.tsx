@@ -84,42 +84,55 @@ const statusConfig = {
   }
 }
 
-// Mock data for retailer posting status
+// Campaign configuration
+const campaigns = [
+  { id: 'spring-2024', name: 'Spring Collection 2024', startDate: '2024-03-01', color: '#10B981' },
+  { id: 'summer-2024', name: 'Summer Collection 2024', startDate: '2024-06-01', color: '#F59E0B' },
+  { id: 'fall-2024', name: 'Fall Collection 2024', startDate: '2024-09-01', color: '#EF4444' },
+  { id: 'holiday-2024', name: 'Holiday Collection 2024', startDate: '2024-11-01', color: '#8B5CF6' }
+] as const
+
+// Mock data for retailer posting status by campaign
 const retailerPostingData = [
   {
     id: 'retailer-001',
     name: 'Luxury Boutique NYC',
     region: 'East',
-    platforms: {
-      instagram: {
+    campaigns: {
+      'spring-2024': {
         posted: true,
-        postTime: '2024-10-20 14:30',
+        postTime: '2024-03-15 14:30',
         postUrl: 'https://instagram.com/p/example1',
         engagement: 245,
         reach: 3200,
         likes: 189,
         comments: 12,
-        shares: 44
+        shares: 44,
+        platform: 'Instagram'
       },
-      facebook: {
+      'summer-2024': {
         posted: true,
-        postTime: '2024-10-20 15:15',
+        postTime: '2024-06-10 15:15',
         postUrl: 'https://facebook.com/post/example1',
-        engagement: 156,
-        reach: 2800,
-        likes: 98,
-        comments: 18,
-        shares: 40
+        engagement: 312,
+        reach: 4100,
+        likes: 267,
+        comments: 23,
+        shares: 22,
+        platform: 'Facebook'
       },
-      linkedin: {
+      'fall-2024': {
         posted: false,
-        scheduled: '2024-10-22 09:00',
-        reason: 'Scheduled for Monday morning'
+        scheduled: '2024-09-15 09:00',
+        reason: 'Scheduled for launch week',
+        platform: 'Instagram'
       },
-      x: {
+      'holiday-2024': {
         posted: false,
-        status: 'unplanned',
-        reason: 'No X strategy for this campaign'
+        status: 'scheduled',
+        scheduled: '2024-11-05 10:00',
+        reason: 'Awaiting final creative approval',
+        platform: 'LinkedIn'
       }
     }
   },
@@ -127,37 +140,46 @@ const retailerPostingData = [
     id: 'retailer-002',
     name: 'Fashion Forward LA',
     region: 'West',
-    platforms: {
-      instagram: {
+    campaigns: {
+      'spring-2024': {
         posted: true,
-        postTime: '2024-10-19 18:20',
+        postTime: '2024-03-12 18:20',
         postUrl: 'https://instagram.com/p/example2',
-        engagement: 312,
-        reach: 4100,
-        likes: 267,
-        comments: 23,
-        shares: 22
+        engagement: 389,
+        reach: 4800,
+        likes: 312,
+        comments: 34,
+        shares: 43,
+        platform: 'Instagram'
       },
-      facebook: {
-        posted: false,
-        status: 'scheduled',
-        scheduled: '2024-10-23 14:00',
-        reason: 'Content under review - scheduled after approval'
-      },
-      linkedin: {
+      'summer-2024': {
         posted: true,
-        postTime: '2024-10-20 10:30',
+        postTime: '2024-06-08 14:00',
         postUrl: 'https://linkedin.com/post/example2',
         engagement: 178,
         reach: 2200,
         likes: 134,
         comments: 15,
-        shares: 29
+        shares: 29,
+        platform: 'LinkedIn'
       },
-      x: {
+      'fall-2024': {
+        posted: true,
+        postTime: '2024-09-10 12:30',
+        postUrl: 'https://facebook.com/post/example2',
+        engagement: 234,
+        reach: 3100,
+        likes: 189,
+        comments: 21,
+        shares: 24,
+        platform: 'Facebook'
+      },
+      'holiday-2024': {
         posted: false,
-        status: 'unplanned',
-        reason: 'Platform not active for this retailer'
+        status: 'scheduled',
+        scheduled: '2024-11-08 14:00',
+        reason: 'Content under review',
+        platform: 'Instagram'
       }
     }
   },
@@ -165,42 +187,41 @@ const retailerPostingData = [
     id: 'retailer-003',
     name: 'Style Central Chicago',
     region: 'Central',
-    platforms: {
-      instagram: {
+    campaigns: {
+      'spring-2024': {
         posted: true,
-        postTime: '2024-10-21 12:15',
+        postTime: '2024-03-18 12:15',
         postUrl: 'https://instagram.com/p/example3',
         engagement: 198,
         reach: 2900,
         likes: 156,
         comments: 18,
-        shares: 24
+        shares: 24,
+        platform: 'Instagram'
       },
-      facebook: {
+      'summer-2024': {
         posted: true,
-        postTime: '2024-10-21 13:00',
+        postTime: '2024-06-15 13:00',
         postUrl: 'https://facebook.com/post/example3',
         engagement: 134,
         reach: 2100,
         likes: 89,
         comments: 22,
-        shares: 23
+        shares: 23,
+        platform: 'Facebook'
       },
-      linkedin: {
+      'fall-2024': {
         posted: false,
         status: 'scheduled',
-        scheduled: '2024-10-23 11:00',
-        reason: 'Waiting for brand approval'
+        scheduled: '2024-09-20 11:00',
+        reason: 'Waiting for brand approval',
+        platform: 'LinkedIn'
       },
-      x: {
-        posted: true,
-        postTime: '2024-10-21 14:30',
-        postUrl: 'https://x.com/post/example3',
-        engagement: 67,
-        reach: 1200,
-        likes: 45,
-        comments: 6,
-        shares: 16
+      'holiday-2024': {
+        posted: false,
+        status: 'notPosted',
+        reason: 'Awaiting creative assets',
+        platform: 'Instagram'
       }
     }
   },
@@ -208,41 +229,46 @@ const retailerPostingData = [
     id: 'retailer-004',
     name: 'Trend Setters Miami',
     region: 'South',
-    platforms: {
-      instagram: {
+    campaigns: {
+      'spring-2024': {
         posted: true,
-        postTime: '2024-10-20 11:45',
+        postTime: '2024-03-14 11:45',
         postUrl: 'https://instagram.com/p/example4',
         engagement: 289,
         reach: 3800,
         likes: 234,
         comments: 28,
-        shares: 27
+        shares: 27,
+        platform: 'Instagram'
       },
-      facebook: {
+      'summer-2024': {
         posted: true,
-        postTime: '2024-10-20 12:30',
+        postTime: '2024-06-12 12:30',
         postUrl: 'https://facebook.com/post/example4',
         engagement: 167,
         reach: 2500,
         likes: 112,
         comments: 19,
-        shares: 36
+        shares: 36,
+        platform: 'Facebook'
       },
-      linkedin: {
+      'fall-2024': {
         posted: true,
-        postTime: '2024-10-21 09:15',
+        postTime: '2024-09-16 09:15',
         postUrl: 'https://linkedin.com/post/example4',
         engagement: 145,
         reach: 1900,
         likes: 98,
         comments: 12,
-        shares: 35
+        shares: 35,
+        platform: 'LinkedIn'
       },
-      x: {
+      'holiday-2024': {
         posted: false,
-        status: 'notPosted',
-        reason: 'Technical issues with platform'
+        status: 'scheduled',
+        scheduled: '2024-11-10 10:00',
+        reason: 'Scheduled for launch day',
+        platform: 'Instagram'
       }
     }
   },
@@ -250,72 +276,75 @@ const retailerPostingData = [
     id: 'retailer-005',
     name: 'Urban Style Dallas',
     region: 'South',
-    platforms: {
-      instagram: {
+    campaigns: {
+      'spring-2024': {
         posted: false,
         status: 'notPosted',
-        reason: 'Content needs modification'
+        reason: 'Content needs modification',
+        platform: 'Instagram'
       },
-      facebook: {
+      'summer-2024': {
         posted: true,
-        postTime: '2024-10-19 16:20',
+        postTime: '2024-06-18 16:20',
         postUrl: 'https://facebook.com/post/example5',
         engagement: 98,
         reach: 1800,
         likes: 67,
         comments: 12,
-        shares: 19
+        shares: 19,
+        platform: 'Facebook'
       },
-      linkedin: {
+      'fall-2024': {
         posted: false,
         status: 'scheduled',
-        scheduled: '2024-10-24 14:00',
-        reason: 'Scheduled for Thursday'
+        scheduled: '2024-09-25 14:00',
+        reason: 'Scheduled for next week',
+        platform: 'LinkedIn'
       },
-      x: {
+      'holiday-2024': {
         posted: false,
         status: 'notPosted',
-        reason: 'Awaiting retailer response'
+        reason: 'Awaiting retailer response',
+        platform: 'Instagram'
       }
     }
   }
 ]
 
-const platforms = ['instagram', 'facebook', 'linkedin', 'x'] as const
-
 interface PostingStatusCellProps {
   retailer: any
-  platform: string
-  onCellClick: (retailer: any, platform: string) => void
+  campaignId: string
+  onCellClick: (retailer: any, campaignId: string) => void
 }
 
-function PostingStatusCell({ retailer, platform, onCellClick }: PostingStatusCellProps) {
-  const platformData = retailer.platforms[platform]
-  const isPosted = platformData?.posted || false
+function PostingStatusCell({ retailer, campaignId, onCellClick }: PostingStatusCellProps) {
+  const campaignData = retailer.campaigns[campaignId]
+  const isPosted = campaignData?.posted || false
   
   // Determine status
   let status = 'notPosted'
   if (isPosted) {
     status = 'posted'
-  } else if (platformData?.status === 'scheduled' || platformData?.scheduled) {
+  } else if (campaignData?.status === 'scheduled' || campaignData?.scheduled) {
     status = 'scheduled'
-  } else if (platformData?.status === 'unplanned') {
+  } else if (campaignData?.status === 'unplanned') {
     status = 'unplanned'
   }
 
   const statusStyle = statusConfig[status as keyof typeof statusConfig]
   const StatusIcon = statusStyle.icon
+  const campaign = campaigns.find(c => c.id === campaignId)
 
   // Create tooltip text
-  let tooltipText = `${retailer.name} - ${platformConfig[platform as keyof typeof platformConfig].name}: `
+  let tooltipText = `${retailer.name} - ${campaign?.name}: `
   if (isPosted) {
-    tooltipText += `Posted on ${platformData.postTime}`
+    tooltipText += `Posted on ${campaignData.postTime}`
   } else if (status === 'scheduled') {
-    tooltipText += `Scheduled for ${platformData.scheduled}`
+    tooltipText += `Scheduled for ${campaignData.scheduled}`
   } else if (status === 'unplanned') {
     tooltipText += 'No post planned'
   } else {
-    tooltipText += platformData?.reason || 'Not posted'
+    tooltipText += campaignData?.reason || 'Not posted'
   }
 
   return (
@@ -326,7 +355,7 @@ function PostingStatusCell({ retailer, platform, onCellClick }: PostingStatusCel
         ${statusStyle.bgColor} ${statusStyle.borderColor}
         hover:border-opacity-60
       `}
-      onClick={() => onCellClick(retailer, platform)}
+      onClick={() => onCellClick(retailer, campaignId)}
       title={tooltipText}
     >
       <StatusIcon className={`w-4 h-4 ${statusStyle.color}`} />
@@ -336,23 +365,27 @@ function PostingStatusCell({ retailer, platform, onCellClick }: PostingStatusCel
 
 interface PostingDetailModalProps {
   retailer: any
-  platform: string
+  campaignId: string
   onClose: () => void
 }
 
-function PostingDetailModal({ retailer, platform, onClose }: PostingDetailModalProps) {
-  const platformData = retailer.platforms[platform]
-  const isPosted = platformData?.posted || false
+function PostingDetailModal({ retailer, campaignId, onClose }: PostingDetailModalProps) {
+  const campaignData = retailer.campaigns[campaignId]
+  const isPosted = campaignData?.posted || false
+  const campaign = campaigns.find(c => c.id === campaignId)
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="text-2xl">{platformIcons[platform as keyof typeof platformIcons]}</div>
+            <div 
+              className="w-3 h-3 rounded-full" 
+              style={{ backgroundColor: campaign?.color }}
+            />
             <div>
               <h3 className="font-semibold">{retailer.name}</h3>
-              <p className="text-sm text-gray-600 capitalize">{platform}</p>
+              <p className="text-sm text-gray-600">{campaign?.name}</p>
             </div>
           </div>
           <Button variant="ghost" size="sm" onClick={onClose}>×</Button>
@@ -368,17 +401,22 @@ function PostingDetailModal({ retailer, platform, onClose }: PostingDetailModalP
             <div className="space-y-3">
               <div>
                 <p className="text-sm text-gray-600">Posted Time</p>
-                <p className="font-medium">{platformData.postTime}</p>
+                <p className="font-medium">{campaignData.postTime}</p>
+              </div>
+              
+              <div>
+                <p className="text-sm text-gray-600">Platform</p>
+                <p className="font-medium">{campaignData.platform}</p>
               </div>
               
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Engagement</p>
-                  <p className="font-semibold text-blue-600">{platformData.engagement}</p>
+                  <p className="font-semibold text-blue-600">{campaignData.engagement}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Reach</p>
-                  <p className="font-semibold text-purple-600">{platformData.reach?.toLocaleString()}</p>
+                  <p className="font-semibold text-purple-600">{campaignData.reach?.toLocaleString()}</p>
                 </div>
               </div>
 
@@ -388,30 +426,30 @@ function PostingDetailModal({ retailer, platform, onClose }: PostingDetailModalP
                     <MessageCircle className="w-3 h-3 text-gray-500" />
                     <span className="text-xs text-gray-600">Likes</span>
                   </div>
-                  <p className="font-medium">{platformData.likes}</p>
+                  <p className="font-medium">{campaignData.likes}</p>
                 </div>
                 <div className="text-center p-2 bg-gray-50 rounded">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <MessageCircle className="w-3 h-3 text-gray-500" />
                     <span className="text-xs text-gray-600">Comments</span>
                   </div>
-                  <p className="font-medium">{platformData.comments}</p>
+                  <p className="font-medium">{campaignData.comments}</p>
                 </div>
                 <div className="text-center p-2 bg-gray-50 rounded">
                   <div className="flex items-center justify-center gap-1 mb-1">
                     <Share2 className="w-3 h-3 text-gray-500" />
                     <span className="text-xs text-gray-600">Shares</span>
                   </div>
-                  <p className="font-medium">{platformData.shares}</p>
+                  <p className="font-medium">{campaignData.shares}</p>
                 </div>
               </div>
 
-              {platformData.postUrl && (
+              {campaignData.postUrl && (
                 <Button 
                   variant="outline" 
                   size="sm" 
                   className="w-full"
-                  onClick={() => window.open(platformData.postUrl, '_blank')}
+                  onClick={() => window.open(campaignData.postUrl, '_blank')}
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
                   View Post
@@ -421,12 +459,12 @@ function PostingDetailModal({ retailer, platform, onClose }: PostingDetailModalP
           </div>
         ) : (
           <div className="space-y-4">
-            {platformData?.status === 'scheduled' || platformData?.scheduled ? (
+            {campaignData?.status === 'scheduled' || campaignData?.scheduled ? (
               <div className="flex items-center gap-2 text-orange-600">
                 <Clock className="w-5 h-5" />
                 <span className="font-medium">Scheduled</span>
               </div>
-            ) : platformData?.status === 'unplanned' ? (
+            ) : campaignData?.status === 'unplanned' ? (
               <div className="flex items-center gap-2 text-gray-500">
                 <Minus className="w-5 h-5" />
                 <span className="font-medium">Unplanned</span>
@@ -439,19 +477,26 @@ function PostingDetailModal({ retailer, platform, onClose }: PostingDetailModalP
             )}
             
             <div className="space-y-3">
-              {platformData?.reason && (
+              {campaignData?.platform && (
                 <div>
-                  <p className="text-sm text-gray-600">Reason</p>
-                  <p className="font-medium">{platformData.reason}</p>
+                  <p className="text-sm text-gray-600">Platform</p>
+                  <p className="font-medium">{campaignData.platform}</p>
                 </div>
               )}
               
-              {platformData?.scheduled && (
+              {campaignData?.reason && (
+                <div>
+                  <p className="text-sm text-gray-600">Reason</p>
+                  <p className="font-medium">{campaignData.reason}</p>
+                </div>
+              )}
+              
+              {campaignData?.scheduled && (
                 <div>
                   <p className="text-sm text-gray-600">Scheduled For</p>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-orange-500" />
-                    <p className="font-medium">{platformData.scheduled}</p>
+                    <p className="font-medium">{campaignData.scheduled}</p>
                   </div>
                 </div>
               )}
@@ -464,11 +509,11 @@ function PostingDetailModal({ retailer, platform, onClose }: PostingDetailModalP
 }
 
 export default function ContentPostingMatrix() {
-  const [selectedCell, setSelectedCell] = useState<{retailer: any, platform: string} | null>(null)
+  const [selectedCell, setSelectedCell] = useState<{retailer: any, campaignId: string} | null>(null)
   const [filterStatus, setFilterStatus] = useState<'all' | 'posted' | 'not-posted'>('all')
 
-  const handleCellClick = (retailer: any, platform: string) => {
-    setSelectedCell({ retailer, platform })
+  const handleCellClick = (retailer: any, campaignId: string) => {
+    setSelectedCell({ retailer, campaignId })
   }
 
   const handleCloseModal = () => {
@@ -476,19 +521,19 @@ export default function ContentPostingMatrix() {
   }
 
   // Calculate summary statistics
-  const totalCells = retailerPostingData.length * platforms.length
+  const totalCells = retailerPostingData.length * campaigns.length
   const postedCells = retailerPostingData.reduce((sum, retailer) => {
-    return sum + platforms.filter(platform => retailer.platforms[platform]?.posted).length
+    return sum + campaigns.filter(campaign => retailer.campaigns[campaign.id]?.posted).length
   }, 0)
   const scheduledCells = retailerPostingData.reduce((sum, retailer) => {
-    return sum + platforms.filter(platform => 
-      !retailer.platforms[platform]?.posted && 
-      (retailer.platforms[platform]?.status === 'scheduled' || retailer.platforms[platform]?.scheduled)
+    return sum + campaigns.filter(campaign => 
+      !retailer.campaigns[campaign.id]?.posted && 
+      (retailer.campaigns[campaign.id]?.status === 'scheduled' || retailer.campaigns[campaign.id]?.scheduled)
     ).length
   }, 0)
   const unplannedCells = retailerPostingData.reduce((sum, retailer) => {
-    return sum + platforms.filter(platform => 
-      retailer.platforms[platform]?.status === 'unplanned'
+    return sum + campaigns.filter(campaign => 
+      retailer.campaigns[campaign.id]?.status === 'unplanned'
     ).length
   }, 0)
   const notPostedCells = totalCells - postedCells - scheduledCells - unplannedCells
@@ -498,10 +543,10 @@ export default function ContentPostingMatrix() {
   const filteredRetailers = retailerPostingData.filter(retailer => {
     if (filterStatus === 'all') return true
     if (filterStatus === 'posted') {
-      return platforms.some(platform => retailer.platforms[platform]?.posted)
+      return campaigns.some(campaign => retailer.campaigns[campaign.id]?.posted)
     }
     if (filterStatus === 'not-posted') {
-      return platforms.some(platform => !retailer.platforms[platform]?.posted)
+      return campaigns.some(campaign => !retailer.campaigns[campaign.id]?.posted)
     }
     return true
   })
@@ -552,25 +597,23 @@ export default function ContentPostingMatrix() {
           </div>
         </CardHeader>
         <CardContent>
-          {/* Platform Headers */}
+          {/* Campaign Headers */}
           <div className="mb-6">
             <div className="grid grid-cols-[200px_repeat(4,1fr)] gap-4 items-center py-3 border-b border-gray-200">
               <div className="font-semibold text-gray-800">Retailer</div>
-              {platforms.map(platform => {
-                const config = platformConfig[platform as keyof typeof platformConfig]
-                const PlatformIcon = config.icon
+              {campaigns.map(campaign => {
                 return (
-                  <div key={platform} className="text-center">
+                  <div key={campaign.id} className="text-center">
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <PlatformIcon 
-                        className="w-4 h-4" 
-                        style={{ color: config.color }}
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: campaign.color }}
                       />
-                      <span className="font-medium text-sm text-gray-700">{config.name}</span>
+                      <span className="font-medium text-sm text-gray-700">{campaign.name}</span>
                     </div>
                     <div 
                       className="w-6 h-0.5 rounded mx-auto"
-                      style={{ backgroundColor: config.color }}
+                      style={{ backgroundColor: campaign.color }}
                     />
                   </div>
                 )
@@ -597,11 +640,11 @@ export default function ContentPostingMatrix() {
                     </Badge>
                   </div>
                 </div>
-                {platforms.map(platform => (
-                  <div key={platform} className="flex justify-center">
+                {campaigns.map(campaign => (
+                  <div key={campaign.id} className="flex justify-center">
                     <PostingStatusCell
                       retailer={retailer}
-                      platform={platform}
+                      campaignId={campaign.id}
                       onCellClick={handleCellClick}
                     />
                   </div>
@@ -672,7 +715,7 @@ export default function ContentPostingMatrix() {
       {selectedCell && (
         <PostingDetailModal
           retailer={selectedCell.retailer}
-          platform={selectedCell.platform}
+          campaignId={selectedCell.campaignId}
           onClose={handleCloseModal}
         />
       )}

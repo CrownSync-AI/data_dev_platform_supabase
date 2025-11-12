@@ -9,16 +9,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   TrendingUp, TrendingDown, Target, Lightbulb, AlertTriangle, Trophy, ArrowRight,
   BarChart3, Calendar, Filter, MapPin, Users, Eye, MessageCircle, Share2,
-  Clock, Zap, Award, ChevronRight, ExternalLink, Download
+  Clock, Zap, Award, ChevronRight, ExternalLink, Download, ArrowUpDown, ArrowUp, ArrowDown
 } from 'lucide-react'
 import {
   LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar,
   ComposedChart, Area, AreaChart, PieChart, Pie, Cell, ScatterChart, Scatter,
   CartesianGrid, ReferenceLine
 } from 'recharts'
-import AttributionWaterfall from './AttributionWaterfall'
 import RegionalHeatmap from './RegionalHeatmap'
 import ContentPostingMatrix from './ContentPostingMatrix'
+import USMapVisualization from './USMapVisualization'
 // import ContentTimingHeatmap from './ContentTimingHeatmap'
 
 // Mock data aligned with Ayrshare structure
@@ -302,6 +302,8 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
   const [selectedPlatform, setSelectedPlatform] = useState('all')
   const [selectedRegion, setSelectedRegion] = useState('all')
   const [selectedMetric, setSelectedMetric] = useState<'engagementRate' | 'totalEngagement' | 'totalReach'>('engagementRate')
+  const [sortColumn, setSortColumn] = useState<'name' | 'posts' | 'engagement' | 'reach' | 'engagementRate' | 'growth'>('engagementRate')
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
   // Get current trend data based on selected metric
   const currentTrendData = trendData[selectedMetric]
@@ -332,6 +334,69 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
       default:
         return metric
     }
+  }
+
+  // Handle column sorting
+  const handleSort = (column: typeof sortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortColumn(column)
+      setSortDirection('desc')
+    }
+  }
+
+  // Sort retailer data
+  const sortedRetailerPerformance = [...retailerPerformance].sort((a, b) => {
+    let aValue: number | string = 0
+    let bValue: number | string = 0
+
+    switch (sortColumn) {
+      case 'name':
+        aValue = a.name
+        bValue = b.name
+        break
+      case 'posts':
+        aValue = a.posts
+        bValue = b.posts
+        break
+      case 'engagement':
+        aValue = a.engagement
+        bValue = b.engagement
+        break
+      case 'reach':
+        aValue = a.reach
+        bValue = b.reach
+        break
+      case 'engagementRate':
+        aValue = a.engagementRate
+        bValue = b.engagementRate
+        break
+      case 'growth':
+        aValue = a.growth
+        bValue = b.growth
+        break
+    }
+
+    if (typeof aValue === 'string' && typeof bValue === 'string') {
+      return sortDirection === 'asc' 
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue)
+    }
+
+    return sortDirection === 'asc' 
+      ? (aValue as number) - (bValue as number)
+      : (bValue as number) - (aValue as number)
+  })
+
+  // Render sort icon
+  const SortIcon = ({ column }: { column: typeof sortColumn }) => {
+    if (sortColumn !== column) {
+      return <ArrowUpDown className="h-3 w-3 text-gray-400" />
+    }
+    return sortDirection === 'asc' 
+      ? <ArrowUp className="h-3 w-3 text-blue-600" />
+      : <ArrowDown className="h-3 w-3 text-blue-600" />
   }
 
   return (
@@ -727,19 +792,67 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left p-3">Retailer</th>
+                <tr className="border-b bg-gray-50">
+                  <th 
+                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('name')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Retailer</span>
+                      <SortIcon column="name" />
+                    </div>
+                  </th>
                   <th className="text-left p-3">Region</th>
-                  <th className="text-left p-3">Posts</th>
-                  <th className="text-left p-3">Engagement</th>
-                  <th className="text-left p-3">Reach</th>
-                  <th className="text-left p-3">ER</th>
-                  <th className="text-left p-3">Growth</th>
+                  <th 
+                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('posts')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Posts</span>
+                      <SortIcon column="posts" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('engagement')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Engagement</span>
+                      <SortIcon column="engagement" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('reach')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Reach</span>
+                      <SortIcon column="reach" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('engagementRate')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>ER</span>
+                      <SortIcon column="engagementRate" />
+                    </div>
+                  </th>
+                  <th 
+                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => handleSort('growth')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span>Growth</span>
+                      <SortIcon column="growth" />
+                    </div>
+                  </th>
                   <th className="text-left p-3">Status</th>
                 </tr>
               </thead>
               <tbody>
-                {retailerPerformance.map((retailer) => (
+                {sortedRetailerPerformance.map((retailer) => (
                   <tr key={retailer.id} className="border-b hover:bg-gray-50">
                     <td className="p-3">
                       <div>
@@ -774,17 +887,12 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
       </Card>
 
       {/* Advanced Analytics Tabs */}
-      <Tabs defaultValue="attribution" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="attribution">Attribution</TabsTrigger>
+      <Tabs defaultValue="regional" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="regional">Regional</TabsTrigger>
           <TabsTrigger value="content">Content Analysis</TabsTrigger>
           <TabsTrigger value="actions">Action Items</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="attribution" className="space-y-6">
-          <AttributionWaterfall />
-        </TabsContent>
 
         <TabsContent value="regional" className="space-y-6">
           <RegionalHeatmap />

@@ -82,6 +82,7 @@
     "@tailwindcss/postcss": "^4.1.11",
     "@types/pg": "^8.15.4",
     "ai": "^5.0.23",
+    "arg": "^5.0.2",
     "autoprefixer": "^10.4.20",
     "caniuse-lite": "latest",
     "class-variance-authority": "^0.7.1",
@@ -98,12 +99,13 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-is": "^18.3.1",
+    "react-simple-maps": "^3.0.0",
+    "react-tooltip": "^5.30.0",
     "react-transition-group": "^4.4.5",
     "recharts": "^2.12.7",
     "sonner": "latest",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7",
-    "arg": "^5.0.2"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@jest/globals": "^30.0.4",
@@ -114,6 +116,8 @@
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/react-simple-maps": "^3.0.6",
+    "@types/react-tooltip": "^3.11.0",
     "@typescript-eslint/eslint-plugin": "^6.12.0",
     "@typescript-eslint/parser": "^6.12.0",
     "eslint-config-prettier": "^9.0.0",
