@@ -9,6 +9,7 @@ import {
   ChevronRight,
   TrendingUp,
   Share2,
+  Zap,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -21,6 +22,18 @@ const sidebarGroups = [
         href: "/dashboard/brand-performance/campaign-performance",
         icon: TrendingUp,
         description: "Comprehensive campaign analytics with social and email performance insights",
+      },
+      {
+        title: "Campaign Intelligence",
+        href: "/dashboard/brand-performance/campaign-intelligence",
+        icon: Share2,
+        description: "Advanced campaign intelligence and performance optimization insights",
+      },
+      {
+        title: "Campaign Intelligence V2",
+        href: "/dashboard/brand-performance/campaign-intelligence-v2",
+        icon: Zap,
+        description: "Redesigned campaign intelligence with enhanced analytics and AI insights",
       },
       {
         title: "Retailer Performance", 
