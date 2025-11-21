@@ -1,24 +1,21 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
-  TrendingUp, TrendingDown, Target, Lightbulb, AlertTriangle, Trophy, ArrowRight,
-  BarChart3, Calendar, Filter, MapPin, Users, Eye, MessageCircle, Share2,
-  Clock, Zap, Award, ChevronRight, ExternalLink, Download, ArrowUpDown, ArrowUp, ArrowDown
+  TrendingUp, Target, Lightbulb, BarChart3, Calendar, Filter, Users, Eye, MessageCircle,
+  Zap, ExternalLink, Download, ArrowUpDown, ArrowUp, ArrowDown, Sparkles, Bot,
+  Instagram, Facebook, Linkedin, MapPin
 } from 'lucide-react'
 import {
-  LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar,
-  ComposedChart, Area, AreaChart, PieChart, Pie, Cell, ScatterChart, Scatter,
-  CartesianGrid, ReferenceLine
+  LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip,
+  CartesianGrid
 } from 'recharts'
 import RegionalHeatmap from './RegionalHeatmap'
 import ContentPostingMatrix from './ContentPostingMatrix'
-import USMapVisualization from './USMapVisualization'
 // import ContentTimingHeatmap from './ContentTimingHeatmap'
 
 // Mock data aligned with Ayrshare structure
@@ -198,40 +195,6 @@ const retailerPerformance = [
   }
 ]
 
-// Trend data for charts - multiple metrics
-const trendData = {
-  engagementRate: [
-    { date: 'Oct 1', current: 2.8, comparison: 2.1 },
-    { date: 'Oct 8', current: 3.2, comparison: 2.3 },
-    { date: 'Oct 15', current: 3.6, comparison: 2.4 },
-    { date: 'Oct 22', current: 3.8, comparison: 2.6 },
-    { date: 'Oct 29', current: 3.9, comparison: 2.5 },
-    { date: 'Nov 5', current: 4.1, comparison: 2.7 },
-    { date: 'Nov 12', current: 3.9, comparison: 2.8 },
-    { date: 'Nov 19', current: 4.2, comparison: 2.9 }
-  ],
-  totalEngagement: [
-    { date: 'Oct 1', current: 3200, comparison: 2400 },
-    { date: 'Oct 8', current: 4100, comparison: 2800 },
-    { date: 'Oct 15', current: 4800, comparison: 3100 },
-    { date: 'Oct 22', current: 5200, comparison: 3400 },
-    { date: 'Oct 29', current: 5600, comparison: 3600 },
-    { date: 'Nov 5', current: 6100, comparison: 3900 },
-    { date: 'Nov 12', current: 5900, comparison: 4200 },
-    { date: 'Nov 19', current: 6400, comparison: 4500 }
-  ],
-  totalReach: [
-    { date: 'Oct 1', current: 85000, comparison: 62000 },
-    { date: 'Oct 8', current: 92000, comparison: 68000 },
-    { date: 'Oct 15', current: 98000, comparison: 72000 },
-    { date: 'Oct 22', current: 105000, comparison: 76000 },
-    { date: 'Oct 29', current: 110000, comparison: 78000 },
-    { date: 'Nov 5', current: 118000, comparison: 82000 },
-    { date: 'Nov 12', current: 115000, comparison: 85000 },
-    { date: 'Nov 19', current: 125000, comparison: 88000 }
-  ]
-}
-
 // Regional performance data
 const regionalData = [
   { region: 'East', retailers: 3, engagement: 15240, reach: 342000, performance: 92 },
@@ -300,14 +263,62 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
   const [selectedTimeRange, setSelectedTimeRange] = useState('last-30-days')
   const [selectedComparison, setSelectedComparison] = useState('holiday-2023')
   const [selectedPlatform, setSelectedPlatform] = useState('all')
-  const [selectedRegion, setSelectedRegion] = useState('all')
   const [selectedMetric, setSelectedMetric] = useState<'engagementRate' | 'totalEngagement' | 'totalReach'>('engagementRate')
   const [sortColumn, setSortColumn] = useState<'name' | 'posts' | 'engagement' | 'reach' | 'engagementRate' | 'growth'>('engagementRate')
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
-  // Get current trend data based on selected metric
-  const currentTrendData = trendData[selectedMetric]
-  
+  // Generate trend data based on selected time range
+  const generateTrendData = (timeRange: string, metric: 'engagementRate' | 'totalEngagement' | 'totalReach') => {
+    const range = timeRanges.find(r => r.id === timeRange)
+    const days = range?.days || 60 // Default to campaign duration
+
+    // Calculate number of data points (weekly intervals)
+    const dataPoints = Math.min(Math.ceil(days / 7), 12)
+
+    const data = []
+    const today = new Date()
+
+    // Base values for each metric
+    const baseValues = {
+      engagementRate: { current: 2.8, comparison: 2.1, growth: 0.15 },
+      totalEngagement: { current: 3200, comparison: 2400, growth: 400 },
+      totalReach: { current: 85000, comparison: 62000, growth: 5000 }
+    }
+
+    const base = baseValues[metric]
+
+    for (let i = 0; i < dataPoints; i++) {
+      const weeksAgo = dataPoints - i - 1
+      const date = new Date(today)
+      date.setDate(date.getDate() - (weeksAgo * 7))
+
+      // Format date based on time range
+      let dateLabel = ''
+      if (days <= 7) {
+        dateLabel = date.toLocaleDateString('en-US', { weekday: 'short' })
+      } else if (days <= 30) {
+        dateLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      } else {
+        dateLabel = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      }
+
+      // Calculate progressive values with some variance
+      const progress = i / (dataPoints - 1)
+      const variance = (Math.sin(i * 0.8) * 0.1 + 1) // Add realistic variance
+
+      data.push({
+        date: dateLabel,
+        current: Number((base.current + (base.growth * progress * dataPoints * variance)).toFixed(metric === 'engagementRate' ? 1 : 0)),
+        comparison: Number((base.comparison + (base.growth * 0.6 * progress * dataPoints * variance)).toFixed(metric === 'engagementRate' ? 1 : 0))
+      })
+    }
+
+    return data
+  }
+
+  // Get current trend data based on selected metric and time range
+  const currentTrendData = generateTrendData(selectedTimeRange, selectedMetric)
+
   // Format the metric value for display
   const formatMetricValue = (value: number, metric: string) => {
     switch (metric) {
@@ -379,12 +390,12 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
     }
 
     if (typeof aValue === 'string' && typeof bValue === 'string') {
-      return sortDirection === 'asc' 
+      return sortDirection === 'asc'
         ? aValue.localeCompare(bValue)
         : bValue.localeCompare(aValue)
     }
 
-    return sortDirection === 'asc' 
+    return sortDirection === 'asc'
       ? (aValue as number) - (bValue as number)
       : (bValue as number) - (aValue as number)
   })
@@ -394,7 +405,7 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
     if (sortColumn !== column) {
       return <ArrowUpDown className="h-3 w-3 text-gray-400" />
     }
-    return sortDirection === 'asc' 
+    return sortDirection === 'asc'
       ? <ArrowUp className="h-3 w-3 text-blue-600" />
       : <ArrowDown className="h-3 w-3 text-blue-600" />
   }
@@ -419,54 +430,92 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
         </div>
       </div>
 
-      {/* AI Smart Summary */}
-      <Card className="border-l-4 border-l-blue-500">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-blue-500" />
-            AI Smart Summary
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-2">What Happened</h4>
-              <div className="flex items-center gap-2 mb-2">
-                <Badge variant="secondary" className="bg-green-100 text-green-800">
-                  {aiInsights.summary.performance.toUpperCase()}
-                </Badge>
-                <span className="text-sm text-gray-600">performance</span>
+      {/* AI Smart Summary - Redesigned */}
+      <Card className="overflow-hidden border-none shadow-lg ring-1 ring-black/5 bg-gradient-to-br from-white to-blue-50/50">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-xl">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Sparkles className="h-5 w-5 text-blue-600" />
               </div>
-              <p className="text-sm text-gray-700">
-                {aiInsights.summary.keyMetric} increased by{' '}
-                <span className="font-semibold text-green-600">{aiInsights.summary.change}</span>{' '}
-                {aiInsights.summary.period}. {aiInsights.summary.highlight}.
-              </p>
+              AI Executive Summary
+            </CardTitle>
+            <Badge variant="outline" className="bg-white/50 backdrop-blur-sm border-blue-200 text-blue-700 flex items-center gap-1">
+              <Bot className="h-3 w-3" />
+              Generated just now
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6 pt-4">
+          {/* Primary Insight */}
+          <div className="bg-white rounded-xl p-4 border border-blue-100 shadow-sm">
+            <div className="flex items-start gap-4">
+              <div className="p-2 bg-green-100 rounded-full mt-1">
+                <TrendingUp className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 text-lg">
+                  Campaign performance is <span className="text-green-600">Exceeding Expectations</span>
+                </h3>
+                <p className="text-gray-600 mt-1 leading-relaxed">
+                  {aiInsights.summary.keyMetric} has increased by <span className="font-bold text-green-600">{aiInsights.summary.change}</span> {aiInsights.summary.period}.
+                  The primary driver is {aiInsights.summary.highlight.toLowerCase()}.
+                </p>
+              </div>
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Key Drivers */}
             <div>
-              <h4 className="font-semibold text-gray-900 mb-2">Why It Happened</h4>
-              <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <Zap className="h-4 w-4" /> Impact Drivers
+              </h4>
+              <div className="space-y-3">
                 {aiInsights.drivers.map((driver, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">{driver.factor}</span>
-                    <span className="text-sm font-medium text-blue-600">{driver.impact}</span>
+                  <div key={index} className="group flex items-center justify-between p-3 rounded-lg bg-white border border-gray-100 hover:border-blue-200 transition-all shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-xs">
+                        {index + 1}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900 text-sm">{driver.factor}</p>
+                        <p className="text-xs text-gray-500">{driver.description}</p>
+                      </div>
+                    </div>
+                    <Badge className="bg-green-50 text-green-700 hover:bg-green-100 border-green-200">
+                      {driver.impact}
+                    </Badge>
                   </div>
                 ))}
               </div>
             </div>
 
+            {/* Recommendations */}
             <div>
-              <h4 className="font-semibold text-gray-900 mb-2">What To Do Next</h4>
-              <div className="space-y-2">
-                {aiInsights.recommendations.slice(0, 2).map((rec, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm text-gray-700">{rec.action}</span>
-                    <Badge variant="outline" className={
-                      rec.priority === 'high' ? 'border-red-200 text-red-700' : 'border-yellow-200 text-yellow-700'
-                    }>
-                      {rec.priority}
-                    </Badge>
+              <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                <Lightbulb className="h-4 w-4" /> Strategic Actions
+              </h4>
+              <div className="space-y-3">
+                {aiInsights.recommendations.map((rec, index) => (
+                  <div key={index} className="p-3 rounded-lg bg-white border border-gray-100 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant={rec.priority === 'high' ? 'default' : 'secondary'} className={
+                        rec.priority === 'high' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-100 text-gray-700'
+                      }>
+                        {rec.priority.toUpperCase()} PRIORITY
+                      </Badge>
+                      <span className="text-xs font-medium text-green-600 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" />
+                        Expected: {rec.impact}
+                      </span>
+                    </div>
+                    <p className="font-medium text-gray-900 text-sm mb-1">{rec.action}</p>
+                    <p className="text-xs text-gray-500 mb-3">{rec.description}</p>
+                    <Button size="sm" variant="outline" className="w-full h-8 text-xs hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200">
+                      Apply Recommendation
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -475,15 +524,17 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
         </CardContent>
       </Card>
 
-      {/* Controls Bar */}
-      <Card>
-        <CardContent className="p-4">
+      {/* Full Width Trend Chart with Integrated Filters */}
+      <Card className="overflow-hidden">
+        {/* Integrated Filter Bar */}
+        <div className="border-b bg-gray-50/40 p-4">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
+              {/* Time Range Filter */}
+              <div className="flex items-center gap-2 bg-white rounded-md border px-3 py-1.5 shadow-sm hover:border-blue-300 transition-colors">
                 <Calendar className="h-4 w-4 text-gray-500" />
                 <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-[140px] border-none h-6 p-0 focus:ring-0 text-sm font-medium text-gray-700">
                     <SelectValue placeholder="Select time range">
                       {timeRanges.find(r => r.id === selectedTimeRange)?.label || 'Last 30 Days'}
                     </SelectValue>
@@ -498,10 +549,11 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
                 </Select>
               </div>
 
-              <div className="flex items-center gap-2">
+              {/* Comparison Filter */}
+              <div className="flex items-center gap-2 bg-white rounded-md border px-3 py-1.5 shadow-sm hover:border-blue-300 transition-colors">
                 <BarChart3 className="h-4 w-4 text-gray-500" />
                 <Select value={selectedComparison} onValueChange={setSelectedComparison}>
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-[180px] border-none h-6 p-0 focus:ring-0 text-sm font-medium text-gray-700">
                     <SelectValue placeholder="Compare with...">
                       {comparisonCampaigns.find(c => c.id === selectedComparison)?.name || 'Holiday Collection 2023'}
                     </SelectValue>
@@ -517,63 +569,40 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Platform">
-                      {selectedPlatform === 'all' ? 'All Platforms' : selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1)}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Platforms</SelectItem>
-                    <SelectItem value="instagram">Instagram</SelectItem>
-                    <SelectItem value="facebook">Facebook</SelectItem>
-                    <SelectItem value="linkedin">LinkedIn</SelectItem>
-                    <SelectItem value="tiktok">TikTok</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-gray-500" />
-                <Select value={selectedRegion} onValueChange={setSelectedRegion}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Region">
-                      {selectedRegion === 'all' ? 'All Regions' : selectedRegion.charAt(0).toUpperCase() + selectedRegion.slice(1)}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Regions</SelectItem>
-                    <SelectItem value="east">East</SelectItem>
-                    <SelectItem value="west">West</SelectItem>
-                    <SelectItem value="central">Central</SelectItem>
-                    <SelectItem value="south">South</SelectItem>
-                    <SelectItem value="north">North</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Platform Filter */}
+            <div className="flex items-center gap-2 bg-white rounded-md border px-3 py-1.5 shadow-sm hover:border-blue-300 transition-colors">
+              <Filter className="h-4 w-4 text-gray-500" />
+              <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
+                <SelectTrigger className="w-[130px] border-none h-6 p-0 focus:ring-0 text-sm font-medium text-gray-700">
+                  <SelectValue placeholder="Platform">
+                    {selectedPlatform === 'all' ? 'All Platforms' : selectedPlatform.charAt(0).toUpperCase() + selectedPlatform.slice(1)}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Platforms</SelectItem>
+                  <SelectItem value="instagram">Instagram</SelectItem>
+                  <SelectItem value="facebook">Facebook</SelectItem>
+                  <SelectItem value="linkedin">LinkedIn</SelectItem>
+                  <SelectItem value="tiktok">TikTok</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Full Width Trend Chart */}
-      <Card>
-        <CardHeader>
+        <CardHeader className="pt-6">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
+                <TrendingUp className="h-5 w-5 text-gray-700" />
                 Performance Trend Analysis
               </CardTitle>
-              <p className="text-sm text-gray-600">Current vs comparison campaign performance</p>
+              <p className="text-sm text-gray-600 mt-1">Current vs comparison campaign performance</p>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">View:</span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-500">Metric:</span>
               <Select value={selectedMetric} onValueChange={(value: any) => setSelectedMetric(value)}>
-                <SelectTrigger className="w-48">
+                <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select metric">
                     {getMetricLabel(selectedMetric)}
                   </SelectValue>
@@ -593,7 +622,7 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
               <LineChart data={currentTrendData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                 <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                <YAxis 
+                <YAxis
                   tick={{ fontSize: 12 }}
                   tickFormatter={(value) => formatMetricValue(value, selectedMetric)}
                 />
@@ -635,7 +664,7 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
               </LineChart>
             </ResponsiveContainer>
           </div>
-          
+
           {/* Trend Summary */}
           <div className="grid grid-cols-3 gap-4 mt-6 pt-4 border-t">
             <div className="text-center">
@@ -665,218 +694,241 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
       </Card>
 
       {/* Performance Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="shadow-sm hover:shadow-md transition-all duration-200 border-gray-200">
+          <CardContent className="p-6">
+            <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-gray-600">Total Engagement</p>
-                <p className="text-2xl font-bold">{performanceOverview.totalEngagement.toLocaleString()}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingUp className="h-3 w-3 text-green-500" />
-                  <span className="text-xs text-green-600">+18.5%</span>
-                </div>
+                <p className="text-sm font-medium text-gray-500">Total Engagement</p>
+                <h3 className="text-3xl font-bold text-gray-900 mt-2">{performanceOverview.totalEngagement.toLocaleString()}</h3>
               </div>
-              <MessageCircle className="h-8 w-8 text-blue-500" />
+              <div className="p-2 bg-blue-50 rounded-full">
+                <MessageCircle className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 mt-4">
+              <TrendingUp className="h-4 w-4 text-green-500" />
+              <span className="text-sm font-medium text-green-600">+18.5%</span>
+              <span className="text-sm text-gray-400 ml-1">vs last period</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
+        <Card className="shadow-sm hover:shadow-md transition-all duration-200 border-gray-200">
+          <CardContent className="p-6">
+            <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-gray-600">Total Reach</p>
-                <p className="text-2xl font-bold">{(performanceOverview.totalReach / 1000).toFixed(0)}K</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingUp className="h-3 w-3 text-green-500" />
-                  <span className="text-xs text-green-600">+12.3%</span>
-                </div>
+                <p className="text-sm font-medium text-gray-500">Total Reach</p>
+                <h3 className="text-3xl font-bold text-gray-900 mt-2">{(performanceOverview.totalReach / 1000).toFixed(0)}K</h3>
               </div>
-              <Eye className="h-8 w-8 text-purple-500" />
+              <div className="p-2 bg-purple-50 rounded-full">
+                <Eye className="h-6 w-6 text-purple-600" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 mt-4">
+              <TrendingUp className="h-4 w-4 text-green-500" />
+              <span className="text-sm font-medium text-green-600">+12.3%</span>
+              <span className="text-sm text-gray-400 ml-1">vs last period</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
+        <Card className="shadow-sm hover:shadow-md transition-all duration-200 border-gray-200">
+          <CardContent className="p-6">
+            <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-gray-600">Engagement Rate</p>
-                <p className="text-2xl font-bold">{performanceOverview.avgEngagementRate}%</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <TrendingUp className="h-3 w-3 text-green-500" />
-                  <span className="text-xs text-green-600">+0.8pp</span>
-                </div>
+                <p className="text-sm font-medium text-gray-500">Engagement Rate</p>
+                <h3 className="text-3xl font-bold text-gray-900 mt-2">{performanceOverview.avgEngagementRate}%</h3>
               </div>
-              <Target className="h-8 w-8 text-green-500" />
+              <div className="p-2 bg-green-50 rounded-full">
+                <Target className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 mt-4">
+              <TrendingUp className="h-4 w-4 text-green-500" />
+              <span className="text-sm font-medium text-green-600">+0.8pp</span>
+              <span className="text-sm text-gray-400 ml-1">vs last period</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
+        <Card className="shadow-sm hover:shadow-md transition-all duration-200 border-gray-200">
+          <CardContent className="p-6">
+            <div className="flex justify-between items-start">
               <div>
-                <p className="text-sm text-gray-600">Active Retailers</p>
-                <p className="text-2xl font-bold">{performanceOverview.activeRetailers}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  <span className="text-xs text-gray-600">{performanceOverview.postsPublished} posts</span>
-                </div>
+                <p className="text-sm font-medium text-gray-500">Active Retailers</p>
+                <h3 className="text-3xl font-bold text-gray-900 mt-2">{performanceOverview.activeRetailers}</h3>
               </div>
-              <Users className="h-8 w-8 text-orange-500" />
+              <div className="p-2 bg-orange-50 rounded-full">
+                <Users className="h-6 w-6 text-orange-600" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 mt-4">
+              <span className="text-sm font-medium text-gray-600">{performanceOverview.postsPublished}</span>
+              <span className="text-sm text-gray-400">total posts published</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Platform Performance */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Platform Performance Overview
-          </CardTitle>
-          <p className="text-sm text-gray-600">Engagement rate and growth by platform</p>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {platformPerformance.map((platform) => (
-              <div key={platform.platform} className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center gap-3 mb-3">
+      <Card className="border-none shadow-none bg-transparent">
+        <div className="flex items-center gap-2 mb-6">
+          <BarChart3 className="h-5 w-5 text-gray-700" />
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">Platform Performance Overview</h3>
+            <p className="text-sm text-gray-500">Engagement rate and growth metrics by platform</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {platformPerformance.map((platform) => (
+            <Card key={platform.platform} className="shadow-sm hover:shadow-md transition-all duration-200 border-gray-200 overflow-hidden">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-3 mb-6">
                   <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: platform.color }}
+                    className="w-3 h-3 rounded-full ring-4 ring-opacity-20"
+                    style={{ backgroundColor: platform.color, '--tw-ring-color': platform.color } as any}
                   />
                   <div>
-                    <p className="font-medium">{platform.platform}</p>
-                    <p className="text-xs text-gray-600">{platform.posts} posts</p>
+                    <h4 className="font-bold text-gray-900">{platform.platform}</h4>
+                    <p className="text-xs text-gray-500 font-medium">{platform.posts} posts</p>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Engagement Rate</span>
-                    <span className="font-semibold">{platform.engagementRate}%</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Growth</span>
-                    <div className="flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3 text-green-500" />
-                      <span className="text-sm text-green-600">+{platform.growth}%</span>
+
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between items-end mb-1">
+                      <span className="text-sm text-gray-500">Engagement Rate</span>
+                      <span className="text-xl font-bold text-gray-900">{platform.engagementRate}%</span>
+                    </div>
+                    <div className="w-full bg-gray-100 rounded-full h-1.5">
+                      <div
+                        className="h-1.5 rounded-full"
+                        style={{ width: `${(platform.engagementRate / 8) * 100}%`, backgroundColor: platform.color }}
+                      />
                     </div>
                   </div>
+
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-50">
+                    <span className="text-sm text-gray-500">Growth</span>
+                    <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-md">
+                      <TrendingUp className="h-3 w-3 text-green-600" />
+                      <span className="text-xs font-bold text-green-700">+{platform.growth}%</span>
+                    </div>
+                  </div>
+
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Top Content</span>
-                    <span className="text-xs font-medium">{platform.topContentType}</span>
+                    <span className="text-sm text-gray-500">Top Content</span>
+                    <span className="text-xs font-semibold px-2 py-1 bg-gray-100 text-gray-700 rounded uppercase tracking-wide">
+                      {platform.topContentType}
+                    </span>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </Card>
 
       {/* Content Posting Status Matrix */}
       <ContentPostingMatrix />
 
       {/* Retailer Performance Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Retailer Performance Analytics
-          </CardTitle>
-          <p className="text-sm text-gray-600">Detailed performance metrics by retail partner</p>
+      <Card className="overflow-hidden border-none shadow-lg ring-1 ring-black/5">
+        <CardHeader className="border-b border-gray-100 bg-gray-50/30 pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <div className="p-2 bg-indigo-100 rounded-lg">
+                  <Users className="h-5 w-5 text-indigo-600" />
+                </div>
+                Retailer Performance Analytics
+              </CardTitle>
+              <p className="text-sm text-gray-500 mt-1">Detailed performance metrics by retail partner</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="h-8 gap-2 bg-white">
+                <Download className="h-3.5 w-3.5" />
+                Export Data
+              </Button>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b bg-gray-50">
-                  <th 
-                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('name')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>Retailer</span>
-                      <SortIcon column="name" />
-                    </div>
+                <tr className="border-b border-gray-100 bg-gray-50/50">
+                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700" onClick={() => handleSort('name')}>
+                    <div className="flex items-center gap-1">Retailer <SortIcon column="name" /></div>
                   </th>
-                  <th className="text-left p-3">Region</th>
-                  <th 
-                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('posts')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>Posts</span>
-                      <SortIcon column="posts" />
-                    </div>
+                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Region</th>
+                  <th className="text-right py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700" onClick={() => handleSort('posts')}>
+                    <div className="flex items-center justify-end gap-1">Posts <SortIcon column="posts" /></div>
                   </th>
-                  <th 
-                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('engagement')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>Engagement</span>
-                      <SortIcon column="engagement" />
-                    </div>
+                  <th className="text-right py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700" onClick={() => handleSort('engagement')}>
+                    <div className="flex items-center justify-end gap-1">Engagement <SortIcon column="engagement" /></div>
                   </th>
-                  <th 
-                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('reach')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>Reach</span>
-                      <SortIcon column="reach" />
-                    </div>
+                  <th className="text-right py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700" onClick={() => handleSort('reach')}>
+                    <div className="flex items-center justify-end gap-1">Reach <SortIcon column="reach" /></div>
                   </th>
-                  <th 
-                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('engagementRate')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>ER</span>
-                      <SortIcon column="engagementRate" />
-                    </div>
+                  <th className="text-right py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700" onClick={() => handleSort('engagementRate')}>
+                    <div className="flex items-center justify-end gap-1">ER <SortIcon column="engagementRate" /></div>
                   </th>
-                  <th 
-                    className="text-left p-3 cursor-pointer hover:bg-gray-100 transition-colors"
-                    onClick={() => handleSort('growth')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span>Growth</span>
-                      <SortIcon column="growth" />
-                    </div>
+                  <th className="text-right py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700" onClick={() => handleSort('growth')}>
+                    <div className="flex items-center justify-end gap-1">Growth <SortIcon column="growth" /></div>
                   </th>
-                  <th className="text-left p-3">Status</th>
+                  <th className="text-left py-4 px-6 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-50">
                 {sortedRetailerPerformance.map((retailer) => (
-                  <tr key={retailer.id} className="border-b hover:bg-gray-50">
-                    <td className="p-3">
-                      <div>
-                        <p className="font-medium">{retailer.name}</p>
-                        <p className="text-sm text-gray-600">Top: {retailer.topPlatform}</p>
+                  <tr key={retailer.id} className="hover:bg-gray-50/80 transition-colors group">
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-600 font-bold text-sm border border-white shadow-sm">
+                          {retailer.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900">{retailer.name}</p>
+                          <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                            {retailer.topPlatform === 'Instagram' && <Instagram className="w-3 h-3 text-pink-500" />}
+                            {retailer.topPlatform === 'Facebook' && <Facebook className="w-3 h-3 text-blue-600" />}
+                            {retailer.topPlatform === 'LinkedIn' && <Linkedin className="w-3 h-3 text-blue-700" />}
+                            {retailer.topPlatform}
+                          </p>
+                        </div>
                       </div>
                     </td>
-                    <td className="p-3">
-                      <Badge variant="outline">{retailer.region}</Badge>
-                    </td>
-                    <td className="p-3">{retailer.posts}</td>
-                    <td className="p-3">{retailer.engagement.toLocaleString()}</td>
-                    <td className="p-3">{(retailer.reach / 1000).toFixed(0)}K</td>
-                    <td className="p-3 font-semibold">{retailer.engagementRate}%</td>
-                    <td className="p-3">
-                      <div className="flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3 text-green-500" />
-                        <span className="text-sm text-green-600">+{retailer.growth}%</span>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <Badge variant={retailer.performance === 'excellent' ? 'default' : 'secondary'}>
-                        {retailer.performance}
+                    <td className="py-4 px-6">
+                      <Badge variant="secondary" className="bg-gray-100 text-gray-600 hover:bg-gray-200 border-none font-normal">
+                        {retailer.region}
                       </Badge>
+                    </td>
+                    <td className="py-4 px-6 text-right font-medium text-gray-600">{retailer.posts}</td>
+                    <td className="py-4 px-6 text-right font-medium text-gray-600">{retailer.engagement.toLocaleString()}</td>
+                    <td className="py-4 px-6 text-right font-medium text-gray-600">{(retailer.reach / 1000).toFixed(0)}K</td>
+                    <td className="py-4 px-6 text-right">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700">
+                        {retailer.engagementRate}%
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-right">
+                      <div className="flex items-center justify-end gap-1 text-green-600">
+                        <TrendingUp className="h-3.5 w-3.5" />
+                        <span className="text-sm font-semibold">+{retailer.growth}%</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${retailer.performance === 'excellent'
+                        ? 'bg-green-50 text-green-700 border-green-100'
+                        : 'bg-yellow-50 text-yellow-700 border-yellow-100'
+                        }`}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${retailer.performance === 'excellent' ? 'bg-green-500' : 'bg-yellow-500'
+                          }`} />
+                        {retailer.performance.charAt(0).toUpperCase() + retailer.performance.slice(1)}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -886,181 +938,36 @@ export default function RedesignedCampaignIntelligence({ campaignId }: Redesigne
         </CardContent>
       </Card>
 
-      {/* Advanced Analytics Tabs */}
-      <Tabs defaultValue="regional" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="regional">Regional</TabsTrigger>
-          <TabsTrigger value="content">Content Analysis</TabsTrigger>
-          <TabsTrigger value="actions">Action Items</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="regional" className="space-y-6">
-          <RegionalHeatmap />
-        </TabsContent>
-
-        <TabsContent value="content" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Content Performance Analysis
+      {/* Regional Performance Analysis */}
+      <div className="relative">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-t-lg" />
+        <Card className="overflow-hidden border-none shadow-lg ring-1 ring-black/5">
+          <CardHeader className="border-b border-gray-100 bg-gradient-to-br from-emerald-50/50 via-teal-50/30 to-cyan-50/50 pb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2 text-2xl">
+                  <div className="p-2.5 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg shadow-sm">
+                    <Target className="h-6 w-6 text-white" />
+                  </div>
+                  Regional Performance Analysis
                 </CardTitle>
-                <p className="text-sm text-gray-600">Performance breakdown by content type and format</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
-                  {/* Content Type Performance */}
-                  <div>
-                    <h4 className="font-semibold mb-4">Content Type Performance</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium">Video Content</p>
-                          <p className="text-sm text-gray-600">68% of posts</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-green-600">4.8% ER</p>
-                          <p className="text-xs text-green-600">+24% vs static</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium">Image Posts</p>
-                          <p className="text-sm text-gray-600">28% of posts</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold">3.9% ER</p>
-                          <p className="text-xs text-gray-600">baseline</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div>
-                          <p className="font-medium">Carousel Posts</p>
-                          <p className="text-sm text-gray-600">4% of posts</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold">3.2% ER</p>
-                          <p className="text-xs text-red-600">-18% vs baseline</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Platform-Specific Insights */}
-                  <div>
-                    <h4 className="font-semibold mb-4">Platform-Specific Insights</h4>
-                    <div className="space-y-3">
-                      <div className="p-3 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-3 h-3 bg-pink-500 rounded-full" />
-                          <span className="font-medium">Instagram</span>
-                        </div>
-                        <p className="text-sm text-gray-700">Reels outperform feed posts by 89%. Stories show 12% higher completion rate.</p>
-                      </div>
-                      <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-3 h-3 bg-blue-500 rounded-full" />
-                          <span className="font-medium">Facebook</span>
-                        </div>
-                        <p className="text-sm text-gray-700">Video posts generate 3x more shares. Live content shows 67% higher engagement.</p>
-                      </div>
-                      <div className="p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg">
-                        <div className="flex items-center gap-2 mb-2">
-                          <div className="w-3 h-3 bg-cyan-600 rounded-full" />
-                          <span className="font-medium">LinkedIn</span>
-                        </div>
-                        <p className="text-sm text-gray-700">Professional content and industry insights drive highest engagement rates.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Optimal Posting Times
-                </CardTitle>
-                <p className="text-sm text-gray-600">Best performing time slots for content</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-green-800">Tuesday 8PM</p>
-                      <p className="text-sm text-green-600">20 posts published</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-green-700">5.4%</p>
-                      <p className="text-xs text-green-600">Engagement Rate</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-green-800">Wednesday 8PM</p>
-                      <p className="text-sm text-green-600">17 posts published</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-green-700">5.3%</p>
-                      <p className="text-xs text-green-600">Engagement Rate</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                    <div>
-                      <p className="font-medium text-green-800">Monday 8PM</p>
-                      <p className="text-sm text-green-600">18 posts published</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-green-700">5.2%</p>
-                      <p className="text-xs text-green-600">Engagement Rate</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="actions" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5" />
-                Recommended Actions
-              </CardTitle>
-              <p className="text-sm text-gray-600">Data-driven recommendations with estimated impact</p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {aiInsights.recommendations.map((rec, index) => (
-                  <Card key={index} className="border-l-4 border-l-blue-500">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <Badge variant={rec.priority === 'high' ? 'destructive' : 'secondary'}>
-                          {rec.priority} priority
-                        </Badge>
-                        <span className="text-sm font-semibold text-green-600">{rec.impact}</span>
-                      </div>
-                      <h4 className="font-semibold mb-2">{rec.action}</h4>
-                      <p className="text-sm text-gray-600 mb-3">{rec.description}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">Effort: {rec.effort}</span>
-                        <Button size="sm" variant="outline">
-                          Take Action
-                          <ChevronRight className="h-3 w-3 ml-1" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                <p className="text-sm text-gray-600 mt-2">
+                  Geographic insights and performance metrics across U.S. regions
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="bg-white/80 backdrop-blur-sm border border-gray-200 text-gray-700 px-3 py-1.5">
+                  <MapPin className="h-3.5 w-3.5 mr-1.5" />
+                  5 Regions
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6">
+            <RegionalHeatmap />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
