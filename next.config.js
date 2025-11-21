@@ -19,6 +19,11 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Generate unique build ID to prevent caching issues
+  generateBuildId: async () => {
+    // Use timestamp to ensure fresh builds
+    return `build-${Date.now()}`
+  },
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals.push('pg', 'dotenv');
