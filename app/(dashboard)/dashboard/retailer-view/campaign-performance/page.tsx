@@ -1,7 +1,7 @@
 'use client'
 
-import RetailerCampaignView from '@/components/brand-performance/campaign-performance/RetailerCampaignView'
+import RetailerCampaignDashboard from '@/components/campaigns/retailer-view/RetailerCampaignDashboard'
 
 export default function RetailerViewCampaignPerformancePage() {
-  return <RetailerCampaignView />
+  return <RetailerCampaignDashboard />
 }

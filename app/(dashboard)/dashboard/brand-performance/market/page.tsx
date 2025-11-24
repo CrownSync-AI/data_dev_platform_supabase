@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Globe, TrendingUp, TrendingDown, Users, Target, MapPin, Download } from 'lucide-react'
-import { TimeRangeSelector } from '@/components/brand-performance/TimeRangeSelector'
+import { TimeRangeSelector } from '@/components/campaigns/shared/filters/TimeRangeSelector'
 
 interface TimeRange {
   label: string
@@ -28,7 +28,7 @@ const regionalPerformanceData = [
     growth: 8.2
   },
   {
-    region: 'Central', 
+    region: 'Central',
     retailers: 5,
     avgClickRate: 2.41,
     avgROI: 87.4,
@@ -61,12 +61,12 @@ const radarData = [
   { metric: 'Innovation', East: 60, Central: 40, West: 85 }
 ]
 
-interface MarketIntelligenceProps {}
+interface MarketIntelligenceProps { }
 
-export default function MarketIntelligencePage({}: MarketIntelligenceProps) {
+export default function MarketIntelligencePage({ }: MarketIntelligenceProps) {
   // radarData is used for future radar chart implementation
   console.log('Radar data available:', radarData.length)
-  
+
   const [timeRange, setTimeRange] = useState<TimeRange>({
     label: 'Past 1 year',
     value: '1y',
@@ -75,7 +75,7 @@ export default function MarketIntelligencePage({}: MarketIntelligenceProps) {
   })
   const [selectedMetric, _setSelectedMetric] = useState('roi')
   const [marketData, _setMarketData] = useState(regionalPerformanceData)
-  
+
   // Variables used for UI state management
   console.log('Current metric:', selectedMetric)
   console.log('Market data loaded:', marketData.length)
@@ -109,7 +109,7 @@ export default function MarketIntelligencePage({}: MarketIntelligenceProps) {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <TimeRangeSelector 
+          <TimeRangeSelector
             options={[
               { label: 'Past 7 days', value: '7d' },
               { label: 'Past 30 days', value: '30d' },
@@ -147,7 +147,7 @@ export default function MarketIntelligencePage({}: MarketIntelligenceProps) {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Market ROI</CardTitle>
@@ -224,7 +224,7 @@ export default function MarketIntelligencePage({}: MarketIntelligenceProps) {
                       <div className="text-xs text-muted-foreground">Avg ROI</div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <div className="flex justify-between text-sm mb-1">
                       <span>Click Rate Performance</span>
@@ -232,7 +232,7 @@ export default function MarketIntelligencePage({}: MarketIntelligenceProps) {
                     </div>
                     <Progress value={region.avgClickRate * 20} className="h-2" />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Top Performer:</span>

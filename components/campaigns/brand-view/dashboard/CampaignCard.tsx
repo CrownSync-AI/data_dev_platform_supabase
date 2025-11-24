@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Search, TrendingUp, TrendingDown, Minus, Calendar, Users, Mail, Eye, MousePointer, MoreHorizontal, Share2 } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import CampaignFiltersAndViews from './CampaignFiltersAndViews'
-import CampaignListView from './CampaignListView'
+import CampaignFilters from './CampaignFilters'
+import CampaignList from './CampaignList'
 
 export interface Campaign {
   campaign_id: string
@@ -360,7 +360,7 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
   return (
     <div className="space-y-6">
       {/* Enhanced Filters and Views */}
-      <CampaignFiltersAndViews
+      <CampaignFilters
         filters={filters}
         onFiltersChange={setFilters}
         viewMode={viewMode}
@@ -370,7 +370,7 @@ export default function CampaignCardView({ role, retailerId, onCampaignClick }: 
 
       {/* Campaign Display - Card or List View */}
       {viewMode === 'list' ? (
-        <CampaignListView
+        <CampaignList
           campaigns={filteredAndSortedCampaigns}
           onCampaignClick={handleCampaignClick}
         />

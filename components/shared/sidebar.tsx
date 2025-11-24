@@ -4,12 +4,10 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
-  Users,
   ChevronLeft,
   ChevronRight,
   TrendingUp,
   Share2,
-  Zap,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -24,22 +22,10 @@ const sidebarGroups = [
         description: "Comprehensive campaign analytics with social and email performance insights",
       },
       {
-        title: "Campaign Intelligence",
+        title: "Campaign Intelligence – Jesse",
         href: "/dashboard/brand-performance/campaign-intelligence",
         icon: Share2,
         description: "Advanced campaign intelligence and performance optimization insights",
-      },
-      {
-        title: "Campaign Intelligence V2",
-        href: "/dashboard/brand-performance/campaign-intelligence-v2",
-        icon: Zap,
-        description: "Redesigned campaign intelligence with enhanced analytics and AI insights",
-      },
-      {
-        title: "Retailer Performance", 
-        href: "/dashboard/brand-performance/retailer-performance",
-        icon: Users,
-        description: "Retailer rankings and performance management",
       },
     ],
   },

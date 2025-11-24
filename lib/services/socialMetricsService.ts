@@ -14,13 +14,14 @@ export interface SocialMetricsOverview {
 
 export async function fetchSocialMetricsOverview(): Promise<SocialMetricsOverview> {
   try {
-    const response = await fetch('/api/social-analytics?overview=true');
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/social-analytics?overview=true`);
     if (!response.ok) {
       throw new Error('Failed to fetch social metrics overview');
     }
-    
+
     const data = await response.json();
-    
+
     return {
       totalReach: data.totalReach || 0,
       totalEngagement: data.totalEngagement || 0,
@@ -33,7 +34,7 @@ export async function fetchSocialMetricsOverview(): Promise<SocialMetricsOvervie
     };
   } catch (error) {
     console.error('Error fetching social metrics overview:', error);
-    
+
     // Return mock data for development
     return {
       totalReach: 245600,

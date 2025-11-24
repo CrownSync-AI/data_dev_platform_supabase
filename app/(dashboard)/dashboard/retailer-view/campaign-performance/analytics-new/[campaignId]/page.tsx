@@ -4,18 +4,18 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, RefreshCw, Download, Share2 } from 'lucide-react';
-import CampaignAnalyticsHeader from '@/components/brand-performance/campaign-performance/analytics-new/CampaignAnalyticsHeader';
-import DriverWaterfallChart from '@/components/brand-performance/campaign-performance/analytics-new/DriverWaterfallChart';
-import TopPostsSection from '@/components/brand-performance/campaign-performance/analytics-new/TopPostsSection';
-import RecommendationCards from '@/components/brand-performance/campaign-performance/analytics-new/RecommendationCards';
-import PlatformPerformanceGrid from '@/components/brand-performance/campaign-performance/analytics-new/PlatformPerformanceGrid';
+import CampaignAnalyticsHeader from '@/components/campaigns/retailer-view/analytics/CampaignAnalyticsHeader';
+import DriverWaterfallChart from '@/components/campaigns/retailer-view/analytics/DriverWaterfallChart';
+import TopPostsSection from '@/components/campaigns/retailer-view/analytics/TopPostsSection';
+import RecommendationCards from '@/components/campaigns/retailer-view/analytics/RecommendationCards';
+import PlatformPerformanceGrid from '@/components/campaigns/retailer-view/analytics/PlatformPerformanceGrid';
 import { generateMockCampaignAnalytics } from '@/lib/services/mockCampaignAnalyticsService';
 
 export default function RetailerCampaignAnalyticsNewPage() {
   const params = useParams();
   const router = useRouter();
   const campaignId = params.campaignId as string;
-  
+
   const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
@@ -126,13 +126,13 @@ export default function RetailerCampaignAnalyticsNewPage() {
       <DriverWaterfallChart data={analyticsData.driverAnalysis} />
 
       {/* Platform Performance Grid */}
-      <PlatformPerformanceGrid 
+      <PlatformPerformanceGrid
         data={analyticsData.platformPerformance}
         onPlatformClick={(platform) => console.log('Platform clicked:', platform)}
       />
 
       {/* Top Posts/Assets - Drill Down */}
-      <TopPostsSection 
+      <TopPostsSection
         posts={analyticsData.topPosts}
         onPostClick={setSelectedPost}
         selectedPost={selectedPost}

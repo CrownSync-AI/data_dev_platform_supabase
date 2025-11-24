@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { FileImage, TrendingUp, BarChart3, Download, Users, MousePointer, Play, FileText, Image, Zap } from 'lucide-react'
-import { TimeRangeSelector } from '@/components/brand-performance/TimeRangeSelector'
+import { TimeRangeSelector } from '@/components/campaigns/shared/filters/TimeRangeSelector'
 
 interface TimeRange {
   label: string
@@ -37,7 +37,7 @@ export default function ContentAnalyticsPage() {
   console.log('Current time range:', timeRange.label)
   const [selectedMetric, _setSelectedMetric] = useState('engagement')
   console.log('Current metric:', selectedMetric)
-  
+
   // Function to generate gold color intensity based on performance value
   const getHeatmapColor = (value: number) => {
     // Gold color gradient: light gold (low %) → dark gold (high %)
@@ -75,7 +75,7 @@ export default function ContentAnalyticsPage() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <TimeRangeSelector 
+          <TimeRangeSelector
             options={[
               { label: 'Past 7 days', value: '7d' },
               { label: 'Past 30 days', value: '30d' },
@@ -113,7 +113,7 @@ export default function ContentAnalyticsPage() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Avg Engagement</CardTitle>
@@ -180,7 +180,7 @@ export default function ContentAnalyticsPage() {
                   {quarter}
                 </div>
               ))}
-              
+
               {/* Data rows */}
               {contentPerformanceData.map((contentType) => (
                 <div key={contentType.type} className="contents">
@@ -189,10 +189,10 @@ export default function ContentAnalyticsPage() {
                     <span>{contentType.type}</span>
                   </div>
                   {[contentType.q1, contentType.q2, contentType.q3, contentType.q4].map((value, cellIndex) => (
-                    <div 
+                    <div
                       key={cellIndex}
                       className="h-12 rounded border flex items-center justify-center text-sm font-bold transition-all hover:scale-105 cursor-pointer"
-                      style={{ 
+                      style={{
                         backgroundColor: getHeatmapColor(value),
                         color: value > 60 ? 'white' : 'black'
                       }}
@@ -204,13 +204,13 @@ export default function ContentAnalyticsPage() {
                 </div>
               ))}
             </div>
-            
+
             {/* Legend */}
             <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
               <span>Low Engagement</span>
               <div className="flex space-x-1">
                 {[20, 40, 60, 80, 100].map(val => (
-                  <div 
+                  <div
                     key={val}
                     className="w-4 h-4 rounded border border-gray-300"
                     style={{ backgroundColor: getHeatmapColor(val) }}
@@ -236,7 +236,7 @@ export default function ContentAnalyticsPage() {
               {contentPerformanceData.map((content) => {
                 const avgPerformance = Math.round((content.q1 + content.q2 + content.q3 + content.q4) / 4)
                 const bestQuarter = Math.max(content.q1, content.q2, content.q3, content.q4)
-                
+
                 return (
                   <div key={content.type} className="flex items-center justify-between p-4 border rounded-lg">
                     <div className="flex items-center space-x-4">
@@ -248,13 +248,13 @@ export default function ContentAnalyticsPage() {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-6">
                       <div className="text-right">
                         <div className="text-sm text-muted-foreground">Avg Performance</div>
                         <div className="text-xl font-bold">{avgPerformance}%</div>
                       </div>
-                      
+
                       <div className="w-32">
                         <Progress value={avgPerformance} className="h-2" />
                       </div>
@@ -370,7 +370,7 @@ export default function ContentAnalyticsPage() {
                 Video content achieved 92% engagement in Q3. Consider increasing video production for upcoming campaigns.
               </p>
             </Card>
-            
+
             <Card className="p-4 bg-orange-50 border-orange-200">
               <h4 className="font-medium text-orange-800 mb-2 flex items-center space-x-2">
                 <BarChart3 className="h-4 w-4" />
@@ -380,7 +380,7 @@ export default function ContentAnalyticsPage() {
                 PDF materials show consistent growth over 3 quarters. Invest in more technical documentation and guides.
               </p>
             </Card>
-            
+
             <Card className="p-4 bg-blue-50 border-blue-200">
               <h4 className="font-medium text-blue-800 mb-2 flex items-center space-x-2">
                 <Zap className="h-4 w-4" />
@@ -394,5 +394,5 @@ export default function ContentAnalyticsPage() {
         </CardContent>
       </Card>
     </div>
-      )
+  )
 } 

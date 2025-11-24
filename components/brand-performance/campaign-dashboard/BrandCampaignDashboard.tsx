@@ -5,13 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Search, 
-  Plus, 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  Mail, 
+import {
+  Search,
+  Plus,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Mail,
   Eye,
   Target,
   Calendar,
@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import CampaignDetailView from './CampaignDetailView';
+import RedesignedCampaignIntelligence from '@/components/campaign-performance-new/RedesignedCampaignIntelligence';
 
 interface CampaignCard {
   campaign_id: string;
@@ -81,11 +82,11 @@ export default function BrandCampaignDashboard({ brandId }: BrandCampaignDashboa
       if (statusFilter !== 'all') params.append('status', statusFilter);
 
       const response = await fetch(`/api/brand-campaigns?${params}`);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
 
       if (result.campaigns) {
@@ -168,7 +169,7 @@ export default function BrandCampaignDashboard({ brandId }: BrandCampaignDashboa
       campaign_id: '4',
       campaign_name: 'Winter Wonderland Exclusive',
       campaign_status: 'active',
-      campaign_type: 'mixed',
+      campaign_type: 'social',
       start_date: '2024-12-15',
       end_date: '2025-02-15',
       duration_days: 62,
@@ -257,9 +258,33 @@ export default function BrandCampaignDashboard({ brandId }: BrandCampaignDashboa
 
   // Show detailed view if campaign is selected
   if (selectedCampaignId) {
+    const selectedCampaign = campaigns.find(c => c.campaign_id === selectedCampaignId);
+
+    // DEBUG OVERLAY
+    if (selectedCampaign) {
+      return (
+        <>
+          <div className="fixed top-0 left-0 bg-yellow-100 p-2 z-50 text-xs border-b border-yellow-300 w-full text-black">
+            DEBUG: ID={selectedCampaignId}, Type={selectedCampaign.campaign_type}, Name={selectedCampaign.campaign_name}
+          </div>
+          {selectedCampaign.campaign_type === 'social' ? (
+            <RedesignedCampaignIntelligence
+              campaignId={selectedCampaignId}
+              onBack={handleBackToDashboard}
+            />
+          ) : (
+            <CampaignDetailView
+              campaignId={selectedCampaignId}
+              onBack={handleBackToDashboard}
+            />
+          )}
+        </>
+      );
+    }
+
     return (
-      <CampaignDetailView 
-        campaignId={selectedCampaignId} 
+      <CampaignDetailView
+        campaignId={selectedCampaignId}
         onBack={handleBackToDashboard}
       />
     );
@@ -366,33 +391,35 @@ export default function BrandCampaignDashboard({ brandId }: BrandCampaignDashboa
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                   <Calendar className="h-3 w-3" />
                   {new Date(campaign.start_date).toLocaleDateString()} - {
-                    campaign.end_date 
+                    campaign.end_date
                       ? new Date(campaign.end_date).toLocaleDateString()
                       : 'Ongoing'
                   }
                 </div>
               </div>
             </CardHeader>
-            
+
             <CardContent className="space-y-4">
-              {/* Key Metrics */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-green-50 rounded-lg">
-                  <div className="flex items-center justify-center gap-1">
-                    <span className="text-2xl font-bold text-green-600">
-                      {campaign.roi_percentage.toFixed(0)}%
-                    </span>
-                    {getTrendIcon(campaign.trend_direction)}
+              {/* Key Metrics - Hide for social campaigns */}
+              {campaign.campaign_type !== 'social' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <div className="flex items-center justify-center gap-1">
+                      <span className="text-2xl font-bold text-green-600">
+                        {campaign.roi_percentage.toFixed(0)}%
+                      </span>
+                      {getTrendIcon(campaign.trend_direction)}
+                    </div>
+                    <div className="text-sm text-green-700">ROI</div>
                   </div>
-                  <div className="text-sm text-green-700">ROI</div>
-                </div>
-                <div className="text-center p-3 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {campaign.avg_click_rate.toFixed(1)}%
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {campaign.avg_click_rate.toFixed(1)}%
+                    </div>
+                    <div className="text-sm text-blue-700">Avg Click Rate</div>
                   </div>
-                  <div className="text-sm text-blue-700">Avg Click Rate</div>
                 </div>
-              </div>
+              )}
 
               {/* Campaign Stats */}
               <div className="space-y-2 text-sm">
@@ -430,8 +457,8 @@ export default function BrandCampaignDashboard({ brandId }: BrandCampaignDashboa
 
               {/* Action Buttons */}
               <div className="space-y-2">
-                <Button 
-                  className="w-full" 
+                <Button
+                  className="w-full"
                   onClick={() => handleCampaignClick(campaign.campaign_id)}
                 >
                   View Detailed Analysis
@@ -459,7 +486,7 @@ export default function BrandCampaignDashboard({ brandId }: BrandCampaignDashboa
               <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium mb-2">No campaigns found</h3>
               <p className="text-muted-foreground mb-4">
-                {searchTerm || statusFilter !== 'all' 
+                {searchTerm || statusFilter !== 'all'
                   ? 'Try adjusting your search or filter criteria'
                   : 'Create your first campaign to start tracking performance'
                 }

@@ -3,18 +3,21 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Plus } from 'lucide-react';
-import CampaignDetailView from '@/components/brand-performance/campaign-dashboard/CampaignDetailView';
-import CampaignCardView from '@/components/brand-performance/campaign-performance/CampaignCardView';
+import CampaignDetail from '@/components/campaigns/brand-view/dashboard/CampaignDetail';
+import CampaignCard from '@/components/campaigns/brand-view/dashboard/CampaignCard';
+import SocialCampaignAnalytics from '@/components/campaigns/brand-view/intelligence/SocialCampaignAnalytics';
 
 
 
 export default function CampaignPerformancePage() {
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null)
+  const [selectedCampaignType, setSelectedCampaignType] = useState<string | null>(null)
 
 
 
   const handleBackToDashboard = () => {
     setSelectedCampaignId(null)
+    setSelectedCampaignType(null)
   }
 
   const handleRefresh = () => {
@@ -24,9 +27,21 @@ export default function CampaignPerformancePage() {
 
   // Show detailed view if campaign is selected
   if (selectedCampaignId) {
+    // Check if it's a social campaign based on the type passed from the card
+    const isSocialCampaign = selectedCampaignType === 'social' || selectedCampaignId === '4' || selectedCampaignId.endsWith('-social');
+
+    if (isSocialCampaign) {
+      return (
+        <SocialCampaignAnalytics
+          campaignId={selectedCampaignId}
+          onBack={handleBackToDashboard}
+        />
+      )
+    }
+
     return (
-      <CampaignDetailView 
-        campaignId={selectedCampaignId} 
+      <CampaignDetail
+        campaignId={selectedCampaignId}
         onBack={handleBackToDashboard}
       />
     )
@@ -56,9 +71,14 @@ export default function CampaignPerformancePage() {
 
       {/* Brand Campaign View */}
       <div className="space-y-6">
-        <CampaignCardView 
-          role="brand" 
-          onCampaignClick={(campaignId) => setSelectedCampaignId(campaignId)}
+        <CampaignCard
+          role="brand"
+          onCampaignClick={(campaignId: string, campaign: any) => {
+            setSelectedCampaignId(campaignId)
+            if (campaign) {
+              setSelectedCampaignType(campaign.campaign_type)
+            }
+          }}
         />
       </div>
     </div>
