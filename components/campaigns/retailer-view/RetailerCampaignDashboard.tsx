@@ -11,11 +11,11 @@ import { Search, TrendingUp, TrendingDown, Minus, Calendar, MoreHorizontal, Arro
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useRouter } from 'next/navigation'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import PlatformSpecificCharts from './PlatformSpecificCharts'
-import AllPlatformsTrendChart from './AllPlatformsTrendChart'
-import PlatformComparisonCharts from './PlatformComparisonCharts'
-import CampaignFiltersAndViews from './CampaignFiltersAndViews'
-import CampaignListView from './CampaignListView'
+import PlatformSpecificCharts from '../shared/charts/PlatformSpecificCharts'
+import AllPlatformsTrendChart from '../shared/charts/AllPlatformsTrendChart'
+import PlatformComparisonCharts from '../shared/charts/PlatformComparisonCharts'
+import CampaignFilters from '../brand-view/dashboard/CampaignFilters'
+import CampaignList from '../brand-view/dashboard/CampaignList'
 
 interface RetailerCampaign {
   campaign_id: string
@@ -109,7 +109,7 @@ export default function RetailerCampaignView() {
     dateRange: { from: undefined, to: undefined },
     search: ''
   })
-  
+
   // Enhanced detailed view states
   const [detailDateRange, setDetailDateRange] = useState<{ from?: Date, to?: Date }>({})
   const [trendPlatformFilter, setTrendPlatformFilter] = useState<string>('all')
@@ -137,7 +137,7 @@ export default function RetailerCampaignView() {
         { retailer_id: '44444444-4444-4444-4444-444444444444', retailer_name: 'Exclusive Miami', region: 'Southeast', campaign_count: 7 },
         { retailer_id: '55555555-5555-5555-5555-555555555555', retailer_name: 'Designer Seattle', region: 'Northwest', campaign_count: 4 }
       ]
-      
+
       setRetailers(mockRetailers)
       if (mockRetailers.length > 0) {
         setSelectedRetailerId(mockRetailers[0].retailer_id)
@@ -156,20 +156,20 @@ export default function RetailerCampaignView() {
         limit: '20',
         offset: '0'
       })
-      
+
       if (filters.search) params.append('search', filters.search)
       if (filters.status !== 'all') params.append('status', filters.status)
       if (filters.type !== 'all') params.append('type', filters.type)
-      
+
       const response = await fetch(`/api/retailer-campaigns?${params}`)
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch retailer campaigns')
       }
-      
+
       const data = await response.json()
       setCampaigns(data.campaigns || [])
-      
+
     } catch (error) {
       console.error('Error fetching retailer campaigns:', error)
       // Keep empty campaigns array on error
@@ -221,24 +221,24 @@ export default function RetailerCampaignView() {
     switch (platform.toLowerCase()) {
       case 'facebook':
         return (
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" 
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg"
             alt="Facebook"
             className="w-5 h-5 object-contain"
           />
         )
       case 'instagram':
         return (
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" 
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png"
             alt="Instagram"
             className="w-5 h-5 object-contain"
           />
         )
       case 'linkedin':
         return (
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" 
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
             alt="LinkedIn"
             className="w-5 h-5 object-contain"
           />
@@ -246,8 +246,8 @@ export default function RetailerCampaignView() {
       case 'twitter':
       case 'x':
         return (
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg" 
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg"
             alt="X"
             className="w-5 h-5 object-contain"
           />
@@ -307,11 +307,11 @@ export default function RetailerCampaignView() {
     return platforms.sort((a, b) => {
       const aValue = a[platformSortField]
       const bValue = b[platformSortField]
-      
+
       if (typeof aValue === 'string' && typeof bValue === 'string') {
         return platformSortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue)
       }
-      
+
       return platformSortDirection === 'asc' ? aValue - bValue : bValue - aValue
     })
   }
@@ -327,8 +327,8 @@ export default function RetailerCampaignView() {
 
   const getSortIcon = (field: typeof platformSortField) => {
     if (platformSortField !== field) return <ArrowUpDown className="h-4 w-4 text-gray-400" />
-    return platformSortDirection === 'asc' ? 
-      <TrendingUp className="h-4 w-4 text-blue-600" /> : 
+    return platformSortDirection === 'asc' ?
+      <TrendingUp className="h-4 w-4 text-blue-600" /> :
       <TrendingDown className="h-4 w-4 text-blue-600" />
   }
 
@@ -337,7 +337,7 @@ export default function RetailerCampaignView() {
       const matchesSearch = !filters.search || campaign.campaign_name.toLowerCase().includes(filters.search.toLowerCase())
       const matchesStatus = filters.status === 'all' || campaign.campaign_status === filters.status
       const matchesType = filters.type === 'all' || campaign.campaign_type === filters.type
-      
+
       let matchesDateRange = true
       if (filters.dateRange.from || filters.dateRange.to) {
         const campaignDate = new Date(campaign.start_date)
@@ -352,7 +352,7 @@ export default function RetailerCampaignView() {
         }
         console.log('📅 Campaign matches date range:', matchesDateRange)
       }
-      
+
       return matchesSearch && matchesStatus && matchesType && matchesDateRange
     })
     .sort((a, b) => {
@@ -424,8 +424,8 @@ export default function RetailerCampaignView() {
                     />
                   </div>
                   {(detailDateRange.from || detailDateRange.to) && (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => setDetailDateRange({})}
                     >
@@ -498,7 +498,7 @@ export default function RetailerCampaignView() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
-                        <th 
+                        <th
                           className="text-left py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
                           onClick={() => handlePlatformSort('platform')}
                         >
@@ -507,7 +507,7 @@ export default function RetailerCampaignView() {
                             {getSortIcon('platform')}
                           </div>
                         </th>
-                        <th 
+                        <th
                           className="text-right py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
                           onClick={() => handlePlatformSort('impressions')}
                         >
@@ -516,7 +516,7 @@ export default function RetailerCampaignView() {
                             {getSortIcon('impressions')}
                           </div>
                         </th>
-                        <th 
+                        <th
                           className="text-right py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
                           onClick={() => handlePlatformSort('reach')}
                         >
@@ -525,7 +525,7 @@ export default function RetailerCampaignView() {
                             {getSortIcon('reach')}
                           </div>
                         </th>
-                        <th 
+                        <th
                           className="text-right py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
                           onClick={() => handlePlatformSort('engagement')}
                         >
@@ -534,7 +534,7 @@ export default function RetailerCampaignView() {
                             {getSortIcon('engagement')}
                           </div>
                         </th>
-                        <th 
+                        <th
                           className="text-right py-3 px-4 font-medium text-gray-600 cursor-pointer hover:bg-gray-50"
                           onClick={() => handlePlatformSort('engagement_rate')}
                         >
@@ -565,10 +565,9 @@ export default function RetailerCampaignView() {
                           </td>
                           <td className="py-4 px-4 text-right">
                             <div className="flex items-center justify-end gap-2">
-                              <span className={`font-medium ${
-                                platform.engagement_rate >= 6 ? 'text-green-600' :
+                              <span className={`font-medium ${platform.engagement_rate >= 6 ? 'text-green-600' :
                                 platform.engagement_rate >= 3 ? 'text-yellow-600' : 'text-gray-600'
-                              }`}>
+                                }`}>
                                 {platform.engagement_rate.toFixed(2)}%
                               </span>
                               {platform.engagement_rate >= 6 ? (
@@ -687,8 +686,8 @@ export default function RetailerCampaignView() {
                         <span className="font-medium">{campaign.email_metrics.open_rate.toFixed(1)}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-purple-600 h-2 rounded-full" 
+                        <div
+                          className="bg-purple-600 h-2 rounded-full"
                           style={{ width: `${Math.min(campaign.email_metrics.open_rate, 100)}%` }}
                         ></div>
                       </div>
@@ -699,8 +698,8 @@ export default function RetailerCampaignView() {
                         <span className="font-medium">{campaign.email_metrics.click_rate.toFixed(1)}%</span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-orange-600 h-2 rounded-full" 
+                        <div
+                          className="bg-orange-600 h-2 rounded-full"
                           style={{ width: `${Math.min(campaign.email_metrics.click_rate * 10, 100)}%` }}
                         ></div>
                       </div>
@@ -713,8 +712,8 @@ export default function RetailerCampaignView() {
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
                           style={{ width: `${Math.min((campaign.email_metrics.click_rate / campaign.email_metrics.open_rate) * 100, 100)}%` }}
                         ></div>
                       </div>
@@ -810,7 +809,7 @@ export default function RetailerCampaignView() {
       {selectedRetailerId && (
         <>
           {/* Enhanced Filters and Views */}
-          <CampaignFiltersAndViews
+          <CampaignFilters
             filters={filters}
             onFiltersChange={setFilters}
             viewMode={viewMode}
@@ -820,22 +819,22 @@ export default function RetailerCampaignView() {
 
           {/* Campaign Display - Card or List View */}
           {viewMode === 'list' ? (
-            <CampaignListView 
+            <CampaignList
               campaigns={filteredAndSortedCampaigns}
-              onCampaignClick={(campaign) => handleCampaignClick(campaign.campaign_id)}
+              onCampaignClick={(campaign: any) => handleCampaignClick(campaign.campaign_id)}
             />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredAndSortedCampaigns.map((campaign) => (
-              <Card 
-                key={campaign.campaign_id} 
-                className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0 flex flex-col h-[520px]"
-                onClick={() => handleCampaignClick(campaign.campaign_id)}
-              >
-                {/* Campaign Image */}
-                <div className="relative h-64 w-full overflow-hidden rounded-t-lg">
-                    <img 
-                      src={campaign.campaign_image || 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573'} 
+                <Card
+                  key={campaign.campaign_id}
+                  className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden p-0 flex flex-col h-[520px]"
+                  onClick={() => handleCampaignClick(campaign.campaign_id)}
+                >
+                  {/* Campaign Image */}
+                  <div className="relative h-64 w-full overflow-hidden rounded-t-lg">
+                    <img
+                      src={campaign.campaign_image || 'https://cdn.shopify.com/s/files/1/0457/5133/7113/collections/523.jpg?v=1598118573'}
                       alt={campaign.campaign_name}
                       className="w-full h-full object-cover transition-transform hover:scale-105"
                     />
@@ -863,129 +862,128 @@ export default function RetailerCampaignView() {
                       </Badge>
                     </div>
                   </div>
-                
-                <CardHeader className="pb-0 px-4 pt-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      {/* Reserved space for campaign title - ensures consistent height */}
-                      <div className="h-6 mb-0">
-                        <CardTitle className="text-base leading-tight">{campaign.campaign_name}</CardTitle>
+
+                  <CardHeader className="pb-0 px-4 pt-2">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        {/* Reserved space for campaign title - ensures consistent height */}
+                        <div className="h-6 mb-0">
+                          <CardTitle className="text-base leading-tight">{campaign.campaign_name}</CardTitle>
+                        </div>
+                        {!campaign.campaign_image && (
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge className={getStatusColor(campaign.campaign_status)}>
+                              {campaign.campaign_status}
+                            </Badge>
+                            <Badge variant="outline">{campaign.campaign_type}</Badge>
+                          </div>
+                        )}
                       </div>
                       {!campaign.campaign_image && (
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge className={getStatusColor(campaign.campaign_status)}>
-                            {campaign.campaign_status}
-                          </Badge>
-                          <Badge variant="outline">{campaign.campaign_type}</Badge>
-                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                            <Button variant="ghost" size="sm">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleCampaignClick(campaign.campaign_id)}>
+                              View Platform Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>Export Platform Data</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       )}
                     </div>
-                    {!campaign.campaign_image && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleCampaignClick(campaign.campaign_id)}>
-                            View Platform Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>Export Platform Data</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="pt-0 px-4 pb-2 flex flex-col flex-1">
-                  {/* Type-Specific Performance Summary */}
-                  <div className="space-y-1 flex-grow">
-                    {campaign.campaign_type === 'social' && (
-                      <>
-                        <div className="text-sm font-medium text-gray-700">Platform Performance:</div>
-                        {Object.entries(campaign.platform_performance).map(([platform, data]) => (
-                          <div key={platform} className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className={`w-2 h-2 rounded-full ${
-                                platform === 'facebook' ? 'bg-blue-500' :
-                                platform === 'instagram' ? 'bg-pink-500' :
-                                platform === 'linkedin' ? 'bg-blue-700' :
-                                platform === 'twitter' ? 'bg-black' :
-                                'bg-sky-500'
-                              }`}></div>
-                              <span className="text-sm">{getPlatformName(platform)}</span>
+                  </CardHeader>
+
+                  <CardContent className="pt-0 px-4 pb-2 flex flex-col flex-1">
+                    {/* Type-Specific Performance Summary */}
+                    <div className="space-y-1 flex-grow">
+                      {campaign.campaign_type === 'social' && (
+                        <>
+                          <div className="text-sm font-medium text-gray-700">Platform Performance:</div>
+                          {Object.entries(campaign.platform_performance).map(([platform, data]) => (
+                            <div key={platform} className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${platform === 'facebook' ? 'bg-blue-500' :
+                                  platform === 'instagram' ? 'bg-pink-500' :
+                                    platform === 'linkedin' ? 'bg-blue-700' :
+                                      platform === 'twitter' ? 'bg-black' :
+                                        'bg-sky-500'
+                                  }`}></div>
+                                <span className="text-sm">{getPlatformName(platform)}</span>
+                              </div>
+                              <span className="text-sm font-medium">{formatNumber(data.engagement)} eng.</span>
                             </div>
-                            <span className="text-sm font-medium">{formatNumber(data.engagement)} eng.</span>
-                          </div>
-                        ))}
-                      </>
-                    )}
+                          ))}
+                        </>
+                      )}
 
-                    {campaign.campaign_type === 'email' && campaign.email_metrics && (
-                      <>
-                        <div className="text-sm font-medium text-gray-700">Email Performance:</div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                            <span className="text-sm">Emails Sent</span>
+                      {campaign.campaign_type === 'email' && campaign.email_metrics && (
+                        <>
+                          <div className="text-sm font-medium text-gray-700">Email Performance:</div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                              <span className="text-sm">Emails Sent</span>
+                            </div>
+                            <span className="text-sm font-medium">{formatNumber(campaign.email_metrics.emails_sent)}</span>
                           </div>
-                          <span className="text-sm font-medium">{formatNumber(campaign.email_metrics.emails_sent)}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                            <span className="text-sm">Emails Opened</span>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                              <span className="text-sm">Emails Opened</span>
+                            </div>
+                            <span className="text-sm font-medium">{formatNumber(campaign.email_metrics.emails_opened)}</span>
                           </div>
-                          <span className="text-sm font-medium">{formatNumber(campaign.email_metrics.emails_opened)}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                            <span className="text-sm">Open Rate</span>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                              <span className="text-sm">Open Rate</span>
+                            </div>
+                            <span className="text-sm font-medium">{campaign.email_metrics.open_rate.toFixed(1)}%</span>
                           </div>
-                          <span className="text-sm font-medium">{campaign.email_metrics.open_rate.toFixed(1)}%</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                            <span className="text-sm">Click Rate</span>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                              <span className="text-sm">Click Rate</span>
+                            </div>
+                            <span className="text-sm font-medium">{campaign.email_metrics.click_rate.toFixed(1)}%</span>
                           </div>
-                          <span className="text-sm font-medium">{campaign.email_metrics.click_rate.toFixed(1)}%</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
+                        </>
+                      )}
+                    </div>
 
-                  {/* Analytics New Button */}
-                  <div className="mt-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
-                      onClick={(e) => handleAnalyticsNewClick(campaign.campaign_id, e)}
-                    >
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      Analytics New
-                    </Button>
-                  </div>
+                    {/* Analytics New Button */}
+                    <div className="mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={(e) => handleAnalyticsNewClick(campaign.campaign_id, e)}
+                      >
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        Analytics New
+                      </Button>
+                    </div>
 
-                  {/* Performance Tier and Trend - Aligned at bottom */}
-                  <div className="mt-auto">
-                    <div className="flex items-center justify-between border-t mt-2 pt-2">
-                    <div className="flex items-center gap-2">
-                      <Badge className={getPerformanceTierColor(campaign.performance_tier)}>
-                        {campaign.performance_tier} performer
-                      </Badge>
-                      {getTrendIcon(campaign.trend_direction)}
+                    {/* Performance Tier and Trend - Aligned at bottom */}
+                    <div className="mt-auto">
+                      <div className="flex items-center justify-between border-t mt-2 pt-2">
+                        <div className="flex items-center gap-2">
+                          <Badge className={getPerformanceTierColor(campaign.performance_tier)}>
+                            {campaign.performance_tier} performer
+                          </Badge>
+                          {getTrendIcon(campaign.trend_direction)}
+                        </div>
+                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                          <Calendar className="h-3 w-3" />
+                          {formatDate(campaign.start_date)}
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-gray-600">
-                      <Calendar className="h-3 w-3" />
-                      {formatDate(campaign.start_date)}
-                    </div>
-                    </div>
-                  </div>
-                </CardContent>
+                  </CardContent>
                 </Card>
               ))}
             </div>
@@ -1001,7 +999,7 @@ export default function RetailerCampaignView() {
                 <h3 className="text-lg font-medium mb-2">No campaigns found</h3>
                 <p className="text-gray-600 mb-4">
                   {filters.search || filters.status !== 'all' || filters.type !== 'all' || filters.dateRange.from || filters.dateRange.to
-                    ? 'Try adjusting your search or filters' 
+                    ? 'Try adjusting your search or filters'
                     : 'This retailer has no campaigns yet'
                   }
                 </p>
