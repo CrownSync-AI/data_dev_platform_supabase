@@ -9,6 +9,8 @@ import SocialCampaignAnalytics from '@/components/campaigns/brand-view/intellige
 
 
 
+import CampaignOverview from '@/components/brand-performance/campaign-performance/CampaignOverview';
+
 export default function CampaignPerformancePage() {
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null)
   const [selectedCampaignType, setSelectedCampaignType] = useState<string | null>(null)
@@ -68,6 +70,9 @@ export default function CampaignPerformancePage() {
           </Button>
         </div>
       </div>
+
+      {/* Overview Section */}
+      <CampaignOverview />
 
       {/* Brand Campaign View */}
       <div className="space-y-6">
