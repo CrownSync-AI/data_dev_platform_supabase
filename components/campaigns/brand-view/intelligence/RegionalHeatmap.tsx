@@ -4,69 +4,23 @@ import { Badge } from '@/components/ui/badge'
 import { Users, TrendingUp } from 'lucide-react'
 import USMapVisualization from './USMapVisualization'
 
-// Regional performance data
-const regionalData = [
-  {
-    region: 'East',
-    retailers: 3,
-    posts: 58,
-    engagement: 15240,
-    reach: 342000,
-    engagementRate: 4.46,
-    performance: 92,
-    growth: 18.5,
-    topRetailer: 'Luxury Boutique NYC',
-    cities: ['New York', 'Boston', 'Philadelphia']
-  },
-  {
-    region: 'West',
-    retailers: 2,
-    posts: 42,
-    engagement: 8960,
-    reach: 198000,
-    engagementRate: 4.53,
-    performance: 88,
-    growth: 15.2,
-    topRetailer: 'Fashion Forward LA',
-    cities: ['Los Angeles', 'San Francisco', 'Seattle']
-  },
-  {
-    region: 'South',
-    retailers: 3,
-    posts: 52,
-    engagement: 10960,
-    reach: 264000,
-    engagementRate: 4.15,
-    performance: 89,
-    growth: 16.9,
-    topRetailer: 'Trend Setters Miami',
-    cities: ['Miami', 'Dallas', 'Atlanta']
-  },
-  {
-    region: 'Central',
-    retailers: 2,
-    posts: 32,
-    engagement: 7420,
-    reach: 156000,
-    engagementRate: 4.76,
-    performance: 85,
-    growth: 12.8,
-    topRetailer: 'Style Central Chicago',
-    cities: ['Chicago', 'Detroit', 'Minneapolis']
-  },
-  {
-    region: 'North',
-    retailers: 2,
-    posts: 18,
-    engagement: 2700,
-    reach: 132000,
-    engagementRate: 2.05,
-    performance: 78,
-    growth: 8.4,
-    topRetailer: 'Northern Trends',
-    cities: ['Toronto', 'Montreal', 'Vancouver']
-  }
-]
+// Type definition for regional data
+interface RegionalData {
+  region: string
+  retailers: number
+  posts: number
+  engagement: number
+  reach: number
+  engagementRate: number
+  performance: number
+  growth: number
+  topRetailer: string
+  cities: string[]
+}
+
+interface RegionalHeatmapProps {
+  regionalData: RegionalData[]
+}
 
 const getPerformanceColor = (performance: number) => {
   if (performance >= 90) return 'bg-green-500'
@@ -82,7 +36,7 @@ const getPerformanceBadge = (performance: number) => {
   return { variant: 'destructive' as const, label: 'Needs Attention' }
 }
 
-export default function RegionalHeatmap() {
+export default function RegionalHeatmap({ regionalData }: RegionalHeatmapProps) {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
       {/* Left Column: Map Visualization */}

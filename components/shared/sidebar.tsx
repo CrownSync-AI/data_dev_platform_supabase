@@ -22,6 +22,12 @@ const sidebarGroups = [
         description: "Comprehensive campaign analytics with social and email performance insights",
       },
       {
+        title: "Campaign Performance – Deliverable",
+        href: "/dashboard/brand-performance/campaign-performance-deliverable",
+        icon: TrendingUp,
+        description: "Realistic deliverable version based on current capabilities",
+      },
+      {
         title: "Campaign Intelligence – Jesse",
         href: "/dashboard/brand-performance/campaign-intelligence",
         icon: Share2,
