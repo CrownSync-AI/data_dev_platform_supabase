@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
-  TrendingUp, Target, Lightbulb, BarChart3, Calendar, Filter, Users, Eye, MessageCircle,
-  Zap, ExternalLink, Download, ArrowUpDown, ArrowUp, ArrowDown, Sparkles, Bot,
+  TrendingUp, Target, BarChart3, Calendar, Filter, Users, Eye, MessageCircle,
+  ExternalLink, Download, ArrowUpDown, ArrowUp, ArrowDown,
   Instagram, Facebook, Linkedin, MapPin, Check, ChevronsUpDown,
   Bell, Trophy, AlertTriangle, Info
 } from 'lucide-react'
@@ -34,6 +34,11 @@ import {
 } from 'recharts'
 import RegionalHeatmap from '@/components/campaigns/brand-view/intelligence/RegionalHeatmap'
 import PlatformPostingMatrix from './PlatformPostingMatrix'
+import {
+  retailerPerformance as importedRetailerPerformance,
+  platformPerformance as importedPlatformPerformance,
+  calculateRegionalData
+} from '@/lib/brand-campaign-data'
 // import ContentTimingHeatmap from '@/components/campaigns/brand-view/intelligence/ContentTimingHeatmap'
 
 // Mock data aligned with Ayrshare structure
@@ -80,342 +85,14 @@ const performanceOverview = {
 }
 
 // Platform performance data
-const platformPerformance = [
-  {
-    platform: 'Instagram',
-    color: '#E4405F',
-    posts: 68,
-    engagement: 18420,
-    reach: 425000,
-    impressions: 580000,
-    engagementRate: 4.33,
-    avgLikes: 271,
-    avgComments: 18,
-    avgShares: 12,
-    topContentType: 'REELS',
-    growth: 12.5
-  },
-  {
-    platform: 'Facebook',
-    color: '#1877F2',
-    posts: 45,
-    engagement: 12680,
-    reach: 285000,
-    impressions: 420000,
-    engagementRate: 3.02,
-    avgLikes: 182,
-    avgComments: 24,
-    avgShares: 76,
-    topContentType: 'VIDEO',
-    growth: 8.3
-  },
-  {
-    platform: 'LinkedIn',
-    color: '#0A66C2',
-    posts: 28,
-    engagement: 8940,
-    reach: 125000,
-    impressions: 165000,
-    engagementRate: 5.42,
-    avgLikes: 89,
-    avgComments: 12,
-    avgShares: 218,
-    topContentType: 'ARTICLE',
-    growth: 15.7
-  },
-  {
-    platform: 'TikTok',
-    color: '#000000',
-    posts: 15,
-    engagement: 5240,
-    reach: 57000,
-    impressions: 75000,
-    engagementRate: 6.99,
-    avgLikes: 249,
-    avgComments: 31,
-    avgShares: 69,
-    topContentType: 'VIDEO',
-    growth: 22.1
-  }
-]
+const platformPerformance = importedPlatformPerformance
 
-// Retailer performance data
-const retailerPerformance = [
-  {
-    id: 'retailer-001',
-    name: 'Luxury Boutique NYC',
-    region: 'East',
-    posts: 24,
-    engagement: 8420,
-    reach: 145000,
-    engagementRate: 5.81,
-    followers: 89000,
-    postingFrequency: 4.2,
-    performance: 'excellent',
-    growth: 18.5,
-    topPlatform: 'Instagram'
-  },
-  {
-    id: 'retailer-002',
-    name: 'Fashion Forward LA',
-    region: 'West',
-    posts: 18,
-    engagement: 6240,
-    reach: 112000,
-    engagementRate: 5.57,
-    followers: 67000,
-    postingFrequency: 3.8,
-    performance: 'excellent',
-    growth: 15.2,
-    topPlatform: 'TikTok'
-  },
-  {
-    id: 'retailer-003',
-    name: 'Style Central Chicago',
-    region: 'Central',
-    posts: 16,
-    engagement: 4680,
-    reach: 89000,
-    engagementRate: 5.26,
-    followers: 54000,
-    postingFrequency: 3.2,
-    performance: 'good',
-    growth: 12.8,
-    topPlatform: 'Instagram'
-  },
-  {
-    id: 'retailer-004',
-    name: 'Trend Setters Miami',
-    region: 'South',
-    posts: 22,
-    engagement: 7120,
-    reach: 128000,
-    engagementRate: 5.56,
-    followers: 72000,
-    postingFrequency: 4.1,
-    performance: 'excellent',
-    growth: 16.9,
-    topPlatform: 'Instagram'
-  },
-  {
-    id: 'retailer-005',
-    name: 'Urban Style Dallas',
-    region: 'South',
-    posts: 14,
-    engagement: 3840,
-    reach: 68000,
-    engagementRate: 5.65,
-    followers: 41000,
-    postingFrequency: 2.8,
-    performance: 'good',
-    growth: 11.4,
-    topPlatform: 'Facebook'
-  },
-  {
-    id: 'retailer-006',
-    name: 'Metro Mode SF',
-    region: 'West',
-    posts: 25,
-    engagement: 8500,
-    reach: 156000,
-    engagementRate: 5.45,
-    followers: 92000,
-    postingFrequency: 4.5,
-    performance: 'excellent',
-    growth: 19.2,
-    topPlatform: 'Instagram'
-  },
-  {
-    id: 'retailer-007',
-    name: 'Capital Chic DC',
-    region: 'East',
-    posts: 19,
-    engagement: 5100,
-    reach: 98000,
-    engagementRate: 5.20,
-    followers: 58000,
-    postingFrequency: 3.5,
-    performance: 'good',
-    growth: 13.5,
-    topPlatform: 'LinkedIn'
-  },
-  {
-    id: 'retailer-008',
-    name: 'Vogue Valley Austin',
-    region: 'South',
-    posts: 15,
-    engagement: 3200,
-    reach: 62000,
-    engagementRate: 5.16,
-    followers: 38000,
-    postingFrequency: 2.9,
-    performance: 'average',
-    growth: 8.4,
-    topPlatform: 'Instagram'
-  },
-  {
-    id: 'retailer-009',
-    name: 'Harbor Trends Boston',
-    region: 'East',
-    posts: 10,
-    engagement: 1800,
-    reach: 45000,
-    engagementRate: 4.00,
-    followers: 28000,
-    postingFrequency: 2.0,
-    performance: 'poor',
-    growth: 2.1,
-    topPlatform: 'Facebook'
-  },
-  {
-    id: 'retailer-010',
-    name: 'Mountain High Denver',
-    region: 'West',
-    posts: 12,
-    engagement: 2100,
-    reach: 52000,
-    engagementRate: 4.04,
-    followers: 31000,
-    postingFrequency: 2.2,
-    performance: 'poor',
-    growth: 3.5,
-    topPlatform: 'Instagram'
-  },
-  {
-    id: 'retailer-011',
-    name: 'Peach State Fashion Atlanta',
-    region: 'South',
-    posts: 20,
-    engagement: 6800,
-    reach: 115000,
-    engagementRate: 5.91,
-    followers: 75000,
-    postingFrequency: 3.9,
-    performance: 'excellent',
-    growth: 16.2,
-    topPlatform: 'Instagram'
-  },
-  {
-    id: 'retailer-012',
-    name: 'Rain City Styles Seattle',
-    region: 'West',
-    posts: 17,
-    engagement: 4200,
-    reach: 82000,
-    engagementRate: 5.12,
-    followers: 48000,
-    postingFrequency: 3.1,
-    performance: 'average',
-    growth: 9.8,
-    topPlatform: 'Facebook'
-  },
-  {
-    id: 'retailer-013',
-    name: 'Motor City Mods Detroit',
-    region: 'Central',
-    posts: 11,
-    engagement: 1950,
-    reach: 48000,
-    engagementRate: 4.06,
-    followers: 29000,
-    postingFrequency: 2.1,
-    performance: 'poor',
-    growth: 1.8,
-    topPlatform: 'Facebook'
-  }
-]
-
-// Regional performance data - calculated dynamically from retailerPerformance
-const calculateRegionalData = () => {
-  const regions = ['East', 'West', 'Central', 'South']
-
-  return regions.map(regionName => {
-    const regionRetailers = retailerPerformance.filter(r => r.region === regionName)
-    const totalEngagement = regionRetailers.reduce((sum, r) => sum + r.engagement, 0)
-    const totalReach = regionRetailers.reduce((sum, r) => sum + r.reach, 0)
-    const totalPosts = regionRetailers.reduce((sum, r) => sum + r.posts, 0)
-    const avgEngagementRate = regionRetailers.length > 0
-      ? regionRetailers.reduce((sum, r) => sum + r.engagementRate, 0) / regionRetailers.length
-      : 0
-    const avgGrowth = regionRetailers.length > 0
-      ? regionRetailers.reduce((sum, r) => sum + r.growth, 0) / regionRetailers.length
-      : 0
-    const topRetailer = regionRetailers.length > 0
-      ? regionRetailers.sort((a, b) => b.engagementRate - a.engagementRate)[0].name
-      : 'N/A'
-
-    // Calculate performance score (0-100) based on engagement rate and growth
-    const performance = Math.min(100, Math.round(
-      (avgEngagementRate * 10) + (avgGrowth * 2)
-    ))
-
-    return {
-      region: regionName,
-      retailers: regionRetailers.length,
-      posts: totalPosts,
-      engagement: totalEngagement,
-      reach: totalReach,
-      engagementRate: Number(avgEngagementRate.toFixed(2)),
-      performance,
-      growth: Number(avgGrowth.toFixed(1)),
-      topRetailer,
-      cities: [] // Can be populated if needed
-    }
-  }).filter(r => r.retailers > 0) // Only include regions with retailers
-}
-
+// Use centralized data source
+const retailerPerformance = importedRetailerPerformance
 const regionalData = calculateRegionalData()
 
-// AI insights and recommendations
-const aiInsights = {
-  summary: {
-    performance: 'excellent',
-    keyMetric: 'Engagement Rate',
-    change: '+18.5%',
-    period: 'vs last campaign',
-    highlight: 'Instagram Reels driving 34% of total engagement'
-  },
-  drivers: [
-    {
-      factor: 'Content Strategy',
-      impact: '+1.2pp ER',
-      description: 'Video content ratio increased to 68%'
-    },
-    {
-      factor: 'Retailer Performance',
-      impact: '+0.8pp ER',
-      description: 'Top 3 retailers exceeded posting targets'
-    },
-    {
-      factor: 'Platform Mix',
-      impact: '+0.5pp ER',
-      description: 'TikTok expansion showing strong results'
-    }
-  ],
-  recommendations: [
-    {
-      priority: 'high',
-      action: 'Scale TikTok Investment',
-      impact: '+0.6pp ER',
-      effort: 'Medium',
-      description: 'Expand TikTok content to underperforming retailers'
-    },
-    {
-      priority: 'medium',
-      action: 'Optimize Posting Schedule',
-      impact: '+0.3pp ER',
-      effort: 'Low',
-      description: 'Shift 20% of posts to peak engagement hours'
-    },
-    {
-      priority: 'medium',
-      action: 'Support Low Performers',
-      impact: '+0.4pp ER',
-      effort: 'High',
-      description: 'Provide content templates to bottom 2 retailers'
-    }
-  ]
-}
+
+
 
 interface RedesignedCampaignIntelligenceProps {
   campaignId?: string
@@ -468,10 +145,15 @@ export default function RedesignedCampaignIntelligence({ campaignId, onBack }: R
     const data = []
 
     // Base values
+    let comparisonMultiplier = 1;
+    if (selectedComparison === 'holiday-2023') comparisonMultiplier = 1.2;
+    if (selectedComparison === 'summer-2024') comparisonMultiplier = 0.9;
+    if (selectedComparison === 'spring-2023') comparisonMultiplier = 0.8;
+
     const baseValues = {
-      engagementRate: { current: 2.8, comparison: 2.1, growth: 0.15 },
-      totalEngagement: { current: 3200, comparison: 2400, growth: 400 },
-      totalReach: { current: 85000, comparison: 62000, growth: 5000 }
+      engagementRate: { current: 2.8, comparison: 2.1 * comparisonMultiplier, growth: 0.15 },
+      totalEngagement: { current: 3200, comparison: 2400 * comparisonMultiplier, growth: 400 },
+      totalReach: { current: 85000, comparison: 62000 * comparisonMultiplier, growth: 5000 }
     }
     const base = baseValues[metric]
 
@@ -672,71 +354,76 @@ export default function RedesignedCampaignIntelligence({ campaignId, onBack }: R
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4">
                   {/* Time Range Filter */}
-                  <div className="flex items-center gap-2 bg-white rounded-md border px-3 py-1.5 shadow-sm hover:border-blue-300 transition-colors">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
-                      <SelectTrigger className="w-[180px] border-none h-6 p-0 focus:ring-0 text-sm font-medium text-gray-700">
+                  {/* Time Range Filter */}
+                  <Select value={selectedTimeRange} onValueChange={setSelectedTimeRange}>
+                    <SelectTrigger className="w-[260px]">
+                      <div className="flex items-center gap-2 truncate">
+                        <Calendar className="h-4 w-4 text-gray-500 shrink-0" />
                         <SelectValue placeholder="Select time range">
                           {timeRanges.find(r => r.id === selectedTimeRange)?.label || 'Campaign Start'}
                         </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {timeRanges.map(range => (
-                          <SelectItem key={range.id} value={range.id}>
-                            {range.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {timeRanges.map(range => (
+                        <SelectItem key={range.id} value={range.id}>
+                          {range.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
 
                   {/* Comparison Filter - Combobox */}
-                  <div className="flex items-center gap-2 bg-white rounded-md border px-3 py-1.5 shadow-sm hover:border-blue-300 transition-colors">
-                    <BarChart3 className="h-4 w-4 text-gray-500" />
-                    <Popover open={open} onOpenChange={setOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          role="combobox"
-                          aria-expanded={open}
-                          className="w-[200px] justify-between h-6 p-0 hover:bg-transparent font-medium text-gray-700"
-                        >
-                          {selectedComparison
-                            ? comparisonCampaigns.find((c) => c.id === selectedComparison)?.name
-                            : "Select campaign..."}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[250px] p-0">
-                        <Command>
-                          <CommandInput placeholder="Search campaign..." />
-                          <CommandList>
-                            <CommandEmpty>No campaign found.</CommandEmpty>
-                            <CommandGroup>
-                              {comparisonCampaigns.map((campaign) => (
-                                <CommandItem
-                                  key={campaign.id}
-                                  value={campaign.id}
-                                  onSelect={(currentValue) => {
-                                    setSelectedComparison(currentValue === selectedComparison ? "" : currentValue)
-                                    setOpen(false)
-                                  }}
-                                >
-                                  <Check
-                                    className={cn(
-                                      "mr-2 h-4 w-4",
-                                      selectedComparison === campaign.id ? "opacity-100" : "opacity-0"
-                                    )}
-                                  />
-                                  {campaign.name}
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
+                  {/* Comparison Filter - Combobox */}
+                  <Popover open={open} onOpenChange={setOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={open}
+                        className="w-[260px] justify-between font-normal"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <BarChart3 className="h-4 w-4 text-gray-500 shrink-0" />
+                          <span className="truncate">
+                            {selectedComparison
+                              ? comparisonCampaigns.find((c) => c.id === selectedComparison)?.name
+                              : "Select campaign..."}
+                          </span>
+                        </div>
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[250px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search campaign..." />
+                        <CommandList>
+                          <CommandEmpty>No campaign found.</CommandEmpty>
+                          <CommandGroup>
+                            {comparisonCampaigns.map((campaign) => (
+                              <CommandItem
+                                key={campaign.id}
+                                value={campaign.id}
+                                onSelect={(currentValue) => {
+                                  setSelectedComparison(currentValue === selectedComparison ? "" : currentValue)
+                                  setOpen(false)
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedComparison === campaign.id ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {campaign.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
                 </div>
 
                 {/* Platform Filter */}
@@ -1264,6 +951,6 @@ export default function RedesignedCampaignIntelligence({ campaignId, onBack }: R
           </div>
         </TabsContent>
       </Tabs>
-    </div>
+    </div >
   )
 }

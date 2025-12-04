@@ -629,25 +629,7 @@ export default function PlatformPostingMatrix() {
                         </div>
                     </div>
 
-                    {/* Legend */}
-                    <div className="p-4 bg-white border-t border-gray-200">
-                        <p className="text-xs text-gray-500 text-center mb-3 font-medium">
-                            Click any cell for detailed information
-                        </p>
-                        <div className="flex items-center justify-center gap-6 flex-wrap">
-                            {Object.entries(statusConfig).map(([key, config]) => {
-                                const Icon = config.icon
-                                return (
-                                    <div key={key} className="flex items-center gap-2">
-                                        <div className={`w-6 h-6 rounded flex items-center justify-center ${config.bgColor} border ${config.borderColor}`}>
-                                            <Icon className={`w-3.5 h-3.5 ${config.color}`} />
-                                        </div>
-                                        <span className="text-xs text-gray-700 font-medium">{config.label}</span>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
+
                 </CardContent>
             </Card>
 

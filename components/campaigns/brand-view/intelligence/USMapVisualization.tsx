@@ -97,18 +97,17 @@ const getColorIntensity = (value: number, metric: string): string => {
 }
 
 interface USMapVisualizationProps {
-  selectedMetric?: 'performance' | 'engagementRate' | 'reach' | 'growth'
+  selectedMetric: 'performance' | 'engagementRate' | 'reach' | 'growth'
+  onMetricChange: (metric: 'performance' | 'engagementRate' | 'reach' | 'growth') => void
   regionalData: any[]
 }
 
 function USMapVisualization({
-  selectedMetric: externalSelectedMetric,
+  selectedMetric,
+  onMetricChange,
   regionalData: propRegionalData
 }: USMapVisualizationProps) {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null)
-  const [selectedMetric, setSelectedMetric] = useState<'performance' | 'engagementRate' | 'reach' | 'growth'>(
-    externalSelectedMetric || 'performance'
-  )
 
   // Convert array to object for map lookup if needed, or use the prop directly
   // The prop is an array in RegionalHeatmap, but USMapVisualization used an object.
@@ -146,7 +145,7 @@ function USMapVisualization({
             <Button
               variant={selectedMetric === 'performance' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setSelectedMetric('performance')}
+              onClick={() => onMetricChange('performance')}
               className="h-8 text-xs"
             >
               Performance
@@ -154,7 +153,7 @@ function USMapVisualization({
             <Button
               variant={selectedMetric === 'engagementRate' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setSelectedMetric('engagementRate')}
+              onClick={() => onMetricChange('engagementRate')}
               className="h-8 text-xs"
             >
               Engagement
@@ -162,7 +161,7 @@ function USMapVisualization({
             <Button
               variant={selectedMetric === 'reach' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setSelectedMetric('reach')}
+              onClick={() => onMetricChange('reach')}
               className="h-8 text-xs"
             >
               Reach
@@ -170,7 +169,7 @@ function USMapVisualization({
             <Button
               variant={selectedMetric === 'growth' ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setSelectedMetric('growth')}
+              onClick={() => onMetricChange('growth')}
               className="h-8 text-xs"
             >
               Growth
