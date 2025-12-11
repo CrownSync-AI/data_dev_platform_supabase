@@ -86,10 +86,57 @@ body {
 }
 
 @layer base {
-	* {
-		@apply border-border outline-ring/50;
-	}
-	body {
-		@apply bg-background text-foreground;
-	}
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-neu-bg text-neu-text;
+  }
+}
+
+@layer utilities {
+  .bg-neu-bg {
+    background-color: #F0F2F5;
+  }
+
+  .text-neu-text {
+    color: #1A202C;
+  }
+
+  .shadow-neu {
+    box-shadow: 12px 12px 24px #D1D9E6, -12px -12px 24px #FFFFFF;
+    background-color: #F0F2F5;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .shadow-neu-sm {
+    box-shadow: 6px 6px 12px #D1D9E6, -6px -6px 12px #FFFFFF;
+    background-color: #F0F2F5;
+  }
+
+  .shadow-neu-pressed {
+    box-shadow: inset 6px 6px 12px #D1D9E6, inset -6px -6px 12px #FFFFFF;
+    background-color: #F0F2F5;
+  }
+
+  .neu-icon-btn {
+    background: #F0F2F5;
+    box-shadow: 6px 6px 12px #D1D9E6, -6px -6px 12px #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .neu-icon-btn:active {
+    box-shadow: inset 3px 3px 6px #D1D9E6, inset -3px -3px 6px #FFFFFF;
+  }
+
+  /* Specific card overrides to match screenshot roundedness */
+  .rounded-neu {
+    border-radius: 2rem;
+    /* ~32px */
+  }
 }
